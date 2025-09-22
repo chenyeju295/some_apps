@@ -10,6 +10,11 @@ class StorageService {
     await GetStorage.init();
   }
 
+  // Generic value storage methods
+  static T? getValue<T>(String key) => _box.read<T>(key);
+  static void setValue<T>(String key, T value) => _box.write(key, value);
+  static void removeValue(String key) => _box.remove(key);
+
   // First time user check
   static bool get isFirstTime => _box.read(AppConstants.keyFirstTime) ?? true;
   static set isFirstTime(bool value) =>

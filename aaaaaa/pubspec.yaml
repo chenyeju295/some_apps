@@ -47,6 +47,7 @@ dependencies:
   image_gallery_saver: ^2.0.3
   permission_handler: ^11.3.0
   path_provider: ^2.1.2
+  app_tracking_transparency: ^2.0.4
   
   # Sharing and utilities
   share_plus: ^7.2.2

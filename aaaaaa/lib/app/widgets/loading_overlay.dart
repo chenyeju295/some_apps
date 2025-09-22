@@ -36,10 +36,12 @@ class LoadingOverlay extends StatelessWidget {
                 child: Stack(
                   children: [
                     // Outer circle
-                    CircularProgressIndicator(
-                      strokeWidth: 3,
-                      valueColor: AlwaysStoppedAnimation<Color>(
-                        Theme.of(context).primaryColor,
+                    Center(
+                      child: CircularProgressIndicator(
+                        strokeWidth: 3,
+                        valueColor: AlwaysStoppedAnimation<Color>(
+                          Theme.of(context).primaryColor,
+                        ),
                       ),
                     ),
                     // Inner sparkle icon
@@ -47,7 +49,7 @@ class LoadingOverlay extends StatelessWidget {
                       child: Icon(
                         Icons.auto_awesome,
                         color: Theme.of(context).primaryColor,
-                        size: 24,
+                        size: 20,
                       ),
                     ),
                   ],

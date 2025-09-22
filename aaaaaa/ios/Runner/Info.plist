@@ -72,7 +72,7 @@
 	
 	<!-- App Tracking Transparency - For analytics and ads -->
 	<key>NSUserTrackingUsageDescription</key>
-	<string>AI Wallpaper would like to track your activity across other apps and websites to provide you with personalized wallpaper recommendations and improve your creative experience.</string>
+	<string>AI Wallpaper would like to access app-related data for delivering personalized content and improving your experience. Your privacy is important to us, and you can change this permission anytime in Settings.</string>
 	
 	<!-- Contacts Access - For sharing features -->
 	<key>NSContactsUsageDescription</key>
