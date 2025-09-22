@@ -236,13 +236,9 @@ class GenerationController extends GetxController {
       return;
     }
 
-    // Calculate total crystal cost for batch
+    // Calculate total crystal cost for batch (with discount)
     final balanceController = Get.find<BalanceController>();
-    final batchCostPerImage = CrystalCosts.calculateGenerationCost(
-      quality: selectedQuality.value,
-      style: selectedStyle.value,
-      isBatch: true,
-    );
+    const batchCostPerImage = 120; // Batch discount price
     final totalCost = batchCostPerImage * selectedPrompts.length;
 
     if (!balanceController.hasEnoughCrystals(totalCost)) {
@@ -331,10 +327,7 @@ class GenerationController extends GetxController {
 
     // Check crystal balance
     final balanceController = Get.find<BalanceController>();
-    final crystalCost = CrystalCosts.calculateGenerationCost(
-      quality: selectedQuality.value,
-      style: selectedStyle.value,
-    );
+    const crystalCost = 150; // Fixed cost for HD generation
 
     if (!balanceController.hasEnoughCrystals(crystalCost)) {
       Get.snackbar(
@@ -359,8 +352,6 @@ class GenerationController extends GetxController {
       final wallpaper = await AIService.generateWallpaper(
         prompt: prompt,
         category: category,
-        size: imageSizeOptions[selectedImageSize.value] ?? '1024x1792',
-        quality: selectedQuality.value,
         style: selectedStyle.value,
       );
 
@@ -368,17 +359,23 @@ class GenerationController extends GetxController {
         // Deduct crystals
         balanceController.spendCrystals(crystalCost);
 
-        // Add to history
+        // Add to history and update UI
         StorageService.addToHistory(wallpaper);
 
+        // Update home controller to refresh the list
+        final homeController = Get.find<HomeController>();
+        homeController.onInit(); // Reload generated wallpapers
+
         Get.snackbar(
-          'Success!',
-          'Wallpaper generated successfully! Remaining crystals: ${balanceController.formattedBalance}',
+          'Magic Created! ✨',
+          'Your wallpaper is ready! Remaining crystals: ${balanceController.formattedBalance}',
           snackPosition: SnackPosition.BOTTOM,
           duration: const Duration(seconds: 3),
+          backgroundColor: Colors.green.withOpacity(0.1),
+          colorText: Colors.green,
         );
 
-        // Navigate to wallpaper detail view
+        // Navigate to wallpaper detail view with hero animation
         Get.toNamed('/wallpaper-detail', arguments: wallpaper);
       }
     } catch (e) {

@@ -24,17 +24,17 @@ class AIService {
     _dio.options.headers['Authorization'] = 'Bearer $apiKey';
   }
 
-  // Generate wallpaper using FLUX.1-dev API
+  // Generate wallpaper using FLUX.1-dev API with optimized defaults
   static Future<WallpaperModel?> generateWallpaper({
     required String prompt,
     required String category,
-    String size = '1024x1024',
-    String quality = 'standard',
     String style = 'realistic',
   }) async {
     try {
       print('Generating image with Together AI - Prompt: $prompt');
 
+      // Use optimized defaults: Portrait HD quality
+      const size = '1024x1792'; // Portrait wallpaper
       final sizeMap = _getSizeFromString(size);
       final enhancedPrompt = _enhancePrompt(prompt, style);
 
@@ -45,7 +45,7 @@ class AIService {
           'prompt': enhancedPrompt,
           'width': sizeMap['width'],
           'height': sizeMap['height'],
-          'steps': quality == 'hd' ? 50 : 28,
+          'steps': 50, // Always use high quality
           'seed': null,
         },
       );
@@ -75,7 +75,7 @@ class AIService {
           category: category,
           createdAt: DateTime.now(),
           style: style,
-          quality: quality,
+          quality: 'hd', // Always HD
           size: size,
         );
       } else {

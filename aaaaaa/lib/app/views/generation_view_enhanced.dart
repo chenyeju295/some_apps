@@ -3,7 +3,6 @@ import 'package:get/get.dart';
 import '../controllers/generation_controller.dart';
 import '../controllers/balance_controller.dart';
 import '../controllers/home_controller.dart';
-import '../controllers/navigation_controller.dart';
 import '../models/theme_category_model.dart';
 import '../models/wallpaper_model.dart';
 import '../models/product_model.dart';
