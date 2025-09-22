@@ -83,8 +83,8 @@ class HomeView extends GetView<HomeController> {
                       const SizedBox(height: 32),
 
                       // Trending categories
-                      const TrendingCategories(),
-                      const SizedBox(height: 32),
+                      // const TrendingCategories(),
+                      // const SizedBox(height: 32),
 
                       // Categories preview
                       _buildCategoriesPreview(context),

@@ -61,22 +61,15 @@ class FavoritesController extends GetxController
       // Remove from favorites
       StorageService.removeFromFavorites(wallpaper.id);
       favoriteWallpapers.removeWhere((w) => w.id == wallpaper.id);
-      Get.snackbar(
-        'Removed',
-        'Wallpaper removed from favorites',
-        snackPosition: SnackPosition.BOTTOM,
-      );
+
     } else {
       // Add to favorites
       final updatedWallpaper = wallpaper.copyWith(isFavorite: true);
       StorageService.addToFavorites(updatedWallpaper);
       favoriteWallpapers.add(updatedWallpaper);
-      Get.snackbar(
-        'Added',
-        'Wallpaper added to favorites',
-        snackPosition: SnackPosition.BOTTOM,
-      );
+
     }
+
     update(); // Trigger UI update
   }
 
@@ -96,6 +89,11 @@ class FavoritesController extends GetxController
           'Removed',
           'Wallpaper removed from favorites',
           snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.red.shade100,
+          colorText: Colors.red.shade800,
+          icon: Icon(Icons.delete_outline, color: Colors.red.shade800),
+          margin: const EdgeInsets.all(16),
+          borderRadius: 12,
         );
         update(); // Trigger UI update
       },
@@ -109,6 +107,11 @@ class FavoritesController extends GetxController
         'No Favorites',
         'You don\'t have any favorite wallpapers',
         snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.blue.shade100,
+        colorText: Colors.blue.shade800,
+        icon: Icon(Icons.info_outline, color: Colors.blue.shade800),
+        margin: const EdgeInsets.all(16),
+        borderRadius: 12,
       );
       return;
     }
@@ -127,6 +130,11 @@ class FavoritesController extends GetxController
           'Cleared',
           'All favorites have been removed',
           snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.orange.shade100,
+          colorText: Colors.orange.shade800,
+          icon: Icon(Icons.clear_all, color: Colors.orange.shade800),
+          margin: const EdgeInsets.all(16),
+          borderRadius: 12,
         );
       },
     );

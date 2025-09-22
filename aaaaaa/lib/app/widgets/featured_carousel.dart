@@ -49,7 +49,7 @@ class _FeaturedCarouselState extends State<FeaturedCarousel>
     return FadeTransition(
       opacity: _fadeAnimation,
       child: SizedBox(
-        height: 280,
+        height: 380,
         child: Swiper(
           controller: _swiperController,
           itemCount: featuredWallpapers.length,
@@ -72,7 +72,7 @@ class _FeaturedCarouselState extends State<FeaturedCarousel>
             alignment: Alignment.bottomCenter,
             margin: const EdgeInsets.only(bottom: 10),
             builder: DotSwiperPaginationBuilder(
-              color: Theme.of(context).dividerColor,
+              color: Colors.white,
               activeColor: Theme.of(context).primaryColor,
               size: 8,
               activeSize: 10,
