@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../../models/generated_image.dart';
 import '../../theme/app_theme.dart';
+import '../animations/ocean_animations.dart';
 
 class RecentImagesSection extends StatelessWidget {
   final List<GeneratedImage> recentImages;
@@ -34,9 +35,9 @@ class RecentImagesSection extends StatelessWidget {
               Text(
                 'Recent Ocean Images',
                 style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  color: AppTheme.deepNavy,
-                  fontWeight: FontWeight.bold,
-                ),
+                      color: AppTheme.deepNavy,
+                      fontWeight: FontWeight.bold,
+                    ),
               ),
               const Spacer(),
               TextButton(
@@ -51,19 +52,25 @@ class RecentImagesSection extends StatelessWidget {
               ),
             ],
           ),
-          
           const SizedBox(height: 12),
-          
           SizedBox(
-            height: 160,
+            height: 200,
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
               itemCount: recentImages.length,
               itemBuilder: (context, index) {
                 final image = recentImages[index];
-                return _RecentImageCard(
-                  image: image,
-                  onTap: () => onImageTap(image),
+                return OceanAnimations.staggeredList(
+                  index: index,
+                  delay: 100,
+                  child: OceanAnimations.floatingWidget(
+                    offset: 3.0,
+                    duration: Duration(seconds: 4 + (index % 3)),
+                    child: _RecentImageCard(
+                      image: image,
+                      onTap: () => onImageTap(image),
+                    ),
+                  ),
                 );
               },
             ),
@@ -126,9 +133,12 @@ class _RecentImageCard extends StatelessWidget {
                           const SizedBox(height: 4),
                           Text(
                             'Image not available',
-                            style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                              color: Colors.grey[600],
-                            ),
+                            style: Theme.of(context)
+                                .textTheme
+                                .labelSmall
+                                ?.copyWith(
+                                  color: Colors.grey[600],
+                                ),
                             textAlign: TextAlign.center,
                           ),
                         ],
@@ -138,7 +148,7 @@ class _RecentImageCard extends StatelessWidget {
                 ),
               ),
             ),
-            
+
             // Content
             Padding(
               padding: const EdgeInsets.all(8),
@@ -148,15 +158,13 @@ class _RecentImageCard extends StatelessWidget {
                   Text(
                     image.prompt,
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: AppTheme.deepNavy,
-                      fontWeight: FontWeight.w500,
-                    ),
+                          color: AppTheme.deepNavy,
+                          fontWeight: FontWeight.w500,
+                        ),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                   ),
-                  
                   const SizedBox(height: 4),
-                  
                   Row(
                     children: [
                       Container(
@@ -170,15 +178,14 @@ class _RecentImageCard extends StatelessWidget {
                         ),
                         child: Text(
                           image.style.displayName,
-                          style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                            color: Colors.white,
-                            fontSize: 10,
-                          ),
+                          style:
+                              Theme.of(context).textTheme.labelSmall?.copyWith(
+                                    color: Colors.white,
+                                    fontSize: 10,
+                                  ),
                         ),
                       ),
-                      
                       const Spacer(),
-                      
                       if (image.isFavorite)
                         Icon(
                           Icons.favorite,
@@ -239,29 +246,23 @@ class _EmptyImagesState extends StatelessWidget {
               size: 40,
             ),
           ),
-          
           const SizedBox(height: 16),
-          
           Text(
             'No Ocean Images Yet',
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
-              color: AppTheme.deepNavy,
-              fontWeight: FontWeight.bold,
-            ),
+                  color: AppTheme.deepNavy,
+                  fontWeight: FontWeight.bold,
+                ),
           ),
-          
           const SizedBox(height: 8),
-          
           Text(
             'Generate your first underwater scene with AI',
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: Colors.grey[600],
-            ),
+                  color: Colors.grey[600],
+                ),
             textAlign: TextAlign.center,
           ),
-          
           const SizedBox(height: 16),
-          
           ElevatedButton.icon(
             onPressed: onGeneratePressed,
             icon: const Icon(Icons.auto_awesome),

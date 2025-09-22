@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:animated_text_kit/animated_text_kit.dart';
 import '../../theme/app_theme.dart';
+import '../animations/ocean_animations.dart';
 
 class WelcomeSection extends StatelessWidget {
   final String userName;
@@ -17,8 +19,10 @@ class WelcomeSection extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       margin: const EdgeInsets.all(16),
-      padding: const EdgeInsets.all(20),
-      decoration: AppTheme.cardDecoration,
+      padding: const EdgeInsets.all(24),
+      decoration: AppTheme.animatedCardDecoration.copyWith(
+        gradient: AppTheme.surfaceGradient,
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -28,47 +32,71 @@ class WelcomeSection extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      'Welcome back, $userName!',
-                      style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                        color: AppTheme.deepNavy,
-                        fontWeight: FontWeight.bold,
-                      ),
+                    AnimatedTextKit(
+                      animatedTexts: [
+                        TypewriterAnimatedText(
+                          'Welcome back, $userName!',
+                          textStyle: Theme.of(context)
+                              .textTheme
+                              .headlineSmall
+                              ?.copyWith(
+                                color: AppTheme.deepNavy,
+                                fontWeight: FontWeight.bold,
+                              ),
+                          speed: const Duration(milliseconds: 100),
+                        ),
+                      ],
+                      isRepeatingAnimation: false,
                     ),
                     const SizedBox(height: 4),
                     Text(
                       'Ready for your next underwater adventure?',
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: Colors.grey[600],
-                      ),
+                            color: Colors.grey[600],
+                          ),
                     ),
                   ],
                 ),
               ),
-              Container(
-                width: 60,
-                height: 60,
-                decoration: BoxDecoration(
-                  gradient: AppTheme.oceanGradient,
-                  shape: BoxShape.circle,
-                ),
-                child: const Icon(
-                  Icons.waves,
-                  color: Colors.white,
-                  size: 30,
+              OceanAnimations.pulsingGlow(
+                glowColor: AppTheme.seaFoam,
+                child: OceanAnimations.floatingWidget(
+                  offset: 6.0,
+                  duration: const Duration(seconds: 3),
+                  child: Container(
+                    width: 70,
+                    height: 70,
+                    decoration: BoxDecoration(
+                      gradient: AppTheme.coralReefGradient,
+                      shape: BoxShape.circle,
+                      boxShadow: AppTheme.floatingShadow,
+                    ),
+                    child: const Icon(
+                      Icons.waves,
+                      color: Colors.white,
+                      size: 35,
+                    ),
+                  ),
                 ),
               ),
             ],
           ),
-          
+
           const SizedBox(height: 20),
-          
-          // Token balance and action
+
+          // Enhanced token balance section
           Container(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
-              color: AppTheme.lightAqua,
-              borderRadius: BorderRadius.circular(12),
+              gradient: AppTheme.sunlightGradient,
+              borderRadius: BorderRadius.circular(16),
+              boxShadow: [
+                BoxShadow(
+                  color: AppTheme.aquaMarine.withOpacity(0.2),
+                  blurRadius: 15,
+                  offset: const Offset(0, 6),
+                ),
+              ],
             ),
             child: Column(
               children: [
@@ -83,21 +111,21 @@ class WelcomeSection extends StatelessWidget {
                     Text(
                       'Tokens Available',
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        color: AppTheme.deepNavy,
-                        fontWeight: FontWeight.w600,
-                      ),
+                            color: AppTheme.deepNavy,
+                            fontWeight: FontWeight.w600,
+                          ),
                     ),
                     const Spacer(),
                     Text(
                       '$tokenBalance',
-                      style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                        color: AppTheme.oceanBlue,
-                        fontWeight: FontWeight.bold,
-                      ),
+                      style:
+                          Theme.of(context).textTheme.headlineSmall?.copyWith(
+                                color: AppTheme.oceanBlue,
+                                fontWeight: FontWeight.bold,
+                              ),
                     ),
                   ],
                 ),
-                
                 if (tokenBalance > 0) ...[
                   const SizedBox(height: 12),
                   SizedBox(
@@ -131,9 +159,9 @@ class WelcomeSection extends StatelessWidget {
               ],
             ),
           ),
-          
+
           const SizedBox(height: 16),
-          
+
           // Daily tip
           Container(
             padding: const EdgeInsets.all(12),
@@ -159,17 +187,18 @@ class WelcomeSection extends StatelessWidget {
                     children: [
                       Text(
                         'Diving Tip of the Day',
-                        style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                          color: AppTheme.coral,
-                          fontWeight: FontWeight.w600,
-                        ),
+                        style:
+                            Theme.of(context).textTheme.labelMedium?.copyWith(
+                                  color: AppTheme.coral,
+                                  fontWeight: FontWeight.w600,
+                                ),
                       ),
                       const SizedBox(height: 2),
                       Text(
                         _getDailyTip(),
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: AppTheme.deepNavy,
-                        ),
+                              color: AppTheme.deepNavy,
+                            ),
                       ),
                     ],
                   ),
@@ -195,7 +224,7 @@ class WelcomeSection extends StatelessWidget {
       'Respect marine life and don\'t touch',
       'Stay hydrated before and after diving',
     ];
-    
+
     final dayOfYear = DateTime.now().dayOfYear;
     return tips[dayOfYear % tips.length];
   }
