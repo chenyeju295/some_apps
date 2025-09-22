@@ -41,11 +41,11 @@ class AIService {
       final response = await _dio.post(
         '', // Empty string since baseUrl is the full endpoint
         data: {
-          'model': 'black-forest-labs/FLUX.1-dev',
+          'model': 'black-forest-labs/FLUX.1-schnell',
           'prompt': enhancedPrompt,
           'width': sizeMap['width'],
           'height': sizeMap['height'],
-          'steps': 50, // Always use high quality
+          'steps': 4, // Always use high quality
           'seed': null,
         },
       );
