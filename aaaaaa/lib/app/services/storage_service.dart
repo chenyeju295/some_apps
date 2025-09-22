@@ -94,6 +94,12 @@ class StorageService {
     _box.erase();
   }
 
+  // Generation confirmation preference
+  static bool get showGenerationConfirm =>
+      _box.read(AppConstants.keyShowGenerationConfirm) ?? true;
+  static set showGenerationConfirm(bool value) =>
+      _box.write(AppConstants.keyShowGenerationConfirm, value);
+
   // Clear specific data
   static void clearFavorites() {
     _box.remove(AppConstants.keyFavoriteWallpapers);

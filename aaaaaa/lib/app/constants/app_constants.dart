@@ -9,6 +9,7 @@ class AppConstants {
   static const String keySelectedTheme = 'selected_theme';
   static const String keyFavoriteWallpapers = 'favorite_wallpapers';
   static const String keyGenerationHistory = 'generation_history';
+  static const String keyShowGenerationConfirm = 'show_generation_confirm';
 
   // API Configuration
   static const String baseUrl = 'https://api.openai.com/v1';

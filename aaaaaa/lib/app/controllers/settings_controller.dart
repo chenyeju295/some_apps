@@ -34,6 +34,16 @@ class SettingsController extends GetxController {
     );
   }
 
+  // Reset generation confirmation
+  void resetGenerationConfirm() {
+    StorageService.showGenerationConfirm = true;
+    Get.snackbar(
+      'Generation Confirmation Reset',
+      'Generation confirmation dialog will be shown again',
+      snackPosition: SnackPosition.BOTTOM,
+    );
+  }
+
   // Update API key
   void updateApiKey(String key) {
     apiKey.value = key.trim();
@@ -67,36 +77,15 @@ class SettingsController extends GetxController {
     );
   }
 
-  // Clear all data
-  void clearAllData() {
-    Get.defaultDialog(
-      title: 'Clear All Data',
-      middleText:
-          'This will remove all favorites and generation history. This action cannot be undone.',
-      textConfirm: 'Clear',
-      textCancel: 'Cancel',
-      confirmTextColor: Colors.white,
-      onConfirm: () {
-        StorageService.clearAll();
-        Get.back();
-        Get.snackbar(
-          'Data Cleared',
-          'All app data has been cleared',
-          snackPosition: SnackPosition.BOTTOM,
-        );
-      },
-    );
-  }
-
-  // Clear favorites only
+  // Clear favorites
   void clearFavorites() {
     Get.defaultDialog(
       title: 'Clear Favorites',
-      middleText:
-          'This will remove all favorite wallpapers. This action cannot be undone.',
+      middleText: 'Are you sure you want to clear all favorite wallpapers?',
       textConfirm: 'Clear',
       textCancel: 'Cancel',
       confirmTextColor: Colors.white,
+      buttonColor: Colors.orange,
       onConfirm: () {
         StorageService.clearFavorites();
         Get.back();
@@ -109,55 +98,84 @@ class SettingsController extends GetxController {
     );
   }
 
-  // Clear history only
+  // Clear history
   void clearHistory() {
     Get.defaultDialog(
       title: 'Clear History',
-      middleText:
-          'This will remove all generation history. This action cannot be undone.',
+      middleText: 'Are you sure you want to clear all generation history?',
       textConfirm: 'Clear',
       textCancel: 'Cancel',
       confirmTextColor: Colors.white,
+      buttonColor: Colors.blue,
       onConfirm: () {
         StorageService.clearHistory();
         Get.back();
         Get.snackbar(
           'History Cleared',
-          'Generation history has been cleared',
+          'All generation history has been removed',
           snackPosition: SnackPosition.BOTTOM,
         );
       },
     );
   }
 
-  // Show about dialog
-  void showAboutDialog() {
+  // Clear all data
+  void clearAllData() {
     Get.defaultDialog(
-      title: AppConstants.appName,
-      content: Column(
-        children: [
-          Text('Version: ${AppConstants.appVersion}'),
-          const SizedBox(height: 16),
-          const Text(
-            'Generate beautiful AI wallpapers with custom prompts and themes.',
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: 16),
-          const Text(
-            'Powered by OpenAI DALL-E',
-            style: TextStyle(fontStyle: FontStyle.italic),
-            textAlign: TextAlign.center,
-          ),
-        ],
-      ),
-      textConfirm: 'OK',
-      onConfirm: () => Get.back(),
+      title: 'Clear All Data',
+      middleText:
+          'This will remove all favorites and generation history. This action cannot be undone.',
+      textConfirm: 'Clear',
+      textCancel: 'Cancel',
+      confirmTextColor: Colors.white,
+      buttonColor: Colors.red,
+      onConfirm: () {
+        StorageService.clearAll();
+        Get.back();
+        Get.snackbar(
+          'Data Cleared',
+          'All app data has been cleared',
+          snackPosition: SnackPosition.BOTTOM,
+        );
+      },
     );
   }
 
-  // Get app version
+  // App version getter
   String get appVersion => AppConstants.appVersion;
 
-  // Get app name
-  String get appName => AppConstants.appName;
+  // Show about dialog
+  void showAboutDialog() {
+    Get.dialog(
+      AlertDialog(
+        title: const Text('About AI Wallpaper Generator'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Version: ${AppConstants.appVersion}'),
+            const SizedBox(height: 8),
+            const Text(
+                'A beautiful AI-powered wallpaper generator using OpenAI\'s DALL-E 3.'),
+            const SizedBox(height: 16),
+            const Text(
+              'Features:',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+            const Text('• AI-powered wallpaper generation'),
+            const Text('• Multiple art styles and categories'),
+            const Text('• High-quality HD images'),
+            const Text('• Crystal-based pricing system'),
+            const Text('• Favorites and history management'),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Get.back(),
+            child: const Text('Close'),
+          ),
+        ],
+      ),
+    );
+  }
 }

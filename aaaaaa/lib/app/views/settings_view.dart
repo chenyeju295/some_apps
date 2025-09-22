@@ -213,6 +213,14 @@ class SettingsView extends GetView<SettingsController> {
     return Column(
       children: [
         ListTile(
+          leading: const Icon(Icons.notifications_active, color: Colors.green),
+          title: const Text('Reset Generation Confirmation'),
+          subtitle:
+              const Text('Re-enable confirmation dialog before generation'),
+          onTap: controller.resetGenerationConfirm,
+        ),
+        const Divider(height: 1),
+        ListTile(
           leading: const Icon(Icons.delete_outline, color: Colors.orange),
           title: const Text('Clear Favorites'),
           subtitle: const Text('Remove all favorite wallpapers'),

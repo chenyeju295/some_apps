@@ -359,35 +359,45 @@ class _GenerationViewState extends State<GenerationView>
                   ),
             ),
             const SizedBox(height: 16),
-            Obx(() => SizedBox(
-                  height: 50,
-                  child: ListView.builder(
-                    scrollDirection: Axis.horizontal,
-                    itemCount: controller.categories.length,
-                    itemBuilder: (context, index) {
-                      final category = controller.categories[index];
-                      final isSelected =
-                          controller.selectedCategory.value?.name ==
-                              category.name;
+            SizedBox(
+              height: 50,
+              child: ListView.builder(
+                scrollDirection: Axis.horizontal,
+                itemCount: controller.categories.length,
+                itemBuilder: (context, index) {
+                  final category = controller.categories[index];
 
-                      return AnimatedContainer(
-                        duration: const Duration(milliseconds: 300),
-                        curve: Curves.easeInOut,
-                        margin: const EdgeInsets.only(right: 12),
-                        child: GestureDetector(
+                  return Obx(() {
+                    final isSelected =
+                        controller.selectedCategory.value?.name ==
+                            category.name;
+
+                    return AnimatedContainer(
+                      duration: const Duration(milliseconds: 300),
+                      curve: Curves.easeInOut,
+                      margin: const EdgeInsets.only(right: 12),
+                      child: Material(
+                        color: Colors.transparent,
+                        child: InkWell(
                           onTap: () {
                             controller.selectCategory(category);
                             // Trigger a small scale animation
                             _scaleController.reset();
                             _scaleController.forward();
                           },
+                          borderRadius: BorderRadius.circular(25),
+                          splashColor: category.color.withOpacity(0.2),
+                          highlightColor: category.color.withOpacity(0.1),
                           child: AnimatedContainer(
-                            duration: const Duration(milliseconds: 300),
+                            duration: const Duration(milliseconds: 400),
+                            curve: Curves.easeOutCubic,
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 20, vertical: 12),
                             decoration: BoxDecoration(
                               gradient: isSelected
                                   ? LinearGradient(
+                                      begin: Alignment.topLeft,
+                                      end: Alignment.bottomRight,
                                       colors: [
                                         category.color,
                                         category.color.withOpacity(0.8),
@@ -398,35 +408,52 @@ class _GenerationViewState extends State<GenerationView>
                                   ? null
                                   : Theme.of(context).cardColor,
                               borderRadius: BorderRadius.circular(25),
+                              border: Border.all(
+                                color: isSelected
+                                    ? category.color
+                                    : category.color.withOpacity(0.3),
+                                width: isSelected ? 2 : 1,
+                              ),
                               boxShadow: isSelected
                                   ? [
                                       BoxShadow(
-                                        color: category.color.withOpacity(0.3),
-                                        blurRadius: 15,
-                                        offset: const Offset(0, 5),
+                                        color: category.color.withOpacity(0.4),
+                                        blurRadius: 20,
+                                        offset: const Offset(0, 8),
+                                        spreadRadius: 2,
+                                      ),
+                                      BoxShadow(
+                                        color: category.color.withOpacity(0.2),
+                                        blurRadius: 5,
+                                        offset: const Offset(0, 2),
                                       ),
                                     ]
                                   : [
                                       BoxShadow(
-                                        color: Colors.black.withOpacity(0.05),
-                                        blurRadius: 10,
-                                        offset: const Offset(0, 2),
+                                        color: Colors.black.withOpacity(0.08),
+                                        blurRadius: 12,
+                                        offset: const Offset(0, 4),
                                       ),
                                     ],
                             ),
                             child: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                Icon(
-                                  category.icon,
-                                  size: 18,
-                                  color: isSelected
-                                      ? Colors.white
-                                      : category.color,
+                                AnimatedContainer(
+                                  duration: const Duration(milliseconds: 300),
+                                  transform: Matrix4.identity()
+                                    ..scale(isSelected ? 1.1 : 1.0),
+                                  child: Icon(
+                                    category.icon,
+                                    size: 18,
+                                    color: isSelected
+                                        ? Colors.white
+                                        : category.color,
+                                  ),
                                 ),
                                 const SizedBox(width: 8),
-                                Text(
-                                  category.name,
+                                AnimatedDefaultTextStyle(
+                                  duration: const Duration(milliseconds: 300),
                                   style: TextStyle(
                                     color: isSelected
                                         ? Colors.white
@@ -435,19 +462,23 @@ class _GenerationViewState extends State<GenerationView>
                                             .bodyMedium
                                             ?.color,
                                     fontWeight: isSelected
-                                        ? FontWeight.w600
+                                        ? FontWeight.w700
                                         : FontWeight.w500,
                                     fontSize: 14,
+                                    letterSpacing: isSelected ? 0.5 : 0,
                                   ),
+                                  child: Text(category.name),
                                 ),
                               ],
                             ),
                           ),
                         ),
-                      );
-                    },
-                  ),
-                )),
+                      ),
+                    );
+                  });
+                },
+              ),
+            ),
           ],
         ),
       ),
@@ -542,51 +573,96 @@ class _GenerationViewState extends State<GenerationView>
   Widget _buildAnimatedPromptChip(BuildContext context, String prompt) {
     final isSelected = controller.isPromptSelected(prompt);
     final displayPrompt =
-        prompt.length > 30 ? '${prompt.substring(0, 30)}...' : prompt;
+        prompt.length > 24 ? '${prompt.substring(0, 24)}...' : prompt;
 
     return AnimatedContainer(
       duration: const Duration(milliseconds: 300),
       curve: Curves.easeInOut,
-      child: GestureDetector(
-        onTap: () => controller.togglePromptSelection(prompt),
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 300),
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-          decoration: BoxDecoration(
-            gradient: isSelected
-                ? LinearGradient(
-                    colors: [
-                      Theme.of(context).primaryColor,
-                      Theme.of(context).primaryColor.withOpacity(0.8),
+      transform: Matrix4.identity()..scale(isSelected ? 1.05 : 1.0),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: () => controller.togglePromptSelection(prompt),
+          borderRadius: BorderRadius.circular(20),
+          splashColor: Theme.of(context).primaryColor.withOpacity(0.2),
+          highlightColor: Theme.of(context).primaryColor.withOpacity(0.1),
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 350),
+            curve: Curves.easeOutCubic,
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+            decoration: BoxDecoration(
+              gradient: isSelected
+                  ? LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [
+                        Theme.of(context).primaryColor,
+                        Theme.of(context).primaryColor.withOpacity(0.8),
+                      ],
+                    )
+                  : null,
+              color: isSelected ? null : Theme.of(context).cardColor,
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(
+                color: isSelected
+                    ? Theme.of(context).primaryColor
+                    : Theme.of(context).dividerColor.withOpacity(0.3),
+                width: isSelected ? 2 : 1,
+              ),
+              boxShadow: isSelected
+                  ? [
+                      BoxShadow(
+                        color: Theme.of(context).primaryColor.withOpacity(0.4),
+                        blurRadius: 15,
+                        offset: const Offset(0, 6),
+                        spreadRadius: 1,
+                      ),
+                      BoxShadow(
+                        color: Theme.of(context).primaryColor.withOpacity(0.2),
+                        blurRadius: 4,
+                        offset: const Offset(0, 2),
+                      ),
+                    ]
+                  : [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.06),
+                        blurRadius: 8,
+                        offset: const Offset(0, 2),
+                      ),
                     ],
-                  )
-                : null,
-            color: isSelected ? null : Theme.of(context).cardColor,
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(
-              color: isSelected
-                  ? Theme.of(context).primaryColor
-                  : Theme.of(context).dividerColor.withOpacity(0.3),
-              width: isSelected ? 0 : 1,
             ),
-            boxShadow: isSelected
-                ? [
-                    BoxShadow(
-                      color: Theme.of(context).primaryColor.withOpacity(0.3),
-                      blurRadius: 10,
-                      offset: const Offset(0, 4),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (isSelected)
+                  AnimatedContainer(
+                    duration: const Duration(milliseconds: 200),
+                    margin: const EdgeInsets.only(right: 6),
+                    child: Icon(
+                      Icons.check_circle,
+                      size: 16,
+                      color: Colors.white,
                     ),
-                  ]
-                : null,
-          ),
-          child: Text(
-            displayPrompt,
-            style: TextStyle(
-              color: isSelected
-                  ? Colors.white
-                  : Theme.of(context).textTheme.bodyMedium?.color,
-              fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
-              fontSize: 13,
+                  ),
+                Flexible(
+                  child: AnimatedDefaultTextStyle(
+                    duration: const Duration(milliseconds: 300),
+                    style: TextStyle(
+                      color: isSelected
+                          ? Colors.white
+                          : Theme.of(context).textTheme.bodyMedium?.color,
+                      fontWeight:
+                          isSelected ? FontWeight.w600 : FontWeight.w500,
+                      fontSize: 13,
+                      letterSpacing: isSelected ? 0.3 : 0,
+                    ),
+                    child: Text(
+                      displayPrompt,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
         ),
@@ -609,7 +685,7 @@ class _GenerationViewState extends State<GenerationView>
           final hasContent = controller.customPrompt.value.isNotEmpty ||
               controller.selectedPrompts.isNotEmpty;
           final crystalCost = CrystalCosts.calculateGenerationCost(
-            quality: 'hd', // Default to HD
+            quality: controller.selectedQuality.value,
             style: controller.selectedStyle.value,
           );
 
@@ -848,7 +924,7 @@ class _GenerationViewState extends State<GenerationView>
     if (controller.customPrompt.value.isNotEmpty) {
       return 'Create Magic';
     } else if (controller.selectedPrompts.isNotEmpty) {
-      return 'Generate ${controller.selectedPrompts.length} Ideas';
+      return 'Generate Wallpaper';
     }
     return 'Create Wallpaper';
   }
@@ -857,11 +933,7 @@ class _GenerationViewState extends State<GenerationView>
     if (controller.customPrompt.value.isNotEmpty) {
       controller.generateWithCustomPrompt();
     } else if (controller.selectedPrompts.isNotEmpty) {
-      if (controller.selectedPrompts.length == 1) {
-        controller.generateWithSelectedPrompts();
-      } else {
-        controller.generateBatch();
-      }
+      controller.generateWithSelectedPrompts();
     }
   }
 

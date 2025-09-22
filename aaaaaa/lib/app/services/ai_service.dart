@@ -182,8 +182,6 @@ class AIService {
         final wallpaper = await generateWallpaper(
           prompt: prompt,
           category: category,
-          size: size,
-          quality: quality,
           style: style,
         );
         if (wallpaper != null) {
@@ -207,8 +205,6 @@ class AIService {
       final result = await generateWallpaper(
         prompt: 'Test image',
         category: 'Test',
-        size: '1024x1024',
-        quality: 'standard',
       );
       return result != null;
     } catch (e) {

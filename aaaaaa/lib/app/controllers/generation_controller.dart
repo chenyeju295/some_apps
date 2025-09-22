@@ -1,9 +1,11 @@
+import 'package:ai_wallpaper_generator/app/controllers/home_controller.dart';
 import 'package:get/get.dart';
 import '../models/theme_category_model.dart';
 import '../models/product_model.dart';
 import '../services/storage_service.dart';
 import '../services/ai_service.dart';
 import 'balance_controller.dart';
+import 'package:flutter/material.dart';
 
 class GenerationController extends GetxController {
   // Observable variables
@@ -73,12 +75,13 @@ class GenerationController extends GetxController {
     selectCategory(category);
   }
 
-  // Toggle prompt selection
+  // Toggle prompt selection (single selection mode)
   void togglePromptSelection(String prompt) {
     if (selectedPrompts.contains(prompt)) {
-      selectedPrompts.remove(prompt);
+      selectedPrompts.clear(); // Clear selection if same prompt is clicked
     } else {
-      selectedPrompts.add(prompt);
+      selectedPrompts.clear(); // Clear previous selection
+      selectedPrompts.add(prompt); // Add only the new selection
     }
   }
 
@@ -102,11 +105,14 @@ class GenerationController extends GetxController {
     selectedPrompts.clear();
   }
 
-  // Select all prompts in current category
-  void selectAllPrompts() {
-    if (selectedCategory.value != null) {
+  // Select random prompt from current category
+  void selectRandomPrompt() {
+    if (selectedCategory.value != null &&
+        selectedCategory.value!.prompts.isNotEmpty) {
+      final prompts = selectedCategory.value!.prompts;
+      final randomPrompt = prompts[DateTime.now().millisecond % prompts.length];
       selectedPrompts.clear();
-      selectedPrompts.addAll(selectedCategory.value!.prompts);
+      selectedPrompts.add(randomPrompt);
     }
   }
 
@@ -170,10 +176,28 @@ class GenerationController extends GetxController {
       return;
     }
 
-    await _generateWallpaper(
-      _buildFinalPrompt(customPrompt.value.trim()),
-      selectedCategory.value?.name ?? 'Custom',
-    );
+    // Check if should show confirmation
+    if (StorageService.showGenerationConfirm) {
+      final crystalCost = CrystalCosts.calculateGenerationCost(
+        quality: selectedQuality.value,
+        style: selectedStyle.value,
+      );
+
+      await _showGenerationConfirmDialog(
+        title: 'Generate Custom Wallpaper',
+        description: customPrompt.value.trim(),
+        cost: crystalCost,
+        onConfirm: () => _generateWallpaper(
+          _buildFinalPrompt(customPrompt.value.trim()),
+          selectedCategory.value?.name ?? 'Custom',
+        ),
+      );
+    } else {
+      await _generateWallpaper(
+        _buildFinalPrompt(customPrompt.value.trim()),
+        selectedCategory.value?.name ?? 'Custom',
+      );
+    }
   }
 
   // Generate wallpaper with selected prompts
@@ -189,10 +213,31 @@ class GenerationController extends GetxController {
 
     // Combine selected prompts
     final combinedPrompt = selectedPrompts.join(', ');
-    await _generateWallpaper(
-      _buildFinalPrompt(combinedPrompt),
-      selectedCategory.value?.name ?? 'Mixed',
-    );
+
+    // Check if should show confirmation
+    if (StorageService.showGenerationConfirm) {
+      final crystalCost = CrystalCosts.calculateGenerationCost(
+        quality: selectedQuality.value,
+        style: selectedStyle.value,
+      );
+
+      await _showGenerationConfirmDialog(
+        title: 'Generate Selected Idea',
+        description: combinedPrompt.length > 80
+            ? "${combinedPrompt.substring(0, 80)}..."
+            : combinedPrompt,
+        cost: crystalCost,
+        onConfirm: () => _generateWallpaper(
+          _buildFinalPrompt(combinedPrompt),
+          selectedCategory.value?.name ?? 'Selected',
+        ),
+      );
+    } else {
+      await _generateWallpaper(
+        _buildFinalPrompt(combinedPrompt),
+        selectedCategory.value?.name ?? 'Mixed',
+      );
+    }
   }
 
   // Generate random wallpaper from selected category
@@ -216,104 +261,6 @@ class GenerationController extends GetxController {
     );
   }
 
-  // Generate multiple wallpapers (batch generation)
-  Future<void> generateBatch() async {
-    if (selectedPrompts.isEmpty) {
-      Get.snackbar(
-        'No Prompts Selected',
-        'Please select prompts for batch generation',
-        snackPosition: SnackPosition.BOTTOM,
-      );
-      return;
-    }
-
-    if (selectedPrompts.length > 5) {
-      Get.snackbar(
-        'Too Many Prompts',
-        'Please select maximum 5 prompts for batch generation',
-        snackPosition: SnackPosition.BOTTOM,
-      );
-      return;
-    }
-
-    // Calculate total crystal cost for batch (with discount)
-    final balanceController = Get.find<BalanceController>();
-    const batchCostPerImage = 120; // Batch discount price
-    final totalCost = batchCostPerImage * selectedPrompts.length;
-
-    if (!balanceController.hasEnoughCrystals(totalCost)) {
-      Get.snackbar(
-        'Insufficient Crystals',
-        'Batch generation needs $totalCost crystals but you only have ${balanceController.formattedBalance}',
-        snackPosition: SnackPosition.BOTTOM,
-        duration: const Duration(seconds: 4),
-      );
-      return;
-    }
-
-    Get.defaultDialog(
-      title: 'Batch Generation',
-      middleText:
-          'Generate ${selectedPrompts.length} wallpapers?\n\nCost: $totalCost crystals\nRemaining: ${balanceController.crystalBalance.value - totalCost} crystals',
-      textConfirm: 'Generate',
-      textCancel: 'Cancel',
-      onConfirm: () async {
-        Get.back();
-        await _generateBatchWallpapers();
-      },
-    );
-  }
-
-  // Internal method to generate batch wallpapers
-  Future<void> _generateBatchWallpapers() async {
-    isGenerating.value = true;
-    int successCount = 0;
-
-    try {
-      Get.snackbar(
-        'Batch Generation Started',
-        'Generating ${selectedPrompts.length} wallpapers...',
-        snackPosition: SnackPosition.BOTTOM,
-        duration: const Duration(seconds: 3),
-      );
-
-      for (int i = 0; i < selectedPrompts.length; i++) {
-        final prompt = selectedPrompts[i];
-        Get.snackbar(
-          'Generating ${i + 1}/${selectedPrompts.length}',
-          'Creating wallpaper: ${prompt.length > 30 ? "${prompt.substring(0, 30)}..." : prompt}',
-          snackPosition: SnackPosition.BOTTOM,
-          duration: const Duration(seconds: 2),
-        );
-
-        final wallpaper = await AIService.generateWallpaper(
-          prompt: _buildFinalPrompt(prompt),
-          category: selectedCategory.value?.name ?? 'Batch',
-          size: imageSizeOptions[selectedImageSize.value] ?? '1024x1792',
-        );
-
-        if (wallpaper != null) {
-          StorageService.addToHistory(wallpaper);
-          successCount++;
-        }
-
-        // Small delay between generations
-        await Future.delayed(const Duration(milliseconds: 500));
-      }
-
-      Get.snackbar(
-        'Batch Generation Complete',
-        'Successfully generated $successCount/${selectedPrompts.length} wallpapers',
-        snackPosition: SnackPosition.BOTTOM,
-      );
-
-      // Navigate to home to view results
-      Get.offAllNamed('/');
-    } finally {
-      isGenerating.value = false;
-    }
-  }
-
   // Internal method to generate single wallpaper
   Future<void> _generateWallpaper(String prompt, String category) async {
     if (isGenerating.value) {
@@ -325,19 +272,11 @@ class GenerationController extends GetxController {
       return;
     }
 
-    // Check crystal balance
     final balanceController = Get.find<BalanceController>();
-    const crystalCost = 150; // Fixed cost for HD generation
-
-    if (!balanceController.hasEnoughCrystals(crystalCost)) {
-      Get.snackbar(
-        'Insufficient Crystals',
-        'You need $crystalCost crystals but only have ${balanceController.formattedBalance}. Visit the shop to buy more!',
-        snackPosition: SnackPosition.BOTTOM,
-        duration: const Duration(seconds: 4),
-      );
-      return;
-    }
+    final crystalCost = CrystalCosts.calculateGenerationCost(
+      quality: selectedQuality.value,
+      style: selectedStyle.value,
+    );
 
     isGenerating.value = true;
 
@@ -365,15 +304,6 @@ class GenerationController extends GetxController {
         // Update home controller to refresh the list
         final homeController = Get.find<HomeController>();
         homeController.onInit(); // Reload generated wallpapers
-
-        Get.snackbar(
-          'Magic Created! ✨',
-          'Your wallpaper is ready! Remaining crystals: ${balanceController.formattedBalance}',
-          snackPosition: SnackPosition.BOTTOM,
-          duration: const Duration(seconds: 3),
-          backgroundColor: Colors.green.withOpacity(0.1),
-          colorText: Colors.green,
-        );
 
         // Navigate to wallpaper detail view with hero animation
         Get.toNamed('/wallpaper-detail', arguments: wallpaper);
@@ -404,4 +334,102 @@ class GenerationController extends GetxController {
   // Check if can generate
   bool get canGenerate =>
       customPrompt.value.trim().isNotEmpty || selectedPrompts.isNotEmpty;
+
+  // Show generation confirmation dialog
+  Future<void> _showGenerationConfirmDialog({
+    required String title,
+    required String description,
+    required int cost,
+    required VoidCallback onConfirm,
+  }) async {
+    final balanceController = Get.find<BalanceController>();
+
+    // Check balance first
+    if (!balanceController.hasEnoughCrystals(cost)) {
+      Get.snackbar(
+        'Insufficient Crystals',
+        'You need $cost crystals but only have ${balanceController.formattedBalance}. Visit the shop to buy more!',
+        snackPosition: SnackPosition.BOTTOM,
+        duration: const Duration(seconds: 4),
+      );
+      return;
+    }
+
+    final showConfirmCheckbox = true.obs;
+
+    Get.defaultDialog(
+      title: title,
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            description,
+            maxLines: 3,
+            overflow: TextOverflow.ellipsis,
+            textAlign: TextAlign.center,
+            style: Get.textTheme.bodyMedium,
+          ),
+          const SizedBox(height: 16),
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: Get.theme.primaryColor.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.diamond,
+                  color: Get.theme.primaryColor,
+                  size: 20,
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  'Cost: $cost crystals',
+                  style: TextStyle(
+                    color: Get.theme.primaryColor,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Remaining: ${balanceController.crystalBalance.value - cost} crystals',
+            style: Get.textTheme.bodySmall?.copyWith(
+              color: Get.theme.textTheme.bodySmall?.color?.withOpacity(0.7),
+            ),
+          ),
+          const SizedBox(height: 16),
+          Obx(() => CheckboxListTile(
+                title: const Text(
+                  "Don't show this confirmation again",
+                  style: TextStyle(fontSize: 14),
+                ),
+                value: !showConfirmCheckbox.value,
+                onChanged: (value) {
+                  showConfirmCheckbox.value = !(value ?? false);
+                },
+                contentPadding: EdgeInsets.zero,
+                controlAffinity: ListTileControlAffinity.leading,
+              )),
+        ],
+      ),
+      textConfirm: 'Generate',
+      textCancel: 'Cancel',
+      confirmTextColor: Colors.white,
+      buttonColor: Get.theme.primaryColor,
+      onConfirm: () {
+        // Update settings if user chose not to show again
+        if (!showConfirmCheckbox.value) {
+          StorageService.showGenerationConfirm = false;
+        }
+        Get.back();
+        onConfirm();
+      },
+      onCancel: () => Get.back(),
+    );
+  }
 }
