@@ -6,4 +6,5 @@ class AppRoutes {
   static const String wallpaperDetail = '/wallpaper-detail';
   static const String apiKeySetup = '/api-key-setup';
   static const String onboarding = '/onboarding';
+  static const String webview = '/webview';
 }

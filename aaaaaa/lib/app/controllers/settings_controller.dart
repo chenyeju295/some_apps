@@ -155,9 +155,7 @@ class SettingsController extends GetxController {
           children: [
             Text('Version: ${AppConstants.appVersion}'),
             const SizedBox(height: 8),
-            const Text(
-                'A beautiful AI-powered wallpaper generator using OpenAI\'s DALL-E 3.'),
-            const SizedBox(height: 16),
+
             const Text(
               'Features:',
               style: TextStyle(fontWeight: FontWeight.bold),

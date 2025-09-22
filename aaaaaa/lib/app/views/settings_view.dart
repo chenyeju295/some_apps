@@ -32,19 +32,22 @@ class SettingsView extends GetView<SettingsController> {
 
             const SizedBox(height: 24),
 
-            // API Configuration Section
-            _buildSectionHeader(context, 'API Configuration'),
-            const SizedBox(height: 16),
-            _buildApiKeySection(context),
-
-            const SizedBox(height: 24),
-
             // Data Management Section
             _buildSectionHeader(context, 'Data Management'),
             const SizedBox(height: 16),
             _buildSettingsCard(
               context,
               children: _buildDataManagementTiles(),
+            ),
+
+            const SizedBox(height: 24),
+
+            // Legal & Privacy Section
+            _buildSectionHeader(context, 'Legal & Privacy'),
+            const SizedBox(height: 16),
+            _buildSettingsCard(
+              context,
+              children: _buildLegalTiles(),
             ),
 
             const SizedBox(height: 24),
@@ -56,6 +59,8 @@ class SettingsView extends GetView<SettingsController> {
               context,
               children: _buildAboutTiles(),
             ),
+            const SizedBox(height: 86),
+
           ],
         ),
       ),
@@ -102,112 +107,6 @@ class SettingsView extends GetView<SettingsController> {
         ));
   }
 
-  Widget _buildApiKeySection(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Theme.of(context).cardColor,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Icon(
-                Icons.key,
-                color: Theme.of(context).primaryColor,
-              ),
-              const SizedBox(width: 12),
-              Text(
-                'OpenAI API Key',
-                style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 8),
-          Text(
-            'Enter your OpenAI API key to generate wallpapers',
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: Theme.of(context)
-                      .textTheme
-                      .bodySmall
-                      ?.color
-                      ?.withOpacity(0.7),
-                ),
-          ),
-          const SizedBox(height: 16),
-
-          // API Key input
-          Obx(() => TextField(
-                onChanged: controller.updateApiKey,
-                obscureText: true,
-                decoration: InputDecoration(
-                  hintText: 'sk-...',
-                  prefixIcon: const Icon(Icons.lock),
-                  suffixIcon: controller.isApiKeyValid.value
-                      ? Icon(Icons.check_circle, color: Colors.green[600])
-                      : null,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-              )),
-
-          const SizedBox(height: 12),
-
-          // Save button
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton.icon(
-              onPressed: controller.saveApiKey,
-              icon: const Icon(Icons.save),
-              label: const Text('Save API Key'),
-            ),
-          ),
-
-          const SizedBox(height: 12),
-
-          // Help text
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: Theme.of(context).primaryColor.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Row(
-              children: [
-                Icon(
-                  Icons.info_outline,
-                  size: 16,
-                  color: Theme.of(context).primaryColor,
-                ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Text(
-                    'Get your API key from platform.openai.com',
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: Theme.of(context).primaryColor,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 
   Widget _buildDataManagementTiles() {
     return Column(
@@ -219,21 +118,8 @@ class SettingsView extends GetView<SettingsController> {
               const Text('Re-enable confirmation dialog before generation'),
           onTap: controller.resetGenerationConfirm,
         ),
-        const Divider(height: 1),
-        ListTile(
-          leading: const Icon(Icons.delete_outline, color: Colors.orange),
-          title: const Text('Clear Favorites'),
-          subtitle: const Text('Remove all favorite wallpapers'),
-          onTap: controller.clearFavorites,
-        ),
-        const Divider(height: 1),
-        ListTile(
-          leading: const Icon(Icons.history, color: Colors.blue),
-          title: const Text('Clear History'),
-          subtitle: const Text('Remove all generation history'),
-          onTap: controller.clearHistory,
-        ),
-        const Divider(height: 1),
+        const Divider(height: 1,color: Colors.grey,),
+
         ListTile(
           leading: const Icon(Icons.delete_forever, color: Colors.red),
           title: const Text('Clear All Data'),
@@ -244,21 +130,69 @@ class SettingsView extends GetView<SettingsController> {
     );
   }
 
+  Widget _buildLegalTiles() {
+    return Column(
+      children: [
+        ListTile(
+          leading: Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: Colors.blue.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: const Icon(Icons.policy, color: Colors.blue, size: 20),
+          ),
+          title: const Text('Privacy Policy'),
+          subtitle: const Text('How we protect and use your data'),
+          trailing: const Icon(Icons.open_in_new, size: 16),
+          onTap: () => _openWebView(
+            'Privacy Policy',
+            'https://www.baidu.com', // 示例隐私政策链接
+          ),
+        ),
+        const Divider(height: 1,color: Colors.grey,),
+        ListTile(
+          leading: Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: Colors.green.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: const Icon(Icons.description, color: Colors.green, size: 20),
+          ),
+          title: const Text('Terms of Service'),
+          subtitle: const Text('Terms and conditions of use'),
+          trailing: const Icon(Icons.open_in_new, size: 16),
+          onTap: () => _openWebView(
+            'Terms of Service',
+            'https://www.baidu.com', // 示例服务条款链接
+          ),
+        ),
+
+
+      ],
+    );
+  }
+
   Widget _buildAboutTiles() {
     return Column(
       children: [
         ListTile(
-          leading: const Icon(Icons.info_outline),
+          leading: Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: Get.theme.primaryColor.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Icon(
+              Icons.info_outline,
+              color: Get.theme.primaryColor,
+              size: 20,
+            ),
+          ),
           title: const Text('About'),
           subtitle: Text('Version ${controller.appVersion}'),
           onTap: controller.showAboutDialog,
-        ),
-        const Divider(height: 1),
-        ListTile(
-          leading: const Icon(Icons.auto_awesome),
-          title: const Text('Powered by OpenAI'),
-          subtitle: const Text('DALL-E 3 Image Generation'),
-          onTap: () {},
         ),
       ],
     );
@@ -433,7 +367,7 @@ class SettingsView extends GetView<SettingsController> {
         color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: Theme.of(context).dividerColor,
+          color: Theme.of(context).primaryColor,
           width: 1,
         ),
         boxShadow: [
@@ -689,5 +623,12 @@ class SettingsView extends GetView<SettingsController> {
         ],
       ),
     );
+  }
+
+  void _openWebView(String title, String url) {
+    Get.toNamed('/webview', arguments: {
+      'title': title,
+      'url': url,
+    });
   }
 }

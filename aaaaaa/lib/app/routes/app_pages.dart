@@ -7,6 +7,7 @@ import '../views/settings_view.dart';
 import '../views/wallpaper_detail_view.dart';
 import '../views/api_key_setup_view.dart';
 import '../views/onboarding_view.dart';
+import '../views/webview_page.dart';
 import '../bindings/navigation_binding.dart';
 import '../bindings/home_binding.dart';
 import '../bindings/generation_binding.dart';
@@ -49,6 +50,10 @@ class AppPages {
     GetPage(
       name: AppRoutes.onboarding,
       page: () => const OnboardingView(),
+    ),
+    GetPage(
+      name: AppRoutes.webview,
+      page: () => const WebViewPage(),
     ),
   ];
 }

@@ -53,7 +53,7 @@ class FavoritesView extends GetView<FavoritesController> {
             child: TabBar(
               padding: EdgeInsets.zero,
               dividerColor: Colors.transparent, // 移除黑色下划线
-             // 完全移除水波纹效果
+              // 完全移除水波纹效果
               controller: controller.tabController,
               indicator: BoxDecoration(
                 color: Theme.of(context).primaryColor,
