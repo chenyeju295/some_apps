@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../controllers/generation_controller.dart';
@@ -114,20 +115,35 @@ class _GenerationViewState extends State<GenerationView>
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
                 colors: [
-                  Theme.of(context).primaryColor.withOpacity(0.05),
-                  Theme.of(context).colorScheme.secondary.withOpacity(0.05),
+                  Theme.of(context).primaryColor.withOpacity(0.1),
+                  Theme.of(context).colorScheme.secondary.withOpacity(0.1),
                 ],
               ),
             ),
           ),
 
           // Main content
-          SafeArea(
-            child: Column(
-              children: [
-                // App Bar
-                _buildAppBar(context),
+          Scaffold(
+            backgroundColor: Colors.transparent,
+            appBar: AppBar(
+              backgroundColor: Colors.transparent,
+              title: Text(
+                'Create Magic',
+                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: -0.5,
+                ),
+              ),
+              centerTitle: false,
+              actions: [
 
+                _buildCrystalBalance(context),
+                SizedBox(width: 16),
+
+              ],
+            ),
+            body: Column(
+              children: [
                 // Content
                 Expanded(
                   child: SingleChildScrollView(
@@ -137,15 +153,15 @@ class _GenerationViewState extends State<GenerationView>
                       children: [
                         // Main prompt input with animation
                         _buildAnimatedPromptInput(context),
-                        const SizedBox(height: 24),
+                        const SizedBox(height: 12),
 
                         // Category selection with animation
                         _buildAnimatedCategoryTabs(context),
-                        const SizedBox(height: 20),
+                        const SizedBox(height: 12),
 
                         // Preset prompts with animation
                         _buildAnimatedPresetPrompts(context),
-                        const SizedBox(height: 32),
+                        const SizedBox(height: 18),
 
                         // Generate button with animation
                         _buildAnimatedGenerateButton(context),
@@ -170,53 +186,21 @@ class _GenerationViewState extends State<GenerationView>
     );
   }
 
-  Widget _buildAppBar(BuildContext context) {
-    return FadeTransition(
-      opacity: _fadeAnimation,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-        child: Row(
-          children: [
-            IconButton(
-              onPressed: () => Get.back(),
-              icon: const Icon(Icons.arrow_back_ios),
-              style: IconButton.styleFrom(
-                backgroundColor: Theme.of(context).cardColor,
-                foregroundColor: Theme.of(context).iconTheme.color,
-              ),
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Text(
-                'Create Magic',
-                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: -0.5,
-                    ),
-              ),
-            ),
-            _buildCrystalBalance(context),
-          ],
-        ),
-      ),
-    );
-  }
-
   Widget _buildAnimatedPromptInput(BuildContext context) {
     return SlideTransition(
       position: _slideAnimation,
       child: FadeTransition(
         opacity: _fadeAnimation,
         child: Container(
-          padding: const EdgeInsets.all(20),
+          padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
             color: Theme.of(context).cardColor,
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: BorderRadius.circular(16),
             boxShadow: [
               BoxShadow(
-                color: Theme.of(context).primaryColor.withOpacity(0.1),
-                blurRadius: 20,
-                offset: const Offset(0, 8),
+                color: Colors.black.withOpacity(0.1),
+                blurRadius: 8,
+                offset: const Offset(0, 2),
               ),
             ],
           ),
@@ -228,8 +212,8 @@ class _GenerationViewState extends State<GenerationView>
                   Container(
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
-                      color: Theme.of(context).primaryColor.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(12),
+                      color: Theme.of(context).primaryColor.withOpacity(0.2),
+                      borderRadius: BorderRadius.circular(8),
                     ),
                     child: Icon(
                       Icons.auto_awesome,
@@ -263,7 +247,7 @@ class _GenerationViewState extends State<GenerationView>
                     ),
                     child: TextField(
                       onChanged: controller.updateCustomPrompt,
-                      maxLines: 4,
+                      maxLines: 3,
                       style: Theme.of(context).textTheme.bodyLarge,
                       decoration: InputDecoration(
                         hintText:
@@ -385,7 +369,7 @@ class _GenerationViewState extends State<GenerationView>
                             _scaleController.reset();
                             _scaleController.forward();
                           },
-                          borderRadius: BorderRadius.circular(25),
+                          borderRadius: BorderRadius.circular(16),
                           splashColor: category.color.withOpacity(0.2),
                           highlightColor: category.color.withOpacity(0.1),
                           child: AnimatedContainer(
@@ -407,32 +391,26 @@ class _GenerationViewState extends State<GenerationView>
                               color: isSelected
                                   ? null
                                   : Theme.of(context).cardColor,
-                              borderRadius: BorderRadius.circular(25),
+                              borderRadius: BorderRadius.circular(16),
                               border: Border.all(
                                 color: isSelected
                                     ? category.color
                                     : category.color.withOpacity(0.3),
-                                width: isSelected ? 2 : 1,
+                                width: 1,
                               ),
                               boxShadow: isSelected
                                   ? [
                                       BoxShadow(
-                                        color: category.color.withOpacity(0.4),
-                                        blurRadius: 20,
+                                        color: category.color.withOpacity(0.3),
+                                        blurRadius: 15,
                                         offset: const Offset(0, 8),
-                                        spreadRadius: 2,
-                                      ),
-                                      BoxShadow(
-                                        color: category.color.withOpacity(0.2),
-                                        blurRadius: 5,
-                                        offset: const Offset(0, 2),
                                       ),
                                     ]
                                   : [
                                       BoxShadow(
-                                        color: Colors.black.withOpacity(0.08),
-                                        blurRadius: 12,
-                                        offset: const Offset(0, 4),
+                                        color: Colors.black.withOpacity(0.1),
+                                        blurRadius: 8,
+                                        offset: const Offset(0, 2),
                                       ),
                                     ],
                             ),
@@ -539,7 +517,7 @@ class _GenerationViewState extends State<GenerationView>
                     ),
                 ],
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 8),
               AnimatedContainer(
                 duration: const Duration(milliseconds: 500),
                 child: Wrap(
@@ -583,13 +561,13 @@ class _GenerationViewState extends State<GenerationView>
         color: Colors.transparent,
         child: InkWell(
           onTap: () => controller.togglePromptSelection(prompt),
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(16),
           splashColor: Theme.of(context).primaryColor.withOpacity(0.2),
           highlightColor: Theme.of(context).primaryColor.withOpacity(0.1),
           child: AnimatedContainer(
             duration: const Duration(milliseconds: 350),
             curve: Curves.easeOutCubic,
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
             decoration: BoxDecoration(
               gradient: isSelected
                   ? LinearGradient(
@@ -602,30 +580,24 @@ class _GenerationViewState extends State<GenerationView>
                     )
                   : null,
               color: isSelected ? null : Theme.of(context).cardColor,
-              borderRadius: BorderRadius.circular(20),
+              borderRadius: BorderRadius.circular(16),
               border: Border.all(
                 color: isSelected
                     ? Theme.of(context).primaryColor
                     : Theme.of(context).dividerColor.withOpacity(0.3),
-                width: isSelected ? 2 : 1,
+                width: 1,
               ),
               boxShadow: isSelected
                   ? [
                       BoxShadow(
-                        color: Theme.of(context).primaryColor.withOpacity(0.4),
+                        color: Theme.of(context).primaryColor.withOpacity(0.3),
                         blurRadius: 15,
-                        offset: const Offset(0, 6),
-                        spreadRadius: 1,
-                      ),
-                      BoxShadow(
-                        color: Theme.of(context).primaryColor.withOpacity(0.2),
-                        blurRadius: 4,
-                        offset: const Offset(0, 2),
+                        offset: const Offset(0, 8),
                       ),
                     ]
                   : [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.06),
+                        color: Colors.black.withOpacity(0.1),
                         blurRadius: 8,
                         offset: const Offset(0, 2),
                       ),
@@ -701,10 +673,12 @@ class _GenerationViewState extends State<GenerationView>
                     : Theme.of(context).disabledColor,
                 foregroundColor: Colors.white,
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20),
+                  borderRadius: BorderRadius.circular(16),
                 ),
-                elevation: hasContent ? 8 : 0,
-                shadowColor: Theme.of(context).primaryColor.withOpacity(0.3),
+                elevation: hasContent ? 4 : 0,
+                shadowColor: hasContent
+                    ? Theme.of(context).primaryColor.withOpacity(0.3)
+                    : null,
               ),
               child: AnimatedSwitcher(
                 duration: const Duration(milliseconds: 300),
@@ -841,34 +815,27 @@ class _GenerationViewState extends State<GenerationView>
             boxShadow: [
               BoxShadow(
                 color: Colors.black.withOpacity(0.1),
-                blurRadius: 10,
-                offset: const Offset(0, 4),
+                blurRadius: 8,
+                offset: const Offset(0, 2),
               ),
             ],
           ),
           child: ClipRRect(
             borderRadius: BorderRadius.circular(16),
-            child: wallpaper.hasLocalFile
-                ? Image.asset(
-                    wallpaper.localPath!,
-                    fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) {
-                      return Container(
-                        color: Theme.of(context).cardColor,
-                        child: Icon(
-                          Icons.image_outlined,
-                          color: Theme.of(context).primaryColor,
-                        ),
-                      );
-                    },
-                  )
-                : Container(
-                    color: Theme.of(context).cardColor,
-                    child: Icon(
-                      Icons.image_outlined,
-                      color: Theme.of(context).primaryColor,
-                    ),
-                  ),
+            child:   CachedNetworkImage(
+              imageUrl: wallpaper.url,
+              fit: BoxFit.cover,
+              placeholder: (context, url) => Container(
+                color: Colors.grey[300],
+                child: const Center(
+                  child: CircularProgressIndicator(),
+                ),
+              ),
+              errorWidget: (context, url, error) => Container(
+                color: Theme.of(context).cardColor,
+                child: const Icon(Icons.error_outline),
+              ),
+            ),
           ),
         ),
       ),
@@ -888,12 +855,12 @@ class _GenerationViewState extends State<GenerationView>
                 Theme.of(context).primaryColor.withOpacity(0.8),
               ],
             ),
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: BorderRadius.circular(16),
             boxShadow: [
               BoxShadow(
                 color: Theme.of(context).primaryColor.withOpacity(0.3),
-                blurRadius: 15,
-                offset: const Offset(0, 5),
+                blurRadius: 8,
+                offset: const Offset(0, 2),
               ),
             ],
           ),

@@ -1,16 +1,34 @@
 import 'package:get/get.dart';
+import 'package:flutter/material.dart';
 import '../models/wallpaper_model.dart';
 import '../services/storage_service.dart';
 
-class FavoritesController extends GetxController {
+class FavoritesController extends GetxController
+    with GetSingleTickerProviderStateMixin {
   // Observable variables
   final favoriteWallpapers = <WallpaperModel>[].obs;
+  final allWallpapers = <WallpaperModel>[].obs;
   final isLoading = false.obs;
+  final currentTabIndex = 0.obs;
+
+  // Tab controller
+  late TabController tabController;
 
   @override
   void onInit() {
     super.onInit();
+    tabController = TabController(length: 2, vsync: this);
+    tabController.addListener(() {
+      currentTabIndex.value = tabController.index;
+    });
     loadFavorites();
+    loadAllWallpapers();
+  }
+
+  @override
+  void onClose() {
+    tabController.dispose();
+    super.onClose();
   }
 
   // Load favorites from storage
@@ -20,6 +38,15 @@ class FavoritesController extends GetxController {
       favoriteWallpapers.value = StorageService.favoriteWallpapers;
     } finally {
       isLoading.value = false;
+    }
+  }
+
+  // Load all generated wallpapers from storage
+  void loadAllWallpapers() {
+    try {
+      allWallpapers.value = StorageService.generationHistory;
+    } catch (e) {
+      print('Error loading all wallpapers: $e');
     }
   }
 
@@ -108,6 +135,7 @@ class FavoritesController extends GetxController {
   // Refresh favorites
   void refreshFavorites() {
     loadFavorites();
+    loadAllWallpapers();
   }
 
   // Get favorites count
@@ -115,6 +143,14 @@ class FavoritesController extends GetxController {
 
   // Check if list is empty
   bool get isEmpty => favoriteWallpapers.isEmpty;
+
+  // Check if all wallpapers list is empty
+  bool get isAllWallpapersEmpty => allWallpapers.isEmpty;
+
+  // Get current tab wallpapers
+  List<WallpaperModel> get currentWallpapers {
+    return currentTabIndex.value == 0 ? favoriteWallpapers : allWallpapers;
+  }
 
   // Get favorites by category
   List<WallpaperModel> getFavoritesByCategory(String category) {
@@ -124,5 +160,10 @@ class FavoritesController extends GetxController {
   // Get all categories in favorites
   List<String> get categoriesInFavorites {
     return favoriteWallpapers.map((w) => w.category).toSet().toList()..sort();
+  }
+
+  // Get all categories in all wallpapers
+  List<String> get categoriesInAllWallpapers {
+    return allWallpapers.map((w) => w.category).toSet().toList()..sort();
   }
 }

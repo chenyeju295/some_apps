@@ -10,91 +10,138 @@ class FavoritesView extends GetView<FavoritesController> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Favorites'),
+        title: const Text('Gallery'),
+        bottom: TabBar(
+
+          controller: controller.tabController,
+          tabs: const [ Tab(
+            icon: Icon(Icons.grid_view),
+            text: 'All',
+          ),
+            Tab(
+              icon: Icon(Icons.favorite),
+              text: 'Favorites',
+            ),
+
+          ],
+        ),
         actions: [
-          Obx(() => controller.favoriteWallpapers.isNotEmpty
-              ? IconButton(
-                  onPressed: controller.clearAllFavorites,
-                  icon: const Icon(Icons.delete_outline),
-                )
-              : const SizedBox.shrink()),
+           ],
+      ),
+      body: TabBarView(
+        controller: controller.tabController,
+        children: [
+          // All Tab
+          _buildWallpaperGrid(false),
+          // Favorites Tab
+          _buildWallpaperGrid(true),
         ],
       ),
-      body: Obx(() {
-        if (controller.isLoading.value) {
-          return const Center(child: CircularProgressIndicator());
-        }
-
-        if (controller.isEmpty) {
-          return _buildEmptyState(context);
-        }
-
-        return RefreshIndicator(
-          onRefresh: () async => controller.refreshFavorites(),
-          child: GridView.builder(
-            padding: const EdgeInsets.all(16),
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2,
-              crossAxisSpacing: 12,
-              mainAxisSpacing: 12,
-              childAspectRatio: 0.7,
-            ),
-            itemCount: controller.favoriteWallpapers.length,
-            itemBuilder: (context, index) {
-              final wallpaper = controller.favoriteWallpapers[index];
-              return _buildWallpaperCard(context, wallpaper, index);
-            },
-          ),
-        );
-      }),
     );
   }
 
-  Widget _buildEmptyState(BuildContext context) {
+  Widget _buildWallpaperGrid(bool isFavoritesTab) {
+    return Obx(() {
+      if (controller.isLoading.value) {
+        return const Center(child: CircularProgressIndicator());
+      }
+
+      final wallpapers = isFavoritesTab
+          ? controller.favoriteWallpapers
+          : controller.allWallpapers;
+      final isEmpty =
+          isFavoritesTab ? controller.isEmpty : controller.isAllWallpapersEmpty;
+
+      if (isEmpty) {
+        return _buildEmptyState(isFavoritesTab);
+      }
+
+      return RefreshIndicator(
+        onRefresh: () async => controller.refreshFavorites(),
+        child: GridView.builder(
+          padding: const EdgeInsets.all(16),
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
+            crossAxisSpacing: 12,
+            mainAxisSpacing: 12,
+            childAspectRatio: 0.7,
+          ),
+          itemCount: wallpapers.length,
+          itemBuilder: (context, index) {
+            final wallpaper = wallpapers[index];
+            return _buildWallpaperCard(
+                context, wallpaper, index, isFavoritesTab);
+          },
+        ),
+      );
+    });
+  }
+
+  void _showClearDialog() {
+    if (controller.currentTabIndex.value == 0) {
+      // Favorites tab
+      controller.clearAllFavorites();
+    } else {
+      // All tab - show clear all history dialog
+      Get.defaultDialog(
+        title: 'Clear All History',
+        middleText:
+            'Are you sure you want to clear all generation history? This action cannot be undone.',
+        textConfirm: 'Clear All',
+        textCancel: 'Cancel',
+        onConfirm: () {
+          // TODO: Implement clear all history
+          Get.back();
+          Get.snackbar(
+            'Feature Coming Soon',
+            'Clear all history functionality will be available soon',
+            snackPosition: SnackPosition.BOTTOM,
+          );
+        },
+      );
+    }
+  }
+
+  Widget _buildEmptyState([bool isFavoritesTab = true]) {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(
-            Icons.favorite_border,
+            isFavoritesTab ? Icons.favorite_border : Icons.image_outlined,
             size: 80,
-            color: Theme.of(context).iconTheme.color?.withOpacity(0.3),
+            color: Get.theme.iconTheme.color?.withOpacity(0.3),
           ),
           const SizedBox(height: 24),
           Text(
-            'No Favorites Yet',
-            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  color: Theme.of(context)
-                      .textTheme
-                      .headlineSmall
-                      ?.color
-                      ?.withOpacity(0.7),
-                ),
+            isFavoritesTab ? 'No Favorites Yet' : 'No Wallpapers Generated',
+            style: Get.textTheme.headlineSmall?.copyWith(
+              color: Get.textTheme.headlineSmall?.color?.withOpacity(0.7),
+            ),
           ),
           const SizedBox(height: 12),
           Text(
-            'Start generating wallpapers and mark your favorites to see them here',
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: Theme.of(context)
-                      .textTheme
-                      .bodyMedium
-                      ?.color
-                      ?.withOpacity(0.5),
-                ),
+            isFavoritesTab
+                ? 'Start generating wallpapers and mark your favorites to see them here'
+                : 'Generate your first AI wallpaper to see it here',
+            style: Get.textTheme.bodyMedium?.copyWith(
+              color: Get.textTheme.bodyMedium?.color?.withOpacity(0.5),
+            ),
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 32),
           ElevatedButton.icon(
             onPressed: () => Get.back(),
-            icon: const Icon(Icons.home),
-            label: const Text('Go Home'),
+            icon: Icon(isFavoritesTab ? Icons.home : Icons.auto_awesome),
+            label: Text(isFavoritesTab ? 'Go Home' : 'Create Wallpaper'),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildWallpaperCard(BuildContext context, wallpaper, int index) {
+  Widget _buildWallpaperCard(
+      BuildContext context, wallpaper, int index, bool isFavoritesTab) {
     return GestureDetector(
       onTap: () => Get.toNamed('/wallpaper-detail', arguments: wallpaper),
       child: Container(
@@ -150,21 +197,34 @@ class FavoritesView extends GetView<FavoritesController> {
                 ),
               ),
 
-              // Remove button
+              // Action button (favorite/remove)
               Positioned(
                 top: 8,
                 right: 8,
                 child: GestureDetector(
-                  onTap: () => controller.removeFromFavorites(wallpaper),
+                  onTap: () {
+                    if (isFavoritesTab) {
+                      controller.removeFromFavorites(wallpaper);
+                    } else {
+                      controller.toggleFavorite(wallpaper);
+                    }
+                  },
                   child: Container(
                     padding: const EdgeInsets.all(6),
                     decoration: BoxDecoration(
                       color: Colors.black.withOpacity(0.5),
                       shape: BoxShape.circle,
                     ),
-                    child: const Icon(
-                      Icons.favorite,
-                      color: Colors.red,
+                    child: Icon(
+                      isFavoritesTab
+                          ? Icons.favorite
+                          : (controller.isFavorite(wallpaper.id)
+                              ? Icons.favorite
+                              : Icons.favorite_border),
+                      color:
+                          isFavoritesTab || controller.isFavorite(wallpaper.id)
+                              ? Colors.red
+                              : Colors.white,
                       size: 20,
                     ),
                   ),

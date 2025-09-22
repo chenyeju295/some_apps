@@ -92,7 +92,7 @@ class HomeView extends GetView<HomeController> {
 
                       // Recent wallpapers
                       _buildRecentSection(context),
-                      const SizedBox(height: 20),
+                      const SizedBox(height: 180),
                     ],
                   ),
                 ),

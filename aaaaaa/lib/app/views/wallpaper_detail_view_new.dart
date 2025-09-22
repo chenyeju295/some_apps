@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:http/http.dart' as http;
 import '../models/wallpaper_model.dart';
 import '../services/image_service.dart';
@@ -107,11 +108,13 @@ class _WallpaperDetailViewState extends State<WallpaperDetailView>
     }
 
     return Scaffold(
+      backgroundColor: Colors.black,
       extendBodyBehindAppBar: true,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         systemOverlayStyle: SystemUiOverlayStyle.light,
+        iconTheme: const IconThemeData(color: Colors.white),
         actions: [
           IconButton(
             onPressed: _toggleFavorite,
@@ -122,27 +125,27 @@ class _WallpaperDetailViewState extends State<WallpaperDetailView>
                     : Icons.favorite_border,
                 color: controller.isFavorite(wallpaper!.id)
                     ? Colors.red
-                    : Colors.grey,
+                    : Colors.white,
               ),
             ),
           ),
           IconButton(
             onPressed: _showActions,
-            icon: const Icon(Icons.more_vert ),
+            icon: const Icon(Icons.more_vert),
           ),
         ],
       ),
       body: Stack(
         children: [
-          // Background gradient - consistent with app theme
+          // Background
           Container(
             decoration: BoxDecoration(
               gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
                 colors: [
-                  Theme.of(context).primaryColor.withOpacity(0.1),
-                  Theme.of(context).colorScheme.secondary.withOpacity(0.1),
+                  Colors.grey[900]!,
+                  Colors.black,
                 ],
               ),
             ),
@@ -229,172 +232,171 @@ class _WallpaperDetailViewState extends State<WallpaperDetailView>
             right: 0,
             child: Container(
               decoration: BoxDecoration(
-                color:
-                    Theme.of(context).scaffoldBackgroundColor.withOpacity(0.95),
+                color: Colors.black.withOpacity(0.9),
                 borderRadius:
                     const BorderRadius.vertical(top: Radius.circular(16)),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
+                    color: Colors.black.withOpacity(0.2),
                     blurRadius: 8,
                     offset: const Offset(0, -2),
                   ),
                 ],
               ),
-              child: Padding(
-                padding: const EdgeInsets.all(30),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    // Prompt
-                    Text(
-                      wallpaper!.prompt,
-                      style: TextStyle(
-                        color: Theme.of(context).textTheme.bodyLarge?.color,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
+              child: SafeArea(
+                child: Padding(
+                  padding: const EdgeInsets.all(20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      // Prompt
+                      Text(
+                        wallpaper!.prompt,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 12),
+                      const SizedBox(height: 12),
 
-                    // Details row
-                    Row(
-                      children: [
-                        _buildDetailChip(
-                          wallpaper!.category,
-                          Icons.category,
-                        ),
-                        const SizedBox(width: 8),
-                        _buildDetailChip(
-                          wallpaper!.formattedStyle,
-                          Icons.palette,
-                        ),
-                        const SizedBox(width: 8),
-                        _buildDetailChip(
-                          wallpaper!.formattedQuality,
-                          Icons.high_quality,
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 12),
-
-                    // Size and date
-                    Row(
-                      children: [
-                        Icon(
-                          Icons.calendar_today,
-                          size: 14,
-                          color: Theme.of(context)
-                              .textTheme
-                              .bodySmall
-                              ?.color
-                              ?.withOpacity(0.7),
-                        ),
-                        const SizedBox(width: 4),
-                        Text(
-                          _formatDate(wallpaper!.createdAt),
-                          style: TextStyle(
-                            color: Theme.of(context)
-                                .textTheme
-                                .bodySmall
-                                ?.color
-                                ?.withOpacity(0.7),
-                            fontSize: 12,
+                      // Details row
+                      Row(
+                        children: [
+                          _buildDetailChip(
+                            wallpaper!.category,
+                            Icons.category,
                           ),
-                        ),
-                        const Spacer(),
+                          const SizedBox(width: 8),
+                          _buildDetailChip(
+                            wallpaper!.formattedStyle,
+                            Icons.palette,
+                          ),
+                          const SizedBox(width: 8),
+                          _buildDetailChip(
+                            wallpaper!.formattedQuality,
+                            Icons.high_quality,
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 12),
 
-                      ],
-                    ),
-                    const SizedBox(height: 16),
+                      // Size and date
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.calendar_today,
+                            size: 14,
+                            color: Colors.white.withOpacity(0.7),
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            _formatDate(wallpaper!.createdAt),
+                            style: TextStyle(
+                              color: Colors.white.withOpacity(0.7),
+                              fontSize: 12,
+                            ),
+                          ),
+                          const Spacer(),
+                          Text(
+                            wallpaper!.formattedSize,
+                            style: TextStyle(
+                              color: Colors.white.withOpacity(0.7),
+                              fontSize: 12,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 16),
 
-                    // Action buttons
-                    Row(
-                      children: [
-                        Expanded(
-                          child: ElevatedButton.icon(
-                            onPressed: isDownloading ? null : _setAsWallpaper,
-                            icon: const Icon(Icons.wallpaper),
-                            label: const Text('Set as Wallpaper'),
+                      // Action buttons
+                      Row(
+                        children: [
+                          Expanded(
+                            child: ElevatedButton.icon(
+                              onPressed: isDownloading ? null : _setAsWallpaper,
+                              icon: const Icon(Icons.wallpaper),
+                              label: const Text('Set as Wallpaper'),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Theme.of(context).primaryColor,
+                                foregroundColor: Colors.white,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(16),
+                                ),
+                                elevation: 4,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          ElevatedButton(
+                            onPressed: isDownloading || isSharing
+                                ? null
+                                : _downloadWallpaper,
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: Theme.of(context).primaryColor,
+                              backgroundColor: Colors.white.withOpacity(0.2),
                               foregroundColor: Colors.white,
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(16),
                               ),
-                              elevation: 4,
+                              padding: const EdgeInsets.all(12),
                             ),
+                            child: isDownloading
+                                ? SizedBox(
+                                    width: 20,
+                                    height: 20,
+                                    child: CircularProgressIndicator(
+                                      value: downloadProgress,
+                                      strokeWidth: 2,
+                                      valueColor:
+                                          const AlwaysStoppedAnimation<Color>(
+                                              Colors.white),
+                                    ),
+                                  )
+                                : const Icon(Icons.download),
                           ),
-                        ),
-                        const SizedBox(width: 12),
-                        ElevatedButton(
-                          onPressed: isDownloading || isSharing
-                              ? null
-                              : _downloadWallpaper,
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.white ,
-                            foregroundColor: Colors.white,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(16),
+                          const SizedBox(width: 12),
+                          ElevatedButton(
+                            onPressed: isSharing || isDownloading
+                                ? null
+                                : _shareWallpaper,
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.white.withOpacity(0.2),
+                              foregroundColor: Colors.white,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                              padding: const EdgeInsets.all(12),
                             ),
-                            padding: const EdgeInsets.all(12),
+                            child: isSharing
+                                ? const SizedBox(
+                                    width: 20,
+                                    height: 20,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                      valueColor: AlwaysStoppedAnimation<Color>(
+                                          Colors.white),
+                                    ),
+                                  )
+                                : const Icon(Icons.share),
                           ),
-                          child: isDownloading
-                              ? SizedBox(
-                                  width: 20,
-                                  height: 20,
-                                  child: CircularProgressIndicator(
-                                    value: downloadProgress,
-                                    strokeWidth: 2,
-                                    valueColor:
-                                        const AlwaysStoppedAnimation<Color>(
-                                            Colors.white),
-                                  ),
-                                )
-                              : const Icon(Icons.download),
-                        ),
-                        const SizedBox(width: 12),
-                        ElevatedButton(
-                          onPressed: isSharing || isDownloading
-                              ? null
-                              : _shareWallpaper,
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.white ,
-                            foregroundColor: Colors.white,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                            padding: const EdgeInsets.all(12),
-                          ),
-                          child: isSharing
-                              ? const SizedBox(
-                                  width: 20,
-                                  height: 20,
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 2,
-                                    valueColor: AlwaysStoppedAnimation<Color>(
-                                        Colors.white),
-                                  ),
-                                )
-                              : const Icon(Icons.share),
-                        ),
-                      ],
-                    ),
-
-                    // Show download progress if downloading
-                    if (isDownloading)
-                      Padding(
-                        padding: const EdgeInsets.only(top: 8),
-                        child: LinearProgressIndicator(
-                          value: downloadProgress,
-                          backgroundColor: Colors.white.withOpacity(0.3),
-                          valueColor: AlwaysStoppedAnimation<Color>(
-                            Theme.of(context).primaryColor,
-                          ),
-                        ),
+                        ],
                       ),
-                  ],
+
+                      // Show download progress if downloading
+                      if (isDownloading)
+                        Padding(
+                          padding: const EdgeInsets.only(top: 8),
+                          child: LinearProgressIndicator(
+                            value: downloadProgress,
+                            backgroundColor: Colors.white.withOpacity(0.3),
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                              Theme.of(context).primaryColor,
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -469,12 +471,8 @@ class _WallpaperDetailViewState extends State<WallpaperDetailView>
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: Theme.of(context).primaryColor.withOpacity(0.1),
+        color: Colors.white.withOpacity(0.2),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: Theme.of(context).primaryColor.withOpacity(0.3),
-          width: 1,
-        ),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -482,13 +480,13 @@ class _WallpaperDetailViewState extends State<WallpaperDetailView>
           Icon(
             icon,
             size: 14,
-            color: Theme.of(context).primaryColor,
+            color: Colors.white,
           ),
           const SizedBox(width: 4),
           Text(
             text,
-            style: TextStyle(
-              color: Theme.of(context).primaryColor,
+            style: const TextStyle(
+              color: Colors.white,
               fontSize: 12,
               fontWeight: FontWeight.w500,
             ),
@@ -602,6 +600,18 @@ class _WallpaperDetailViewState extends State<WallpaperDetailView>
   Future<void> _downloadWallpaper() async {
     if (isDownloading) return;
 
+    final permission = await Permission.photos.request();
+    if (!permission.isGranted) {
+      Get.snackbar(
+        'Permission Required',
+        'Please grant photo library access to save wallpapers',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.orange,
+        colorText: Colors.white,
+      );
+      return;
+    }
+
     setState(() {
       isDownloading = true;
       downloadProgress = 0.0;
@@ -699,6 +709,14 @@ class _WallpaperDetailViewState extends State<WallpaperDetailView>
                 onTap: () {
                   Navigator.pop(context);
                   _downloadWallpaper();
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.info_outline),
+                title: const Text('Image Info'),
+                onTap: () {
+                  Navigator.pop(context);
+                  _showImageInfo();
                 },
               ),
               ListTile(
@@ -804,7 +822,6 @@ class _WallpaperDetailViewState extends State<WallpaperDetailView>
       homeController.generatedWallpapers
           .removeWhere((w) => w.id == wallpaper!.id);
 
-      Get.back();
       Get.snackbar(
         'Deleted',
         'Wallpaper removed from your collection',
@@ -814,6 +831,7 @@ class _WallpaperDetailViewState extends State<WallpaperDetailView>
         icon: const Icon(Icons.check_circle, color: Colors.white),
       );
 
+      Get.back();
     } catch (e) {
       Get.snackbar(
         'Delete Failed',
