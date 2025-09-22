@@ -1,7 +1,9 @@
 import 'package:get/get.dart';
 import '../models/theme_category_model.dart';
+import '../models/product_model.dart';
 import '../services/storage_service.dart';
 import '../services/ai_service.dart';
+import 'balance_controller.dart';
 
 class GenerationController extends GetxController {
   // Observable variables
@@ -234,10 +236,29 @@ class GenerationController extends GetxController {
       return;
     }
 
+    // Calculate total crystal cost for batch
+    final balanceController = Get.find<BalanceController>();
+    final batchCostPerImage = CrystalCosts.calculateGenerationCost(
+      quality: selectedQuality.value,
+      style: selectedStyle.value,
+      isBatch: true,
+    );
+    final totalCost = batchCostPerImage * selectedPrompts.length;
+
+    if (!balanceController.hasEnoughCrystals(totalCost)) {
+      Get.snackbar(
+        'Insufficient Crystals',
+        'Batch generation needs $totalCost crystals but you only have ${balanceController.formattedBalance}',
+        snackPosition: SnackPosition.BOTTOM,
+        duration: const Duration(seconds: 4),
+      );
+      return;
+    }
+
     Get.defaultDialog(
       title: 'Batch Generation',
       middleText:
-          'Generate ${selectedPrompts.length} wallpapers?\nThis will consume ${selectedPrompts.length} API credits.',
+          'Generate ${selectedPrompts.length} wallpapers?\n\nCost: $totalCost crystals\nRemaining: ${balanceController.crystalBalance.value - totalCost} crystals',
       textConfirm: 'Generate',
       textCancel: 'Cancel',
       onConfirm: () async {
@@ -308,12 +329,29 @@ class GenerationController extends GetxController {
       return;
     }
 
+    // Check crystal balance
+    final balanceController = Get.find<BalanceController>();
+    final crystalCost = CrystalCosts.calculateGenerationCost(
+      quality: selectedQuality.value,
+      style: selectedStyle.value,
+    );
+
+    if (!balanceController.hasEnoughCrystals(crystalCost)) {
+      Get.snackbar(
+        'Insufficient Crystals',
+        'You need $crystalCost crystals but only have ${balanceController.formattedBalance}. Visit the shop to buy more!',
+        snackPosition: SnackPosition.BOTTOM,
+        duration: const Duration(seconds: 4),
+      );
+      return;
+    }
+
     isGenerating.value = true;
 
     try {
       Get.snackbar(
         'Generating Wallpaper',
-        'Creating your ${selectedQuality.value.toUpperCase()} quality wallpaper...',
+        'Creating your ${selectedQuality.value.toUpperCase()} quality wallpaper... (-$crystalCost crystals)',
         snackPosition: SnackPosition.BOTTOM,
         duration: const Duration(seconds: 3),
       );
@@ -322,21 +360,34 @@ class GenerationController extends GetxController {
         prompt: prompt,
         category: category,
         size: imageSizeOptions[selectedImageSize.value] ?? '1024x1792',
+        quality: selectedQuality.value,
+        style: selectedStyle.value,
       );
 
       if (wallpaper != null) {
+        // Deduct crystals
+        balanceController.spendCrystals(crystalCost);
+
         // Add to history
         StorageService.addToHistory(wallpaper);
 
         Get.snackbar(
           'Success!',
-          'Wallpaper generated successfully',
+          'Wallpaper generated successfully! Remaining crystals: ${balanceController.formattedBalance}',
           snackPosition: SnackPosition.BOTTOM,
+          duration: const Duration(seconds: 3),
         );
 
         // Navigate to wallpaper detail view
         Get.toNamed('/wallpaper-detail', arguments: wallpaper);
       }
+    } catch (e) {
+      Get.snackbar(
+        'Generation Failed',
+        'Failed to generate wallpaper: ${e.toString()}',
+        snackPosition: SnackPosition.BOTTOM,
+        duration: const Duration(seconds: 4),
+      );
     } finally {
       isGenerating.value = false;
     }

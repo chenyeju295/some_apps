@@ -1,15 +1,21 @@
 import 'package:dio/dio.dart';
 import 'package:get/get.dart' as getx;
-import '../constants/app_constants.dart';
 import '../models/wallpaper_model.dart';
+import 'image_service.dart';
 
 class AIService {
+  static const String _baseUrl =
+      'https://api.together.xyz/v1/images/generations';
+  static const String _apiKey =
+      'tgp_v1_MmM3xO9NcFhbEUG7hpYkv9664YbSDWdib0n3DyeHCZ0';
+
   static final Dio _dio = Dio(BaseOptions(
-    baseUrl: AppConstants.baseUrl,
+    baseUrl: _baseUrl,
     connectTimeout: const Duration(seconds: 30),
     receiveTimeout: const Duration(seconds: 60),
     headers: {
       'Content-Type': 'application/json',
+      'Authorization': 'Bearer $_apiKey',
     },
   ));
 
@@ -18,37 +24,59 @@ class AIService {
     _dio.options.headers['Authorization'] = 'Bearer $apiKey';
   }
 
-  // Generate wallpaper using DALL-E API
+  // Generate wallpaper using FLUX.1-dev API
   static Future<WallpaperModel?> generateWallpaper({
     required String prompt,
     required String category,
-    String size = AppConstants.defaultImageSize,
+    String size = '1024x1024',
+    String quality = 'standard',
+    String style = 'realistic',
   }) async {
     try {
+      print('Generating image with Together AI - Prompt: $prompt');
+
+      final sizeMap = _getSizeFromString(size);
+      final enhancedPrompt = _enhancePrompt(prompt, style);
+
       final response = await _dio.post(
-        AppConstants.imageGenerationEndpoint,
+        '', // Empty string since baseUrl is the full endpoint
         data: {
-          'model': 'dall-e-3',
-          'prompt': _enhancePrompt(prompt),
-          'n': 1,
-          'size': size,
-          'quality': 'hd',
-          'response_format': 'url',
+          'model': 'black-forest-labs/FLUX.1-dev',
+          'prompt': enhancedPrompt,
+          'width': sizeMap['width'],
+          'height': sizeMap['height'],
+          'steps': quality == 'hd' ? 50 : 28,
+          'seed': null,
         },
       );
 
+      print('API Response Status: ${response.statusCode}');
+      print('API Response Data: ${response.data}');
+
       if (response.statusCode == 200) {
         final data = response.data;
-        final imageUrl = data['data'][0]['url'] as String;
-        final revisedPrompt =
-            data['data'][0]['revised_prompt'] as String? ?? prompt;
+        final imageData = data['data'][0];
+        final imageUrl = imageData['url'] ?? imageData['b64_json'];
+
+        final wallpaperId = DateTime.now().millisecondsSinceEpoch.toString();
+
+        // Download and save image locally
+        final localPath = await ImageService.downloadAndSaveImage(
+          imageUrl: imageUrl,
+          wallpaperId: wallpaperId,
+          prompt: prompt,
+        );
 
         return WallpaperModel(
-          id: DateTime.now().millisecondsSinceEpoch.toString(),
+          id: wallpaperId,
           url: imageUrl,
-          prompt: revisedPrompt,
+          localPath: localPath,
+          prompt: prompt,
           category: category,
           createdAt: DateTime.now(),
+          style: style,
+          quality: quality,
+          size: size,
         );
       } else {
         getx.Get.snackbar(
@@ -60,6 +88,9 @@ class AIService {
       }
     } on DioException catch (e) {
       String errorMessage = 'Network error occurred';
+
+      print('DioException: ${e.toString()}');
+      print('Response: ${e.response?.data}');
 
       if (e.response != null) {
         final errorData = e.response!.data;
@@ -80,6 +111,7 @@ class AIService {
       );
       return null;
     } catch (e) {
+      print('Unexpected error: $e');
       getx.Get.snackbar(
         'Error',
         'An unexpected error occurred: $e',
@@ -89,40 +121,99 @@ class AIService {
     }
   }
 
-  // Enhance prompt with wallpaper-specific keywords
-  static String _enhancePrompt(String prompt) {
-    // Add wallpaper-specific enhancements
-    final enhancedPrompt =
-        '$prompt, high resolution wallpaper, beautiful composition, vibrant colors, professional photography style, 4K quality';
-    return enhancedPrompt;
+  // Enhance prompt with wallpaper-specific keywords and style
+  static String _enhancePrompt(String prompt, String style) {
+    String stylePrompt = '';
+
+    switch (style) {
+      case 'realistic':
+        stylePrompt = 'photorealistic, high detail, professional photography';
+        break;
+      case 'artistic':
+        stylePrompt = 'artistic style, creative composition, painterly';
+        break;
+      case 'anime':
+        stylePrompt = 'anime style, manga artwork, Japanese animation';
+        break;
+      case 'fantasy':
+        stylePrompt = 'fantasy art, magical, ethereal, otherworldly';
+        break;
+      case 'vintage':
+        stylePrompt = 'vintage style, retro aesthetic, classic';
+        break;
+      case 'modern':
+        stylePrompt = 'modern contemporary art, sleek design, minimalist';
+        break;
+      default:
+        stylePrompt = 'high quality artwork';
+    }
+
+    return '$prompt, $stylePrompt, high resolution wallpaper, beautiful composition, vibrant colors, 4K quality, detailed';
+  }
+
+  // Helper method to convert size string to width/height
+  static Map<String, int> _getSizeFromString(String size) {
+    switch (size) {
+      case 'portrait':
+      case '1024x1792':
+        return {'width': 1024, 'height': 1792};
+      case 'landscape':
+      case '1792x1024':
+        return {'width': 1792, 'height': 1024};
+      case 'square':
+      case '1024x1024':
+      default:
+        return {'width': 1024, 'height': 1024};
+    }
+  }
+
+  // Generate multiple wallpapers
+  static Future<List<WallpaperModel>> generateMultipleWallpapers({
+    required List<String> prompts,
+    required String category,
+    String size = '1024x1024',
+    String quality = 'standard',
+    String style = 'realistic',
+  }) async {
+    final List<WallpaperModel> wallpapers = [];
+
+    for (final prompt in prompts) {
+      try {
+        final wallpaper = await generateWallpaper(
+          prompt: prompt,
+          category: category,
+          size: size,
+          quality: quality,
+          style: style,
+        );
+        if (wallpaper != null) {
+          wallpapers.add(wallpaper);
+        }
+
+        // Add small delay between requests to avoid rate limiting
+        await Future.delayed(const Duration(milliseconds: 1000));
+      } catch (e) {
+        print('Error generating wallpaper for prompt "$prompt": $e');
+        // Continue with other prompts even if one fails
+      }
+    }
+
+    return wallpapers;
   }
 
   // Test API connection
   static Future<bool> testConnection() async {
     try {
-      // Use a simple request to test the connection
-      final response = await _dio.get('/models');
-      return response.statusCode == 200;
+      final result = await generateWallpaper(
+        prompt: 'Test image',
+        category: 'Test',
+        size: '1024x1024',
+        quality: 'standard',
+      );
+      return result != null;
     } catch (e) {
+      print('API test failed: $e');
       return false;
-    }
-  }
-
-  // Get available models
-  static Future<List<String>> getAvailableModels() async {
-    try {
-      final response = await _dio.get('/models');
-      if (response.statusCode == 200) {
-        final data = response.data;
-        final models = data['data'] as List;
-        return models
-            .where((model) => model['id'].toString().contains('dall-e'))
-            .map((model) => model['id'].toString())
-            .toList();
-      }
-      return ['dall-e-3']; // Default fallback
-    } catch (e) {
-      return ['dall-e-3']; // Default fallback
     }
   }
 }

@@ -23,6 +23,36 @@ class FavoritesController extends GetxController {
     }
   }
 
+  // Check if wallpaper is favorite
+  bool isFavorite(String wallpaperId) {
+    return favoriteWallpapers.any((w) => w.id == wallpaperId);
+  }
+
+  // Toggle favorite status
+  void toggleFavorite(WallpaperModel wallpaper) {
+    if (isFavorite(wallpaper.id)) {
+      // Remove from favorites
+      StorageService.removeFromFavorites(wallpaper.id);
+      favoriteWallpapers.removeWhere((w) => w.id == wallpaper.id);
+      Get.snackbar(
+        'Removed',
+        'Wallpaper removed from favorites',
+        snackPosition: SnackPosition.BOTTOM,
+      );
+    } else {
+      // Add to favorites
+      final updatedWallpaper = wallpaper.copyWith(isFavorite: true);
+      StorageService.addToFavorites(updatedWallpaper);
+      favoriteWallpapers.add(updatedWallpaper);
+      Get.snackbar(
+        'Added',
+        'Wallpaper added to favorites',
+        snackPosition: SnackPosition.BOTTOM,
+      );
+    }
+    update(); // Trigger UI update
+  }
+
   // Remove from favorites
   void removeFromFavorites(WallpaperModel wallpaper) {
     Get.defaultDialog(
@@ -40,6 +70,7 @@ class FavoritesController extends GetxController {
           'Wallpaper removed from favorites',
           snackPosition: SnackPosition.BOTTOM,
         );
+        update(); // Trigger UI update
       },
     );
   }

@@ -4,6 +4,7 @@ import '../controllers/home_controller.dart';
 import '../controllers/generation_controller.dart';
 import '../controllers/favorites_controller.dart';
 import '../controllers/settings_controller.dart';
+import '../controllers/balance_controller.dart';
 
 class NavigationBinding extends Bindings {
   @override
@@ -32,6 +33,11 @@ class NavigationBinding extends Bindings {
 
     Get.lazyPut<SettingsController>(
       () => SettingsController(),
+      fenix: true,
+    );
+
+    Get.lazyPut<BalanceController>(
+      () => BalanceController(),
       fenix: true,
     );
   }

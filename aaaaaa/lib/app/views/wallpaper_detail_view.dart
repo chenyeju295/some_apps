@@ -1,68 +1,99 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:share_plus/share_plus.dart';
-import 'package:image_gallery_saver/image_gallery_saver.dart';
-import 'package:permission_handler/permission_handler.dart';
-import 'package:dio/dio.dart';
 import '../models/wallpaper_model.dart';
+import '../services/image_service.dart';
+import '../controllers/favorites_controller.dart';
 
-class WallpaperDetailView extends StatelessWidget {
+class WallpaperDetailView extends StatefulWidget {
   const WallpaperDetailView({super.key});
 
   @override
+  State<WallpaperDetailView> createState() => _WallpaperDetailViewState();
+}
+
+class _WallpaperDetailViewState extends State<WallpaperDetailView> {
+  WallpaperModel? wallpaper;
+  bool isLoading = true;
+  String? fullImagePath;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadWallpaper();
+  }
+
+  void _loadWallpaper() async {
+    // Get wallpaper from arguments
+    final arg = Get.arguments;
+    if (arg is WallpaperModel) {
+      wallpaper = arg;
+
+      // If has local path, get full path
+      if (wallpaper!.hasLocalFile) {
+        try {
+          fullImagePath = await ImageService.getFullPath(wallpaper!.localPath!);
+        } catch (e) {
+          print('Error getting full path: $e');
+        }
+      }
+    }
+
+    setState(() {
+      isLoading = false;
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final WallpaperModel wallpaper = Get.arguments as WallpaperModel;
+    if (isLoading || wallpaper == null) {
+      return Scaffold(
+        appBar: AppBar(title: const Text('Loading...')),
+        body: const Center(child: CircularProgressIndicator()),
+      );
+    }
 
     return Scaffold(
       backgroundColor: Colors.black,
+      extendBodyBehindAppBar: true,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        systemOverlayStyle: SystemUiOverlayStyle.light,
+        iconTheme: const IconThemeData(color: Colors.white),
+        actions: [
+          IconButton(
+            onPressed: _toggleFavorite,
+            icon: GetBuilder<FavoritesController>(
+              builder: (controller) => Icon(
+                controller.isFavorite(wallpaper!.id)
+                    ? Icons.favorite
+                    : Icons.favorite_border,
+                color: controller.isFavorite(wallpaper!.id)
+                    ? Colors.red
+                    : Colors.white,
+              ),
+            ),
+          ),
+          IconButton(
+            onPressed: _showActions,
+            icon: const Icon(Icons.more_vert),
+          ),
+        ],
+      ),
       body: Stack(
         children: [
-          // Wallpaper image
+          // Full screen image
           Center(
-            child: CachedNetworkImage(
-              imageUrl: wallpaper.url,
-              fit: BoxFit.contain,
-              placeholder: (context, url) => const Center(
-                child: CircularProgressIndicator(color: Colors.white),
-              ),
-              errorWidget: (context, url, error) => const Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(Icons.error_outline, color: Colors.white, size: 48),
-                    SizedBox(height: 16),
-                    Text(
-                      'Failed to load wallpaper',
-                      style: TextStyle(color: Colors.white),
-                    ),
-                  ],
-                ),
-              ),
+            child: Hero(
+              tag: 'wallpaper_${wallpaper!.id}',
+              child: _buildImage(),
             ),
           ),
 
-          // Top app bar
-          SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  _buildActionButton(
-                    icon: Icons.arrow_back,
-                    onTap: () => Get.back(),
-                  ),
-                  _buildActionButton(
-                    icon: Icons.share,
-                    onTap: () => _shareWallpaper(wallpaper),
-                  ),
-                ],
-              ),
-            ),
-          ),
-
-          // Bottom actions
+          // Bottom info panel
           Positioned(
             bottom: 0,
             left: 0,
@@ -75,17 +106,75 @@ class WallpaperDetailView extends StatelessWidget {
                   colors: [
                     Colors.transparent,
                     Colors.black.withOpacity(0.8),
+                    Colors.black,
                   ],
                 ),
               ),
               child: SafeArea(
                 child: Padding(
-                  padding: const EdgeInsets.all(16),
+                  padding: const EdgeInsets.all(20),
                   child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      // Wallpaper info
-                      _buildWallpaperInfo(context, wallpaper),
+                      // Prompt
+                      Text(
+                        wallpaper!.prompt,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+
+                      // Details row
+                      Row(
+                        children: [
+                          _buildDetailChip(
+                            wallpaper!.category,
+                            Icons.category,
+                          ),
+                          const SizedBox(width: 8),
+                          _buildDetailChip(
+                            wallpaper!.formattedStyle,
+                            Icons.palette,
+                          ),
+                          const SizedBox(width: 8),
+                          _buildDetailChip(
+                            wallpaper!.formattedQuality,
+                            Icons.high_quality,
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 12),
+
+                      // Size and date
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.calendar_today,
+                            size: 14,
+                            color: Colors.white.withOpacity(0.7),
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            _formatDate(wallpaper!.createdAt),
+                            style: TextStyle(
+                              color: Colors.white.withOpacity(0.7),
+                              fontSize: 12,
+                            ),
+                          ),
+                          const Spacer(),
+                          Text(
+                            wallpaper!.formattedSize,
+                            style: TextStyle(
+                              color: Colors.white.withOpacity(0.7),
+                              fontSize: 12,
+                            ),
+                          ),
+                        ],
+                      ),
                       const SizedBox(height: 16),
 
                       // Action buttons
@@ -93,30 +182,30 @@ class WallpaperDetailView extends StatelessWidget {
                         children: [
                           Expanded(
                             child: ElevatedButton.icon(
-                              onPressed: () => _downloadWallpaper(wallpaper),
-                              icon: const Icon(Icons.download),
-                              label: const Text('Download'),
+                              onPressed: _setAsWallpaper,
+                              icon: const Icon(Icons.wallpaper),
+                              label: const Text('Set as Wallpaper'),
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: Theme.of(context).primaryColor,
                                 foregroundColor: Colors.white,
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 12),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
                               ),
                             ),
                           ),
                           const SizedBox(width: 12),
-                          Expanded(
-                            child: ElevatedButton.icon(
-                              onPressed: () => _setAsWallpaper(wallpaper),
-                              icon: const Icon(Icons.wallpaper),
-                              label: const Text('Set as Wallpaper'),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.white.withOpacity(0.2),
-                                foregroundColor: Colors.white,
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 12),
+                          ElevatedButton(
+                            onPressed: _shareWallpaper,
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.white.withOpacity(0.2),
+                              foregroundColor: Colors.white,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
                               ),
+                              padding: const EdgeInsets.all(12),
                             ),
+                            child: const Icon(Icons.share),
                           ),
                         ],
                       ),
@@ -131,81 +220,88 @@ class WallpaperDetailView extends StatelessWidget {
     );
   }
 
-  Widget _buildActionButton({
-    required IconData icon,
-    required VoidCallback onTap,
-  }) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          color: Colors.black.withOpacity(0.5),
-          shape: BoxShape.circle,
+  Widget _buildImage() {
+    if (wallpaper!.hasLocalFile && fullImagePath != null) {
+      // Show local image
+      final file = File(fullImagePath!);
+      if (file.existsSync()) {
+        return InteractiveViewer(
+          child: Image.file(
+            file,
+            fit: BoxFit.contain,
+            width: double.infinity,
+            height: double.infinity,
+            errorBuilder: (context, error, stackTrace) {
+              return _buildNetworkImage();
+            },
+          ),
+        );
+      }
+    }
+
+    // Fallback to network image
+    return _buildNetworkImage();
+  }
+
+  Widget _buildNetworkImage() {
+    return InteractiveViewer(
+      child: CachedNetworkImage(
+        imageUrl: wallpaper!.url,
+        fit: BoxFit.contain,
+        width: double.infinity,
+        height: double.infinity,
+        placeholder: (context, url) => Container(
+          color: Colors.grey[900],
+          child: const Center(
+            child: CircularProgressIndicator(),
+          ),
         ),
-        child: Icon(
-          icon,
-          color: Colors.white,
-          size: 24,
+        errorWidget: (context, url, error) => Container(
+          color: Colors.grey[900],
+          child: const Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.error_outline,
+                  color: Colors.white,
+                  size: 48,
+                ),
+                SizedBox(height: 8),
+                Text(
+                  'Failed to load image',
+                  style: TextStyle(color: Colors.white),
+                ),
+              ],
+            ),
+          ),
         ),
       ),
     );
   }
 
-  Widget _buildWallpaperInfo(BuildContext context, WallpaperModel wallpaper) {
+  Widget _buildDetailChip(String text, IconData icon) {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: Colors.black.withOpacity(0.7),
-        borderRadius: BorderRadius.circular(16),
+        color: Colors.white.withOpacity(0.2),
+        borderRadius: BorderRadius.circular(12),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
         children: [
-          // Category
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-            decoration: BoxDecoration(
-              color: Theme.of(context).primaryColor,
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Text(
-              wallpaper.category,
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 12,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
+          Icon(
+            icon,
+            size: 14,
+            color: Colors.white,
           ),
-          const SizedBox(height: 12),
-
-          // Prompt
+          const SizedBox(width: 4),
           Text(
-            'Prompt:',
-            style: TextStyle(
-              color: Colors.white.withOpacity(0.7),
-              fontSize: 12,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            wallpaper.prompt,
+            text,
             style: const TextStyle(
               color: Colors.white,
-              fontSize: 14,
-              fontWeight: FontWeight.w400,
-            ),
-          ),
-          const SizedBox(height: 12),
-
-          // Created date
-          Text(
-            'Created: ${_formatDate(wallpaper.createdAt)}',
-            style: TextStyle(
-              color: Colors.white.withOpacity(0.5),
               fontSize: 12,
+              fontWeight: FontWeight.w500,
             ),
           ),
         ],
@@ -214,103 +310,202 @@ class WallpaperDetailView extends StatelessWidget {
   }
 
   String _formatDate(DateTime date) {
-    return '${date.day}/${date.month}/${date.year} at ${date.hour}:${date.minute.toString().padLeft(2, '0')}';
-  }
+    final now = DateTime.now();
+    final difference = now.difference(date);
 
-  Future<void> _shareWallpaper(WallpaperModel wallpaper) async {
-    try {
-      await Share.share(
-        'Check out this amazing AI-generated wallpaper!\n\nPrompt: ${wallpaper.prompt}\n\n${wallpaper.url}',
-        subject: 'AI Wallpaper - ${wallpaper.category}',
-      );
-    } catch (e) {
-      Get.snackbar(
-        'Share Failed',
-        'Could not share wallpaper: $e',
-        snackPosition: SnackPosition.BOTTOM,
-      );
+    if (difference.inDays > 0) {
+      return '${difference.inDays}d ago';
+    } else if (difference.inHours > 0) {
+      return '${difference.inHours}h ago';
+    } else if (difference.inMinutes > 0) {
+      return '${difference.inMinutes}m ago';
+    } else {
+      return 'Just now';
     }
   }
 
-  Future<void> _downloadWallpaper(WallpaperModel wallpaper) async {
-    try {
-      // Request storage permission
-      final permission = await Permission.storage.request();
-      if (!permission.isGranted) {
-        Get.snackbar(
-          'Permission Denied',
-          'Storage permission is required to download wallpapers',
-          snackPosition: SnackPosition.BOTTOM,
-        );
-        return;
-      }
-
-      Get.snackbar(
-        'Downloading',
-        'Downloading wallpaper...',
-        snackPosition: SnackPosition.BOTTOM,
-        duration: const Duration(seconds: 2),
-      );
-
-      // Download image
-      final dio = Dio();
-      final response = await dio.get(
-        wallpaper.url,
-        options: Options(responseType: ResponseType.bytes),
-      );
-
-      // Save to gallery
-      final result = await ImageGallerySaver.saveImage(
-        response.data,
-        name: 'wallpaper_${wallpaper.id}',
-        quality: 100,
-      );
-
-      if (result['isSuccess'] == true) {
-        Get.snackbar(
-          'Download Complete',
-          'Wallpaper saved to gallery',
-          snackPosition: SnackPosition.BOTTOM,
-        );
-      } else {
-        throw Exception('Failed to save image');
-      }
-    } catch (e) {
-      Get.snackbar(
-        'Download Failed',
-        'Could not download wallpaper: $e',
-        snackPosition: SnackPosition.BOTTOM,
-      );
-    }
+  void _toggleFavorite() {
+    final controller = Get.find<FavoritesController>();
+    controller.toggleFavorite(wallpaper!);
   }
 
-  Future<void> _setAsWallpaper(WallpaperModel wallpaper) async {
-    // Note: Setting wallpaper programmatically requires platform-specific code
-    // For now, we'll show a dialog with instructions
-    Get.defaultDialog(
-      title: 'Set as Wallpaper',
-      content: const Column(
-        children: [
-          Text(
-            'To set this as your wallpaper:',
-            style: TextStyle(fontWeight: FontWeight.bold),
+  void _setAsWallpaper() {
+    // TODO: Implement wallpaper setting functionality
+    Get.snackbar(
+      'Feature Coming Soon',
+      'Set as wallpaper functionality will be available soon',
+      snackPosition: SnackPosition.BOTTOM,
+    );
+  }
+
+  void _shareWallpaper() {
+    // TODO: Implement share functionality
+    Get.snackbar(
+      'Feature Coming Soon',
+      'Share functionality will be available soon',
+      snackPosition: SnackPosition.BOTTOM,
+    );
+  }
+
+  void _showActions() {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (context) => Container(
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+        ),
+        child: SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const SizedBox(height: 8),
+              Container(
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: Colors.grey[300],
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+              const SizedBox(height: 16),
+              ListTile(
+                leading: const Icon(Icons.copy),
+                title: const Text('Copy Prompt'),
+                onTap: () {
+                  Clipboard.setData(ClipboardData(text: wallpaper!.prompt));
+                  Navigator.pop(context);
+                  Get.snackbar(
+                    'Copied',
+                    'Prompt copied to clipboard',
+                    snackPosition: SnackPosition.BOTTOM,
+                  );
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.download),
+                title: const Text('Download Original'),
+                onTap: () {
+                  Navigator.pop(context);
+                  _downloadOriginal();
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.info_outline),
+                title: const Text('Image Info'),
+                onTap: () {
+                  Navigator.pop(context);
+                  _showImageInfo();
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.delete_outline),
+                title: const Text('Delete'),
+                textColor: Colors.red,
+                iconColor: Colors.red,
+                onTap: () {
+                  Navigator.pop(context);
+                  _confirmDelete();
+                },
+              ),
+              const SizedBox(height: 16),
+            ],
           ),
-          SizedBox(height: 12),
-          Text(
-            '1. Download the wallpaper\n'
-            '2. Go to Settings > Wallpaper\n'
-            '3. Select the downloaded image\n'
-            '4. Choose Lock Screen or Home Screen',
-            textAlign: TextAlign.left,
+        ),
+      ),
+    );
+  }
+
+  void _downloadOriginal() {
+    // TODO: Implement download functionality
+    Get.snackbar(
+      'Feature Coming Soon',
+      'Download functionality will be available soon',
+      snackPosition: SnackPosition.BOTTOM,
+    );
+  }
+
+  void _showImageInfo() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Image Information'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildInfoRow('ID', wallpaper!.id),
+            _buildInfoRow('Category', wallpaper!.category),
+            _buildInfoRow('Style', wallpaper!.formattedStyle),
+            _buildInfoRow('Quality', wallpaper!.formattedQuality),
+            _buildInfoRow('Size', wallpaper!.formattedSize),
+            _buildInfoRow('Created', _formatDate(wallpaper!.createdAt)),
+            _buildInfoRow('Local File', wallpaper!.hasLocalFile ? 'Yes' : 'No'),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Close'),
           ),
         ],
       ),
-      textConfirm: 'Download First',
-      textCancel: 'OK',
-      onConfirm: () {
-        Get.back();
-        _downloadWallpaper(wallpaper);
-      },
+    );
+  }
+
+  Widget _buildInfoRow(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            width: 80,
+            child: Text(
+              '$label:',
+              style: const TextStyle(fontWeight: FontWeight.w500),
+            ),
+          ),
+          Expanded(
+            child: Text(value),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _confirmDelete() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Delete Wallpaper'),
+        content: const Text(
+            'Are you sure you want to delete this wallpaper? This action cannot be undone.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+              _deleteWallpaper();
+            },
+            style: TextButton.styleFrom(foregroundColor: Colors.red),
+            child: const Text('Delete'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _deleteWallpaper() {
+    // TODO: Implement delete functionality
+    Get.snackbar(
+      'Feature Coming Soon',
+      'Delete functionality will be available soon',
+      snackPosition: SnackPosition.BOTTOM,
     );
   }
 }

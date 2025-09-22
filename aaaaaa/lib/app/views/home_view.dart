@@ -13,99 +13,96 @@ class HomeView extends GetView<HomeController> {
 
   @override
   Widget build(BuildContext context) {
-    return  Stack(
-        children: [
-          // Background gradient
-          Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [
-                  Theme.of(context).primaryColor.withOpacity(0.1),
-                  Theme.of(context).colorScheme.secondary.withOpacity(0.1),
+    return Stack(
+      children: [
+        // Background gradient
+        Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                Theme.of(context).primaryColor.withOpacity(0.1),
+                Theme.of(context).colorScheme.secondary.withOpacity(0.1),
+              ],
+            ),
+          ),
+        ),
+
+        // Main content
+        Scaffold(
+          appBar: AppBar(
+            actions: [
+              IconButton(
+                onPressed: () =>
+                    Get.find<NavigationController>().navigateToTab('Settings'),
+                icon: const Icon(Icons.settings),
+              ),
+            ],
+            title: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'AI Wallpaper',
+                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: Theme.of(context).primaryColor,
+                        ),
+                  ),
                 ],
               ),
             ),
           ),
+          body: Column(
+            children: [
+              // App Bar
 
-          // Main content
-          Scaffold(
-            appBar: AppBar(
-              actions: [
-                IconButton(
-                  onPressed: () => Get.toNamed('/settings'),
-                  icon: const Icon(Icons.settings),
-                ),
-              ],
-              title: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'AI Wallpaper',
-                      style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: Theme.of(context).primaryColor,
-                      ),
-                    ),
+              // Content
+              Expanded(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Welcome banner with inspiring image
+                      _buildWelcomeBanner(context),
+                      const SizedBox(height: 24),
 
-                  ],
-                ),
-              ),
-            ),
-            body: Column(
-              children: [
-                // App Bar
+                      // Inspirational quotes
+                      const InspirationalQuotes(),
+                      const SizedBox(height: 32),
 
+                      // Main action buttons
+                      _buildMainActions(context),
+                      const SizedBox(height: 32),
 
-                // Content
-                Expanded(
-                  child: SingleChildScrollView(
-                    padding: const EdgeInsets.all(16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // Welcome banner with inspiring image
-                        _buildWelcomeBanner(context),
-                        const SizedBox(height: 24),
+                      // Featured carousel
+                      const FeaturedCarousel(),
+                      const SizedBox(height: 32),
 
-                        // Inspirational quotes
-                        const InspirationalQuotes(),
-                        const SizedBox(height: 32),
+                      // Trending categories
+                      const TrendingCategories(),
+                      const SizedBox(height: 32),
 
-                        // Main action buttons
-                        _buildMainActions(context),
-                        const SizedBox(height: 32),
+                      // Categories preview
+                      _buildCategoriesPreview(context),
+                      const SizedBox(height: 32),
 
-                        // Featured carousel
-                        const FeaturedCarousel(),
-                        const SizedBox(height: 32),
-
-                        // Trending categories
-                        const TrendingCategories(),
-                        const SizedBox(height: 32),
-
-                        // Categories preview
-                        _buildCategoriesPreview(context),
-                        const SizedBox(height: 32),
-
-                        // Recent wallpapers
-                        _buildRecentSection(context),
-                        const SizedBox(height: 20),
-                      ],
-                    ),
+                      // Recent wallpapers
+                      _buildRecentSection(context),
+                      const SizedBox(height: 20),
+                    ],
                   ),
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
-        ],
-
+        ),
+      ],
     );
   }
-
 
   Widget _buildWelcomeBanner(BuildContext context) {
     return Container(
@@ -210,11 +207,23 @@ class HomeView extends GetView<HomeController> {
                     child: ListView(
                       scrollDirection: Axis.horizontal,
                       children: [
-                        _buildFeatureChip(Icons.palette, 'Portrait & Beauty'),
+                        _buildFeatureChip(
+                            Icons.palette,
+                            'Portrait & Beauty',
+                            () => Get.find<NavigationController>()
+                                .navigateToGeneration(category: 'Portrait')),
                         const SizedBox(width: 8),
-                        _buildFeatureChip(Icons.animation, 'Anime Style'),
+                        _buildFeatureChip(
+                            Icons.animation,
+                            'Anime Style',
+                            () => Get.find<NavigationController>()
+                                .navigateToGeneration(category: 'Anime')),
                         const SizedBox(width: 8),
-                        _buildFeatureChip(Icons.trending_up, 'Trending'),
+                        _buildFeatureChip(
+                            Icons.trending_up,
+                            'Trending',
+                            () => Get.find<NavigationController>()
+                                .navigateToGeneration()),
                       ],
                     ),
                   ),
@@ -227,27 +236,34 @@ class HomeView extends GetView<HomeController> {
     );
   }
 
-  Widget _buildFeatureChip(IconData icon, String label) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-      decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.2),
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, color: Colors.white, size: 16),
-          const SizedBox(width: 6),
-          Text(
-            label,
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 12,
-              fontWeight: FontWeight.w500,
-            ),
+  Widget _buildFeatureChip(IconData icon, String label, VoidCallback onTap) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        decoration: BoxDecoration(
+          color: Colors.white.withOpacity(0.2),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: Colors.white.withOpacity(0.3),
+            width: 1,
           ),
-        ],
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, color: Colors.white, size: 16),
+            const SizedBox(width: 6),
+            Text(
+              label,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 12,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -296,7 +312,8 @@ class HomeView extends GetView<HomeController> {
                 context,
                 icon: Icons.favorite,
                 label: 'Favorites',
-                onTap: () => Get.toNamed('/favorites'),
+                onTap: () =>
+                    Get.find<NavigationController>().navigateToTab('Favorites'),
               ),
             ),
             const SizedBox(width: 12),
@@ -305,7 +322,8 @@ class HomeView extends GetView<HomeController> {
                 context,
                 icon: Icons.settings,
                 label: 'Settings',
-                onTap: () => Get.toNamed('/settings'),
+                onTap: () =>
+                    Get.find<NavigationController>().navigateToTab('Settings'),
               ),
             ),
           ],
@@ -450,17 +468,36 @@ class HomeView extends GetView<HomeController> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                'Recent Creations',
-                style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
+              Row(
+                children: [
+                  Text(
+                    'Recent Creations',
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                  ),
+                  const SizedBox(width: 8),
+                  IconButton(
+                    onPressed: () {
+                      // Navigate to generation page to create new wallpaper
+                      Get.find<NavigationController>().navigateToGeneration();
+                    },
+                    icon: const Icon(Icons.add_circle_outline, size: 20),
+                    tooltip: 'Create New',
+                  ),
+                ],
               ),
-              if (controller.generatedWallpapers.length > 4)
-                TextButton(
-                  onPressed: () => Get.toNamed('/favorites'),
-                  child: const Text('View All'),
-                ),
+              Row(
+                children: [
+                  if (controller.generatedWallpapers.isNotEmpty)
+                    TextButton.icon(
+                      onPressed: () => Get.find<NavigationController>()
+                          .navigateToTab('Favorites'),
+                      icon: const Icon(Icons.favorite, size: 16),
+                      label: const Text('Favorites'),
+                    ),
+                ],
+              ),
             ],
           ),
           const SizedBox(height: 16),
