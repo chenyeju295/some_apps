@@ -11,6 +11,10 @@ class GeneratedImage {
   final ImageStyle style;
   final bool isFavorite;
   final int tokensUsed;
+  final String? title;
+  final String? description;
+  final String? knowledgeContent;
+  final List<String>? tags;
 
   const GeneratedImage({
     required this.id,
@@ -20,6 +24,10 @@ class GeneratedImage {
     required this.style,
     this.isFavorite = false,
     this.tokensUsed = 1,
+    this.title,
+    this.description,
+    this.knowledgeContent,
+    this.tags,
   });
 
   factory GeneratedImage.fromJson(Map<String, dynamic> json) =>
@@ -35,6 +43,10 @@ class GeneratedImage {
     ImageStyle? style,
     bool? isFavorite,
     int? tokensUsed,
+    String? title,
+    String? description,
+    String? knowledgeContent,
+    List<String>? tags,
   }) {
     return GeneratedImage(
       id: id ?? this.id,
@@ -44,6 +56,10 @@ class GeneratedImage {
       style: style ?? this.style,
       isFavorite: isFavorite ?? this.isFavorite,
       tokensUsed: tokensUsed ?? this.tokensUsed,
+      title: title ?? this.title,
+      description: description ?? this.description,
+      knowledgeContent: knowledgeContent ?? this.knowledgeContent,
+      tags: tags ?? this.tags,
     );
   }
 

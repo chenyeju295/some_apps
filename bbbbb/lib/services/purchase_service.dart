@@ -1,16 +1,15 @@
 import 'dart:async';
-import 'dart:io';
 import 'package:in_app_purchase/in_app_purchase.dart';
-import 'package:in_app_purchase_storekit/in_app_purchase_storekit.dart';
 
 class PurchaseService {
   static PurchaseService? _instance;
-  static PurchaseService get instance => _instance ??= PurchaseService._internal();
+  static PurchaseService get instance =>
+      _instance ??= PurchaseService._internal();
   PurchaseService._internal();
 
   final InAppPurchase _inAppPurchase = InAppPurchase.instance;
   late StreamSubscription<List<PurchaseDetails>> _subscription;
-  
+
   // Purchase state callbacks
   Function(String productId, int tokens)? onPurchaseSuccess;
   Function(String error)? onPurchaseError;
@@ -68,11 +67,7 @@ class PurchaseService {
         return false;
       }
 
-      if (Platform.isIOS) {
-        final InAppPurchaseStoreKitPlatformAddition iosAddition =
-            _inAppPurchase.getPlatformAddition<InAppPurchaseStoreKitPlatformAddition>();
-        await iosAddition.setDelegate(IOSPaymentQueueDelegate());
-      }
+      // iOS-specific configuration is handled automatically by the plugin
 
       _subscription = _inAppPurchase.purchaseStream.listen(
         _handlePurchaseUpdates,
@@ -119,16 +114,16 @@ class PurchaseService {
     }
 
     try {
-      final ProductDetails? product = _products
-          .where((p) => p.id == productId)
-          .firstOrNull;
+      final ProductDetails? product =
+          _products.where((p) => p.id == productId).firstOrNull;
 
       if (product == null) {
         print('Product not found: $productId');
         return false;
       }
 
-      final PurchaseParam purchaseParam = PurchaseParam(productDetails: product);
+      final PurchaseParam purchaseParam =
+          PurchaseParam(productDetails: product);
       final bool success = await _inAppPurchase.buyConsumable(
         purchaseParam: purchaseParam,
       );
@@ -170,7 +165,7 @@ class PurchaseService {
 
   void _handleSuccessfulPurchase(PurchaseDetails purchaseDetails) {
     print('Purchase successful: ${purchaseDetails.productID}');
-    
+
     final TokenPackage? package = getTokenPackage(purchaseDetails.productID);
     if (package != null) {
       onPurchaseSuccess?.call(purchaseDetails.productID, package.tokens);
@@ -179,9 +174,7 @@ class PurchaseService {
 
   void _handlePurchaseError(PurchaseDetails purchaseDetails) {
     print('Purchase error: ${purchaseDetails.error}');
-    onPurchaseError?.call(
-      purchaseDetails.error?.message ?? 'Purchase failed'
-    );
+    onPurchaseError?.call(purchaseDetails.error?.message ?? 'Purchase failed');
   }
 
   void _handleRestoredPurchase(PurchaseDetails purchaseDetails) {
@@ -221,7 +214,8 @@ class TokenPackage {
   });
 
   double get tokensPerDollar {
-    final double priceValue = double.tryParse(price.replaceAll('\$', '')) ?? 0.0;
+    final double priceValue =
+        double.tryParse(price.replaceAll('\$', '')) ?? 0.0;
     if (priceValue == 0.0) return 0.0;
     return tokens / priceValue;
   }
@@ -233,20 +227,5 @@ class TokenPackage {
       return 'BEST VALUE';
     }
     return '';
-  }
-}
-
-class IOSPaymentQueueDelegate implements SKPaymentQueueDelegateWrapper {
-  @override
-  bool shouldContinueTransaction(
-    SKPaymentTransactionWrapper transaction,
-    SKStorefrontWrapper storefront,
-  ) {
-    return true;
-  }
-
-  @override
-  bool shouldShowPriceConsent() {
-    return false;
   }
 }

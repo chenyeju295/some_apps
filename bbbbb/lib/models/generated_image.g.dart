@@ -15,6 +15,10 @@ GeneratedImage _$GeneratedImageFromJson(Map<String, dynamic> json) =>
       style: $enumDecode(_$ImageStyleEnumMap, json['style']),
       isFavorite: json['isFavorite'] as bool? ?? false,
       tokensUsed: (json['tokensUsed'] as num?)?.toInt() ?? 1,
+      title: json['title'] as String?,
+      description: json['description'] as String?,
+      knowledgeContent: json['knowledgeContent'] as String?,
+      tags: (json['tags'] as List<dynamic>?)?.map((e) => e as String).toList(),
     );
 
 Map<String, dynamic> _$GeneratedImageToJson(GeneratedImage instance) =>
@@ -26,6 +30,10 @@ Map<String, dynamic> _$GeneratedImageToJson(GeneratedImage instance) =>
       'style': _$ImageStyleEnumMap[instance.style]!,
       'isFavorite': instance.isFavorite,
       'tokensUsed': instance.tokensUsed,
+      'title': instance.title,
+      'description': instance.description,
+      'knowledgeContent': instance.knowledgeContent,
+      'tags': instance.tags,
     };
 
 const _$ImageStyleEnumMap = {

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class AppTheme {
-  // Ocean-inspired color palette
+  // Enhanced ocean-inspired color palette
   static const Color oceanBlue = Color(0xFF0077BE);
   static const Color deepSeaGreen = Color(0xFF1B4D3E);
   static const Color coral = Color(0xFFFF6B6B);
@@ -11,24 +11,70 @@ class AppTheme {
   static const Color tropicalTeal = Color(0xFF00ACC1);
   static const Color sandyBeige = Color(0xFFF5F5DC);
 
-  // Gradient definitions
-  static const LinearGradient oceanGradient = LinearGradient(
+  // New gradient colors
+  static const Color shallowWater = Color(0xFF87CEEB);
+  static const Color mediumDepth = Color(0xFF4682B4);
+  static const Color deepOcean = Color(0xFF191970);
+  static const Color sunlightYellow = Color(0xFFFFE135);
+  static const Color aquaMarine = Color(0xFF7FFFD4);
+  static const Color seahorse = Color(0xFF20B2AA);
+  static const Color kelp = Color(0xFF006A4E);
+  static const Color pearl = Color(0xFFF8F8FF);
+
+  // Enhanced gradient definitions
+  static const LinearGradient oceanDepthGradient = LinearGradient(
     begin: Alignment.topCenter,
     end: Alignment.bottomCenter,
     colors: [
-      Color(0xFF4FC3F7), // Light blue
-      Color(0xFF0077BE), // Ocean blue
-      Color(0xFF1B4D3E), // Deep sea green
+      shallowWater,
+      mediumDepth,
+      oceanBlue,
+      deepOcean,
     ],
+    stops: [0.0, 0.3, 0.7, 1.0],
+  );
+
+  static const LinearGradient sunlightGradient = LinearGradient(
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+    colors: [
+      sunlightYellow,
+      aquaMarine,
+      seaFoam,
+    ],
+    stops: [0.0, 0.5, 1.0],
+  );
+
+  static const LinearGradient coralReefGradient = LinearGradient(
+    begin: Alignment.topCenter,
+    end: Alignment.bottomCenter,
+    colors: [
+      lightAqua,
+      tropicalTeal,
+      coral,
+    ],
+    stops: [0.0, 0.6, 1.0],
   );
 
   static const LinearGradient surfaceGradient = LinearGradient(
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
     colors: [
-      Color(0xFFE3F2FD), // Light aqua
-      Color(0xFFBBDEFB), // Lighter blue
+      pearl,
+      lightAqua,
+      seaFoam,
     ],
+  );
+
+  static const RadialGradient bubbleGradient = RadialGradient(
+    center: Alignment.topLeft,
+    radius: 1.5,
+    colors: [
+      Color(0xFFFFFFFF),
+      Color(0xFFE3F2FD),
+      Color(0xFF4FC3F7),
+    ],
+    stops: [0.0, 0.4, 1.0],
   );
 
   static ThemeData get lightTheme {
@@ -44,7 +90,6 @@ class AppTheme {
         background: lightAqua,
         error: coral,
       ),
-      
       appBarTheme: const AppBarTheme(
         backgroundColor: oceanBlue,
         foregroundColor: Colors.white,
@@ -56,7 +101,6 @@ class AppTheme {
           color: Colors.white,
         ),
       ),
-      
       navigationBarTheme: NavigationBarThemeData(
         backgroundColor: Colors.white,
         indicatorColor: oceanBlue.withOpacity(0.2),
@@ -77,15 +121,13 @@ class AppTheme {
           },
         ),
       ),
-      
-      cardTheme: CardTheme(
+      cardTheme: CardThemeData(
         elevation: 2,
         shadowColor: Colors.black.withOpacity(0.1),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
         ),
       ),
-      
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
           backgroundColor: oceanBlue,
@@ -97,14 +139,12 @@ class AppTheme {
           elevation: 2,
         ),
       ),
-      
       textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(
           foregroundColor: oceanBlue,
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         ),
       ),
-      
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
         fillColor: Colors.grey[50],
@@ -120,9 +160,9 @@ class AppTheme {
           borderRadius: BorderRadius.circular(8),
           borderSide: const BorderSide(color: oceanBlue, width: 2),
         ),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        contentPadding:
+            const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       ),
-      
       chipTheme: ChipThemeData(
         backgroundColor: lightAqua,
         selectedColor: oceanBlue,
@@ -131,13 +171,11 @@ class AppTheme {
           borderRadius: BorderRadius.circular(16),
         ),
       ),
-      
       dividerTheme: DividerThemeData(
         color: Colors.grey[300],
         thickness: 1,
         space: 1,
       ),
-      
       textTheme: const TextTheme(
         headlineLarge: TextStyle(
           fontSize: 32,
@@ -193,7 +231,6 @@ class AppTheme {
         background: const Color(0xFF121212),
         error: coral,
       ),
-      
       appBarTheme: const AppBarTheme(
         backgroundColor: Color(0xFF1E1E1E),
         foregroundColor: Colors.white,
@@ -205,7 +242,6 @@ class AppTheme {
           color: Colors.white,
         ),
       ),
-      
       navigationBarTheme: NavigationBarThemeData(
         backgroundColor: const Color(0xFF1E1E1E),
         indicatorColor: seaFoam.withOpacity(0.3),
@@ -226,8 +262,7 @@ class AppTheme {
           },
         ),
       ),
-      
-      cardTheme: CardTheme(
+      cardTheme: CardThemeData(
         elevation: 4,
         shadowColor: Colors.black.withOpacity(0.3),
         color: const Color(0xFF2D2D2D),
@@ -235,7 +270,6 @@ class AppTheme {
           borderRadius: BorderRadius.circular(12),
         ),
       ),
-      
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
           backgroundColor: seaFoam,
@@ -247,14 +281,12 @@ class AppTheme {
           elevation: 2,
         ),
       ),
-      
       textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(
           foregroundColor: seaFoam,
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         ),
       ),
-      
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
         fillColor: const Color(0xFF2D2D2D),
@@ -270,9 +302,9 @@ class AppTheme {
           borderRadius: BorderRadius.circular(8),
           borderSide: const BorderSide(color: seaFoam, width: 2),
         ),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        contentPadding:
+            const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       ),
-      
       chipTheme: ChipThemeData(
         backgroundColor: const Color(0xFF2D2D2D),
         selectedColor: seaFoam,
@@ -281,13 +313,11 @@ class AppTheme {
           borderRadius: BorderRadius.circular(16),
         ),
       ),
-      
       dividerTheme: const DividerThemeData(
         color: Color(0xFF404040),
         thickness: 1,
         space: 1,
       ),
-      
       textTheme: const TextTheme(
         headlineLarge: TextStyle(
           fontSize: 32,
@@ -332,54 +362,151 @@ class AppTheme {
 
   // Custom button styles
   static ButtonStyle get primaryButtonStyle => ElevatedButton.styleFrom(
-    backgroundColor: oceanBlue,
-    foregroundColor: Colors.white,
-    padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
-    shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.circular(12),
-    ),
-    elevation: 3,
-  );
+        backgroundColor: oceanBlue,
+        foregroundColor: Colors.white,
+        padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+        elevation: 3,
+      );
 
   static ButtonStyle get secondaryButtonStyle => OutlinedButton.styleFrom(
-    foregroundColor: oceanBlue,
-    side: const BorderSide(color: oceanBlue, width: 2),
-    padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
-    shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.circular(12),
-    ),
-  );
+        foregroundColor: oceanBlue,
+        side: const BorderSide(color: oceanBlue, width: 2),
+        padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+      );
 
-  // Custom container decorations
+  // Enhanced container decorations with animations in mind
+  static BoxDecoration get oceanDepthDecoration => const BoxDecoration(
+        gradient: oceanDepthGradient,
+      );
+
+  // Legacy support - keeping old names for compatibility
   static BoxDecoration get oceanGradientDecoration => const BoxDecoration(
-    gradient: oceanGradient,
-  );
+        gradient: oceanDepthGradient,
+      );
+
+  static LinearGradient get oceanGradient => oceanDepthGradient;
 
   static BoxDecoration get cardDecoration => BoxDecoration(
-    color: Colors.white,
-    borderRadius: BorderRadius.circular(12),
-    boxShadow: [
-      BoxShadow(
-        color: Colors.black.withOpacity(0.08),
-        blurRadius: 10,
-        offset: const Offset(0, 4),
-      ),
-    ],
-  );
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.08),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      );
+
+  static BoxDecoration get sunlightDecoration => const BoxDecoration(
+        gradient: sunlightGradient,
+      );
+
+  static BoxDecoration get coralReefDecoration => const BoxDecoration(
+        gradient: coralReefGradient,
+      );
+
+  static BoxDecoration get bubbleDecoration => const BoxDecoration(
+        gradient: bubbleGradient,
+        shape: BoxShape.circle,
+      );
+
+  static BoxDecoration get animatedCardDecoration => BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: oceanBlue.withOpacity(0.1),
+            blurRadius: 20,
+            offset: const Offset(0, 8),
+            spreadRadius: 2,
+          ),
+          BoxShadow(
+            color: seaFoam.withOpacity(0.08),
+            blurRadius: 40,
+            offset: const Offset(0, 16),
+          ),
+        ],
+      );
 
   static BoxDecoration get glassDecoration => BoxDecoration(
-    color: Colors.white.withOpacity(0.9),
-    borderRadius: BorderRadius.circular(16),
-    border: Border.all(
-      color: Colors.white.withOpacity(0.2),
-      width: 1,
-    ),
-    boxShadow: [
-      BoxShadow(
-        color: Colors.black.withOpacity(0.1),
-        blurRadius: 20,
-        offset: const Offset(0, 8),
-      ),
-    ],
-  );
+        color: Colors.white.withOpacity(0.85),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: seaFoam.withOpacity(0.3),
+          width: 1.5,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: oceanBlue.withOpacity(0.1),
+            blurRadius: 25,
+            offset: const Offset(0, 10),
+          ),
+        ],
+      );
+
+  static BoxDecoration get wavyBottomDecoration => BoxDecoration(
+        gradient: const LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [
+            Colors.transparent,
+            lightAqua,
+            seaFoam,
+          ],
+        ),
+        borderRadius: const BorderRadius.only(
+          bottomLeft: Radius.elliptical(50, 20),
+          bottomRight: Radius.elliptical(50, 20),
+        ),
+      );
+
+  // Animation durations and curves
+  static const Duration fastAnimation = Duration(milliseconds: 200);
+  static const Duration normalAnimation = Duration(milliseconds: 400);
+  static const Duration slowAnimation = Duration(milliseconds: 800);
+  static const Duration waveAnimation = Duration(milliseconds: 2000);
+
+  static const Curve defaultCurve = Curves.easeInOut;
+  static const Curve waveCurve = Curves.easeInOutSine;
+  static const Curve bubbleCurve = Curves.elasticOut;
+  static const Curve fadeCurve = Curves.easeIn;
+
+  // Special effects
+  static List<BoxShadow> get floatingShadow => [
+        BoxShadow(
+          color: oceanBlue.withOpacity(0.15),
+          blurRadius: 30,
+          offset: const Offset(0, 15),
+          spreadRadius: 5,
+        ),
+        BoxShadow(
+          color: seaFoam.withOpacity(0.1),
+          blurRadius: 50,
+          offset: const Offset(0, 25),
+        ),
+      ];
+
+  static List<BoxShadow> get pulsingGlow => [
+        BoxShadow(
+          color: aquaMarine.withOpacity(0.4),
+          blurRadius: 15,
+          spreadRadius: 2,
+        ),
+        BoxShadow(
+          color: seaFoam.withOpacity(0.3),
+          blurRadius: 30,
+          spreadRadius: 5,
+        ),
+      ];
+
+  // Shimmer colors for loading states
+  static Color get shimmerBaseColor => lightAqua.withOpacity(0.3);
+  static Color get shimmerHighlightColor => pearl.withOpacity(0.8);
 }

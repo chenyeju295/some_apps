@@ -19,14 +19,14 @@ class ContentProvider extends ChangeNotifier {
   String get searchQuery => _searchQuery;
 
   List<String> get categories => [
-    'All',
-    ...DivingCategory.values.map((c) => c.displayName),
-  ];
+        'All',
+        ...DivingCategory.values.map((c) => c.displayName),
+      ];
 
   List<String> get difficultyLevels => [
-    'All',
-    ...DifficultyLevel.values.map((d) => d.displayName),
-  ];
+        'All',
+        ...DifficultyLevel.values.map((d) => d.displayName),
+      ];
 
   Future<void> loadContent() async {
     _setLoading(true);
@@ -86,7 +86,9 @@ class ContentProvider extends ChangeNotifier {
 
   List<DivingContent> getContentByCategory(String category) {
     if (category == 'All') return _allContent;
-    return _allContent.where((content) => content.category == category).toList();
+    return _allContent
+        .where((content) => content.category == category)
+        .toList();
   }
 
   List<DivingContent> getContentByIds(List<String> ids) {
@@ -98,12 +100,16 @@ class ContentProvider extends ChangeNotifier {
 
     // Apply category filter
     if (_selectedCategory != 'All') {
-      filtered = filtered.where((content) => content.category == _selectedCategory).toList();
+      filtered = filtered
+          .where((content) => content.category == _selectedCategory)
+          .toList();
     }
 
     // Apply difficulty filter
     if (_selectedDifficulty != 'All') {
-      filtered = filtered.where((content) => content.difficulty == _selectedDifficulty).toList();
+      filtered = filtered
+          .where((content) => content.difficulty == _selectedDifficulty)
+          .toList();
     }
 
     // Apply search filter
@@ -111,8 +117,8 @@ class ContentProvider extends ChangeNotifier {
       final String query = _searchQuery.toLowerCase();
       filtered = filtered.where((content) {
         return content.title.toLowerCase().contains(query) ||
-               content.content.toLowerCase().contains(query) ||
-               content.tags.any((tag) => tag.toLowerCase().contains(query));
+            content.content.toLowerCase().contains(query) ||
+            content.tags.any((tag) => tag.toLowerCase().contains(query));
       }).toList();
     }
 
@@ -585,7 +591,7 @@ Master buoyancy control and transform your diving experience. It's the foundatio
       DivingContent(
         id: 'cert_001',
         title: 'Open Water Diver Certification Guide',
-        content: '''# Open Water Diver Certification Guide
+        content: r'''# Open Water Diver Certification Guide
 
 The Open Water Diver certification is your first step into the underwater world. This certification allows you to dive with a certified buddy to a maximum depth of 18 meters (60 feet).
 
@@ -923,6 +929,1691 @@ Each destination offers its own magic. Choose based on your certification level,
         imageUrl: 'https://example.com/diving_destinations.jpg',
         readTimeMinutes: 20,
         createdAt: DateTime.now().subtract(const Duration(days: 7)),
+      ),
+
+      // Female Diving Inspiration Content
+      DivingContent(
+        id: 'inspiration_001',
+        title: 'Women in Diving: Breaking Barriers Underwater',
+        content: '''# Women in Diving: Breaking Barriers Underwater
+
+## The Rise of Female Divers
+
+The diving community has seen a remarkable increase in female participation over the past decade. Women are not only joining recreational diving but also excelling in professional diving careers, underwater photography, marine conservation, and dive instruction.
+
+## Breaking Stereotypes
+
+### Physical Capabilities
+Contrary to outdated beliefs:
+- **Air consumption**: Women often have better air consumption rates due to smaller lung capacity and calmer diving approach
+- **Flexibility**: Generally better flexibility aids in equipment handling and underwater maneuvering
+- **Attention to detail**: Enhanced focus on safety protocols and dive planning
+
+### Leadership in Diving
+Women are leading in various diving fields:
+- **Marine Biology**: Dr. Sylvia Earle, renowned oceanographer
+- **Technical Diving**: Jill Heinerth, cave diving pioneer
+- **Underwater Photography**: Many award-winning female photographers
+- **Dive Instruction**: High percentage of skilled female instructors
+
+## Inspiring Female Diving Stories
+
+### Professional Achievements
+- **Commercial diving**: Women working in offshore construction
+- **Scientific diving**: Research in marine biology and oceanography
+- **Military diving**: Naval diving specialists
+- **Rescue operations**: Professional dive rescue teams
+
+### Adventure Diving
+- **Deep diving records**: Women setting depth records
+- **Cave exploration**: Leading underwater cave expeditions
+- **Wreck diving**: Historical shipwreck documentation
+- **Arctic diving**: Extreme cold water exploration
+
+## Getting Started as a Female Diver
+
+### Choosing Equipment
+**Wetsuit considerations**:
+- Proper fit is crucial for thermal protection
+- Women-specific designs available
+- Size charts may differ from men's
+
+**BCD selection**:
+- Women-specific models offer better fit
+- Shorter torso designs available
+- Integrated weight systems preferred
+
+### Training Tips
+1. **Find supportive instructors** who encourage confidence
+2. **Practice in shallow water** to build comfort
+3. **Join women's diving groups** for mentorship
+4. **Set personal goals** rather than comparing to others
+
+## Safety Considerations
+
+### Pregnancy and Diving
+- **Avoid diving during pregnancy** due to potential risks
+- **Plan for family** considerations in diving career
+- **Consult medical professionals** for guidance
+
+### Menstruation and Diving
+- **No medical contraindications** for diving during menstruation
+- **Use appropriate protection** for comfort
+- **Shark myths debunked** - no increased risk
+
+## Building Confidence Underwater
+
+### Mental Preparation
+- **Visualization techniques** for dive scenarios
+- **Breathing exercises** for relaxation
+- **Positive self-talk** during challenging situations
+
+### Skill Development
+- **Buoyancy mastery** builds overall confidence
+- **Equipment familiarity** reduces anxiety
+- **Emergency training** increases preparedness
+
+## Female Diving Communities
+
+### Online Groups
+- Women's diving forums and social media groups
+- Mentorship programs for new divers
+- Equipment reviews and recommendations
+
+### Local Clubs
+- Women-only diving events
+- Skills workshops and training
+- Adventure trip planning
+
+## Career Opportunities
+
+### Professional Paths
+- **Dive Instructor**: Teaching others to dive
+- **Underwater Photographer**: Capturing marine life
+- **Marine Biologist**: Research and conservation
+- **Technical Diver**: Advanced diving operations
+
+### Business Opportunities
+- **Dive shop ownership**
+- **Eco-tourism operations**
+- **Equipment design and testing**
+- **Content creation and blogging**
+
+## Inspiring the Next Generation
+
+### Youth Programs
+- Encouraging young girls to try diving
+- School presentation programs
+- Junior diver certification courses
+
+### Representation Matters
+- Visibility of female role models
+- Media representation in diving
+- Success stories and achievements
+
+Women continue to push boundaries in the diving world, proving that the ocean welcomes all who approach it with respect, preparation, and passion. Whether you're interested in recreational diving, professional opportunities, or underwater adventures, the diving community celebrates diversity and encourages everyone to explore the underwater world.''',
+        category: 'Certification',
+        difficulty: 'Beginner',
+        tags: ['women', 'inspiration', 'diving careers', 'female divers'],
+        imageUrl: 'assets/images/female_diver_1.png',
+        readTimeMinutes: 12,
+        createdAt: DateTime.now().subtract(const Duration(hours: 2)),
+      ),
+
+      DivingContent(
+        id: 'techniques_002',
+        title: 'Underwater Photography for Beginners',
+        content: '''# Underwater Photography for Beginners
+
+## Getting Started with Underwater Photography
+
+Underwater photography combines the excitement of diving with the creativity of photography. It's a rewarding way to capture and share the beauty of the marine world.
+
+## Essential Equipment
+
+### Camera Options
+**Entry Level**:
+- **GoPro cameras**: Compact, durable, good for beginners
+- **Waterproof compact cameras**: Easy to use, affordable
+- **Smartphone housings**: Use your existing phone underwater
+
+**Advanced Options**:
+- **Mirrorless cameras**: Better image quality, more control
+- **DSLR cameras**: Professional results, extensive lens options
+- **Dedicated underwater cameras**: Purpose-built for diving
+
+### Housing and Protection
+- **Waterproof housing**: Essential for any camera
+- **O-ring maintenance**: Critical for preventing leaks
+- **Pressure testing**: Always test before diving
+- **Desiccant packets**: Prevent condensation inside housing
+
+### Lighting Equipment
+**Why lighting matters**:
+- Water absorbs red light first
+- Colors fade with depth
+- Artificial light restores true colors
+
+**Lighting options**:
+- **Strobes**: Powerful flash for still photography
+- **Video lights**: Continuous lighting for video
+- **Focus lights**: Help camera autofocus in dark conditions
+
+## Basic Techniques
+
+### Shooting Fundamentals
+**Get close**:
+- Water reduces contrast and sharpness
+- Fill the frame with your subject
+- Minimize water between camera and subject
+
+**Shoot upward**:
+- Use the surface as a bright background
+- Creates dramatic silhouettes
+- Better separation from the bottom
+
+**Mind your buoyancy**:
+- Perfect buoyancy control essential
+- Avoid stirring up sediment
+- Don't damage coral or marine life
+
+### Composition Rules
+**Rule of thirds**:
+- Place subjects on intersection points
+- Creates more dynamic images
+- Avoid centering everything
+
+**Leading lines**:
+- Use coral formations or marine life
+- Guide viewer's eye through image
+- Create depth and movement
+
+**Patterns and textures**:
+- Look for repeating elements
+- Close-up details of marine life
+- Abstract patterns in coral or sand
+
+## Subject Selection
+
+### Marine Life Photography
+**Fish photography**:
+- Move slowly to avoid scaring subjects
+- Anticipate behavior and movement
+- Use burst mode for action shots
+
+**Macro photography**:
+- Small subjects like nudibranchs
+- Requires special close-focusing lenses
+- Extremely steady hands needed
+
+**Wide-angle scenes**:
+- Capture entire reef systems
+- Include divers for scale
+- Show relationship between elements
+
+### Portrait Photography Underwater
+**Diver portraits**:
+- Position subject with good background
+- Use strobes to light the diver's face
+- Capture emotion and experience
+
+**Model positioning**:
+- Natural, relaxed poses work best
+- Avoid forced or uncomfortable positions
+- Show interaction with marine environment
+
+## Technical Settings
+
+### Camera Settings
+**Shooting mode**:
+- Start with auto modes while learning
+- Progress to manual control gradually
+- Understand exposure triangle underwater
+
+**White balance**:
+- Custom white balance for depth
+- Auto white balance often insufficient
+- Manual adjustment for best colors
+
+**ISO settings**:
+- Keep as low as possible for quality
+- Higher ISO for darker conditions
+- Balance noise vs. image brightness
+
+### Strobe Techniques
+**TTL vs Manual**:
+- TTL (Through The Lens) for beginners
+- Manual control for consistent results
+- Learn to balance ambient and strobe light
+
+**Strobe positioning**:
+- Avoid straight-on lighting
+- Angle strobes to prevent backscatter
+- Multiple strobes for even lighting
+
+## Common Challenges
+
+### Backscatter
+**What causes it**:
+- Particles in water reflecting light back
+- Using strobes too close to camera
+- Stirred up sediment from poor buoyancy
+
+**How to avoid**:
+- Position strobes away from camera
+- Shoot in clear water when possible
+- Maintain excellent buoyancy control
+
+### Color Loss
+**Understanding the problem**:
+- Red light disappears first underwater
+- Blues and greens dominate deeper
+- Artificial light needed to restore colors
+
+**Solutions**:
+- Use strobes or video lights
+- Shoot RAW format for post-processing
+- Custom white balance settings
+
+### Focus Issues
+**Low light challenges**:
+- Autofocus struggles in low light
+- Use focus lights to assist camera
+- Manual focus for macro subjects
+
+**Moving subjects**:
+- Continuous autofocus modes
+- Anticipate subject movement
+- Pre-focus on expected position
+
+## Post-Processing Tips
+
+### Basic Adjustments
+- **Exposure correction**: Brighten or darken images
+- **Color balance**: Restore natural colors
+- **Contrast enhancement**: Make images pop
+- **Sharpening**: Compensate for water softening
+
+### Advanced Techniques
+- **Selective color adjustments**: Enhance specific colors
+- **Noise reduction**: Clean up high ISO images
+- **Graduated filters**: Balance exposure differences
+- **Creative effects**: Artistic interpretations
+
+## Building Your Skills
+
+### Practice Recommendations
+1. **Start shallow**: Learn basics in good visibility
+2. **Master buoyancy first**: Essential for good photos
+3. **Study marine behavior**: Predict and capture action
+4. **Shoot regularly**: Consistent practice improves skills
+
+### Learning Resources
+- **Underwater photography courses**
+- **Online tutorials and communities**
+- **Photography workshops on dive trips**
+- **Local dive club photography groups**
+
+## Sharing Your Work
+
+### Social Media
+- **Instagram**: Use relevant hashtags
+- **Facebook groups**: Join underwater photography communities
+- **Photography websites**: Display your portfolio
+
+### Competitions
+- **Local dive club contests**
+- **International underwater photography competitions**
+- **Magazine submissions**
+- **Online photography challenges**
+
+Underwater photography is a journey of continuous learning and discovery. Every dive offers new opportunities to capture the magic of the underwater world. Start with basic equipment and techniques, then gradually expand your skills and gear as your passion grows.''',
+        category: 'Techniques',
+        difficulty: 'Intermediate',
+        tags: ['photography', 'underwater', 'techniques', 'equipment'],
+        imageUrl: 'assets/images/female_diver_2.png',
+        readTimeMinutes: 15,
+        createdAt: DateTime.now().subtract(const Duration(hours: 4)),
+      ),
+
+      DivingContent(
+        id: 'marine_002',
+        title: 'Sea Turtle Conservation and Diving Ethics',
+        content: '''# Sea Turtle Conservation and Diving Ethics
+
+## The Magic of Sea Turtle Encounters
+
+Swimming alongside sea turtles is often described as one of the most magical experiences in diving. These ancient mariners have been roaming our oceans for over 100 million years, making them true survivors of the marine world.
+
+## Sea Turtle Species
+
+### Common Species Divers Encounter
+
+**Green Sea Turtle**:
+- **Size**: Up to 1.5 meters, 200+ kg
+- **Diet**: Primarily seagrass and algae (adults)
+- **Habitat**: Coastal areas, seagrass beds
+- **Identification**: Heart-shaped shell, single pair of scales between eyes
+
+**Hawksbill Turtle**:
+- **Size**: Up to 1 meter, 80 kg
+- **Diet**: Sponges, jellyfish, sea anemones
+- **Habitat**: Coral reefs and rocky areas
+- **Identification**: Overlapping shell plates, hawk-like beak
+
+**Loggerhead Turtle**:
+- **Size**: Up to 1.2 meters, 180 kg
+- **Diet**: Jellyfish, crabs, fish, mollusks
+- **Habitat**: Open ocean and coastal areas
+- **Identification**: Large head, reddish-brown shell
+
+**Olive Ridley**:
+- **Size**: Up to 75 cm, 45 kg
+- **Diet**: Jellyfish, crabs, fish, algae
+- **Habitat**: Open ocean, coastal waters
+- **Identification**: Olive-colored heart-shaped shell
+
+## Life Cycle and Behavior
+
+### Nesting Behavior
+**Beach selection**:
+- Return to natal beaches to nest
+- Prefer dark, quiet beaches
+- Temperature determines gender of hatchlings
+
+**Nesting process**:
+- Female comes ashore at night
+- Digs nest 50-60 cm deep
+- Lays 50-200 eggs depending on species
+- Covers nest and returns to sea
+
+### Migration Patterns
+- **Incredible distances**: Some travel thousands of kilometers
+- **Navigation**: Use magnetic fields and ocean currents
+- **Feeding grounds**: Travel between nesting and feeding areas
+- **Generational memory**: Pass routes to offspring
+
+## Conservation Challenges
+
+### Major Threats
+**Plastic pollution**:
+- Mistake plastic bags for jellyfish
+- Ingestion causes internal injuries
+- Microplastics in food chain
+
+**Fishing activities**:
+- Bycatch in fishing nets
+- Longline fishing hooks
+- Entanglement in fishing gear
+
+**Coastal development**:
+- Loss of nesting beaches
+- Light pollution disrupts nesting
+- Increased human activity
+
+**Climate change**:
+- Rising sea levels threaten nesting sites
+- Temperature changes affect gender ratios
+- Changing ocean currents disrupt food sources
+
+### Population Status
+- **6 of 7 species** listed as threatened or endangered
+- **Dramatic population declines** over past decades
+- **Some recovery** where protection measures implemented
+- **Critical need** for continued conservation efforts
+
+## Diving Ethics with Sea Turtles
+
+### Responsible Observation
+**Maintain distance**:
+- Stay at least 3 meters away
+- Never touch or ride turtles
+- Avoid blocking their path to surface
+
+**Minimize disturbance**:
+- Move slowly and calmly
+- Avoid sudden movements
+- Don't use flash photography excessively
+
+**Respect their space**:
+- Let them approach you if curious
+- Don't corner them against reefs
+- Allow clear escape routes
+
+### Photography Ethics
+**Responsible photography**:
+- Use natural light when possible
+- Limit flash photography
+- Don't pursue turtles for photos
+- Respect their natural behavior
+
+**Social media responsibility**:
+- Don't reveal specific locations
+- Include conservation messages
+- Promote responsible diving practices
+- Educate followers about threats
+
+## How Divers Can Help
+
+### Direct Conservation Actions
+**Beach cleanups**:
+- Remove plastic and debris
+- Participate in organized cleanups
+- Adopt-a-beach programs
+
+**Citizen science**:
+- Report turtle sightings
+- Participate in research projects
+- Photo-identification contributions
+- Nesting surveys
+
+**Support organizations**:
+- Donate to turtle conservation groups
+- Volunteer for research projects
+- Adopt a turtle programs
+- Educational outreach
+
+### Sustainable Tourism
+**Choose responsible operators**:
+- Support eco-certified dive operators
+- Operators with conservation programs
+- Local community involvement
+- Educational briefings about marine life
+
+**Reduce your footprint**:
+- Use reef-safe sunscreen
+- Minimize single-use plastics
+- Choose sustainable accommodations
+- Support local conservation efforts
+
+## Conservation Success Stories
+
+### Recovery Examples
+**Kemp's Ridley in Mexico**:
+- Coordinated international effort
+- Nesting beach protection
+- Fishing industry cooperation
+- Population slowly recovering
+
+**Green turtles in Hawaii**:
+- Strong legal protection
+- Public education campaigns
+- Habitat restoration
+- Significant population increase
+
+### Research Breakthroughs
+**Satellite tracking**:
+- Understanding migration patterns
+- Identifying critical habitats
+- Informing protection measures
+
+**Genetic studies**:
+- Population structure knowledge
+- Origin identification
+- Breeding stock assessment
+
+## Sea Turtle Research and Technology
+
+### Modern Research Methods
+**Satellite telemetry**:
+- Track individual movements
+- Map migration corridors
+- Identify feeding areas
+- Monitor diving behavior
+
+**Photo-identification**:
+- Individual recognition using facial scales
+- Population monitoring
+- Long-term life history studies
+- Citizen science contributions
+
+**Genetic analysis**:
+- Population structure studies
+- Stock identification
+- Paternity testing
+- Disease research
+
+### Emerging Technologies
+**Environmental DNA (eDNA)**:
+- Detect turtle presence without capture
+- Monitor population changes
+- Assess habitat use
+
+**Drone surveys**:
+- Monitor nesting beaches
+- Count populations
+- Assess threats
+- Minimize disturbance
+
+## Global Conservation Efforts
+
+### International Cooperation
+**CITES protection**:
+- International trade regulations
+- Enforcement cooperation
+- Species listing updates
+
+**Regional agreements**:
+- Inter-American Convention
+- Indian Ocean South-East Asia MOU
+- Mediterranean Action Plan
+
+**Marine protected areas**:
+- Critical habitat protection
+- No-take zones
+- Corridor establishment
+- Enforcement programs
+
+### Local Community Involvement
+**Economic incentives**:
+- Ecotourism opportunities
+- Alternative livelihoods
+- Community-based conservation
+- Education programs
+
+**Traditional knowledge**:
+- Indigenous conservation practices
+- Local monitoring systems
+- Cultural significance recognition
+- Collaborative management
+
+## What Every Diver Should Know
+
+### Turtle First Aid
+**Entangled turtles**:
+- Don't attempt removal underwater
+- Document and report location
+- Contact local marine authorities
+- Professional rescue required
+
+**Injured turtles**:
+- Assess from distance
+- Report to authorities immediately
+- Don't attempt to help unless trained
+- Provide accurate location information
+
+### Legal Protections
+**Know local laws**:
+- Turtle touching prohibited in many areas
+- Photography restrictions may apply
+- Report violations to authorities
+- Respect marine protected areas
+
+### Educational Opportunities
+**Learn about local species**:
+- Identification guides
+- Behavior patterns
+- Seasonal movements
+- Conservation status
+
+**Share knowledge**:
+- Educate other divers
+- Social media awareness
+- Support conservation messages
+- Promote responsible practices
+
+Sea turtles are ambassadors for ocean health. By diving responsibly and supporting conservation efforts, we can help ensure these magnificent creatures continue to grace our oceans for generations to come. Every dive is an opportunity to learn, appreciate, and contribute to their protection.''',
+        category: 'Marine Life',
+        difficulty: 'Beginner',
+        tags: ['conservation', 'sea turtles', 'ethics', 'marine protection'],
+        imageUrl: 'assets/images/female_diver_turtle.png',
+        readTimeMinutes: 18,
+        createdAt: DateTime.now().subtract(const Duration(hours: 6)),
+      ),
+
+      DivingContent(
+        id: 'training_001',
+        title: 'Dive Instructor Career Path: Teaching Others to Explore',
+        content: '''# Dive Instructor Career Path: Teaching Others to Explore
+
+## The Rewarding World of Dive Instruction
+
+Becoming a dive instructor is more than just a career choice—it's a calling to share your passion for the underwater world while ensuring others can safely enjoy this incredible environment. As an instructor, you'll guide students through their first breaths underwater and watch their confidence grow with each dive.
+
+## Why Choose Dive Instruction?
+
+### Personal Rewards
+**Sharing your passion**:
+- Introduce others to the underwater world
+- Witness the joy of first-time experiences
+- Build lasting relationships with students
+- Create positive environmental ambassadors
+
+**Continuous learning**:
+- Stay current with diving techniques
+- Learn from diverse student backgrounds
+- Develop teaching and communication skills
+- Expand knowledge through specialty courses
+
+**Lifestyle benefits**:
+- Work in beautiful locations worldwide
+- Flexible scheduling opportunities
+- Combine career with travel
+- Be part of diving community leadership
+
+### Professional Opportunities
+**Career progression**:
+- Open Water Instructor to Course Director
+- Specialty instructor certifications
+- Technical diving instruction
+- Dive center management roles
+
+**Global mobility**:
+- Teach worldwide with international certifications
+- Seasonal work opportunities
+- Diverse cultural experiences
+- Network building internationally
+
+## Path to Becoming an Instructor
+
+### Prerequisites
+**Certification requirements**:
+- Advanced Open Water Diver minimum
+- Rescue Diver certification
+- Emergency First Response (EFR) training
+- Minimum age (usually 18)
+
+**Experience requirements**:
+- Minimum 100 logged dives
+- Varied diving experiences
+- Leadership experience preferred
+- Strong swimming ability
+
+**Personal qualities**:
+- Patience and empathy
+- Clear communication skills
+- Safety-conscious mindset
+- Professional attitude
+
+### Training Progression
+
+#### Step 1: Divemaster
+**Role and responsibilities**:
+- Assist certified instructors
+- Guide certified divers
+- Supervise dive activities
+- Learn teaching fundamentals
+
+**Training components**:
+- Dive theory and physics
+- Risk management
+- Emergency response
+- Professional development
+
+#### Step 2: Assistant Instructor (AI)
+**Enhanced responsibilities**:
+- Assist with training programs
+- Conduct some training elements
+- Begin teaching experience
+- Preparation for instructor course
+
+**Skills development**:
+- Classroom presentation skills
+- Student assessment techniques
+- Program organization
+- Professional standards
+
+#### Step 3: Open Water Scuba Instructor (OWSI)
+**Full instructor privileges**:
+- Conduct complete certification courses
+- Issue certifications independently
+- Teach specialty courses (with additional training)
+- Mentor diving students
+
+**Instructor Development Course (IDC)**:
+- Intensive training program
+- Teaching methodology
+- Standards and procedures
+- Risk management and liability
+
+## Essential Teaching Skills
+
+### Communication and Presentation
+**Effective communication**:
+- Adapt teaching style to different learning preferences
+- Use clear, simple language
+- Provide visual demonstrations
+- Give constructive feedback
+
+**Classroom management**:
+- Create positive learning environment
+- Manage diverse group dynamics
+- Handle challenging students professionally
+- Maintain engagement and motivation
+
+### Water Skills Demonstration
+**Perfect skill demonstration**:
+- Flawless execution of all dive skills
+- Clear, slow movements for student observation
+- Multiple demonstration angles
+- Error correction techniques
+
+**Student assistance**:
+- Recognize when students need help
+- Provide gentle guidance and encouragement
+- Ensure student safety at all times
+- Build confidence through positive reinforcement
+
+### Safety and Risk Management
+**Safety-first mindset**:
+- Continuous risk assessment
+- Prevention-focused approach
+- Emergency response readiness
+- Clear safety communication
+
+**Student welfare**:
+- Monitor comfort levels
+- Recognize signs of stress or panic
+- Adapt training pace to individual needs
+- Ensure proper equipment fit and function
+
+## Specialization Opportunities
+
+### Popular Specialty Courses
+**Underwater Photography**:
+- Technical camera skills
+- Composition and lighting
+- Equipment maintenance
+- Post-processing basics
+
+**Nitrox Diving**:
+- Gas theory and physiology
+- Equipment considerations
+- Dive planning with enriched air
+- Safety procedures
+
+**Deep Diving**:
+- Deep diving physiology
+- Nitrogen narcosis management
+- Emergency procedures
+- Equipment requirements
+
+**Night Diving**:
+- Low-light navigation
+- Specialized equipment use
+- Marine life behavior changes
+- Safety protocols
+
+### Advanced Specializations
+**Technical Diving**:
+- Decompression procedures
+- Multiple gas mixtures
+- Advanced equipment configurations
+- Extended range diving
+
+**Cave and Cavern Diving**:
+- Overhead environment training
+- Specialized techniques and equipment
+- Emergency procedures
+- Environmental awareness
+
+**Wreck Diving**:
+- Penetration techniques
+- Historical research
+- Safety protocols
+- Archaeological considerations
+
+## Business Aspects of Instruction
+
+### Employment Options
+**Dive center employment**:
+- Structured learning environment
+- Mentorship opportunities
+- Regular student flow
+- Benefits and support systems
+
+**Freelance instruction**:
+- Flexible scheduling
+- Multiple location opportunities
+- Direct client relationships
+- Higher earning potential per course
+
+**Resort instruction**:
+- Vacation destination locations
+- Cultural experiences
+- Seasonal employment
+- Tips and gratuities
+
+### Building Your Career
+**Professional development**:
+- Continue education with advanced ratings
+- Attend industry workshops and seminars
+- Network with other professionals
+- Stay current with standards and techniques
+
+**Reputation building**:
+- Maintain high safety standards
+- Provide excellent customer service
+- Seek positive reviews and referrals
+- Professional social media presence
+
+### Income Considerations
+**Factors affecting earnings**:
+- Location and local economics
+- Seasonal variations
+- Experience and reputation
+- Additional skills and specializations
+
+**Income diversification**:
+- Multiple specialty instructor ratings
+- Equipment sales and services
+- Dive guiding services
+- Travel planning and booking
+
+## Challenges and Rewards
+
+### Common Challenges
+**Student diversity**:
+- Different learning speeds and styles
+- Varying comfort levels in water
+- Language and cultural differences
+- Physical limitations and fears
+
+**Environmental factors**:
+- Weather and sea conditions
+- Equipment malfunctions
+- Wildlife encounters
+- Changing dive sites
+
+**Professional demands**:
+- Maintaining certification standards
+- Continuing education requirements
+- Insurance and liability considerations
+- Physical demands of the job
+
+### Immense Rewards
+**Personal satisfaction**:
+- Watching students overcome fears
+- Creating new divers and ocean advocates
+- Sharing incredible underwater experiences
+- Contributing to diving safety and education
+
+**Professional growth**:
+- Developing leadership skills
+- Building international network
+- Advancing in diving industry
+- Creating lasting career opportunities
+
+## Industry Trends and Future
+
+### Technology Integration
+**Digital learning**:
+- Online theory components
+- Virtual reality training tools
+- Digital certification cards
+- Enhanced tracking and record-keeping
+
+**Equipment advances**:
+- Improved safety systems
+- Better environmental monitoring
+- Enhanced communication devices
+- Sustainable gear options
+
+### Environmental Focus
+**Conservation education**:
+- Marine protection awareness
+- Sustainable diving practices
+- Climate change impacts
+- Plastic pollution reduction
+
+**Eco-certification programs**:
+- Green diving practices
+- Sustainable tourism promotion
+- Local community support
+- Environmental project participation
+
+## Getting Started Today
+
+### Immediate Steps
+1. **Assess your readiness**: Ensure you meet all prerequisites
+2. **Choose training agency**: Research PADI, SSI, NAUI, or others
+3. **Find quality training**: Select reputable instructor development
+4. **Gain experience**: Log diverse dives and practice skills
+5. **Develop teaching skills**: Practice presentations and demonstrations
+
+### Long-term Planning
+**Career goals**:
+- Define your ideal instructor role
+- Identify preferred geographic locations
+- Plan specialization pathway
+- Set professional development timeline
+
+**Skill development**:
+- Improve language skills for international work
+- Develop business and marketing knowledge
+- Enhance photography and social media skills
+- Build emergency response capabilities
+
+Becoming a dive instructor is a journey that transforms not only your relationship with the ocean but also your ability to positively impact others' lives. Every student you teach becomes a new ambassador for the underwater world, carrying forward the knowledge, skills, and passion you've shared with them. Whether you choose to teach locally or travel the globe, dive instruction offers a unique opportunity to make a living while making a difference.''',
+        category: 'Certification',
+        difficulty: 'Advanced',
+        tags: ['instructor', 'teaching', 'career', 'professional'],
+        imageUrl: 'assets/images/female_diver_instructor.png',
+        readTimeMinutes: 22,
+        createdAt: DateTime.now().subtract(const Duration(hours: 8)),
+      ),
+
+      DivingContent(
+        id: 'dest_002',
+        title: 'Dive Boat Adventures: Group Diving Expeditions',
+        content: '''# Dive Boat Adventures: Group Diving Expeditions
+
+## The Thrill of Boat Diving
+
+Dive boat adventures offer access to remote dive sites, deeper waters, and pristine marine environments that are often impossible to reach from shore. Whether you're exploring offshore reefs, historic wrecks, or marine sanctuaries, boat diving opens up a world of underwater possibilities.
+
+## Types of Dive Boats
+
+### Day Trip Boats
+**Characteristics**:
+- 6-12 hour excursions
+- Multiple dive sites per day
+- Equipment rental available
+- Lunch and refreshments provided
+
+**Typical schedule**:
+- Morning departure (7-8 AM)
+- 2-3 dives with surface intervals
+- Equipment setup and briefings
+- Return to port (4-6 PM)
+
+### Liveaboards
+**Extended expeditions**:
+- 3-14 day trips
+- Access to remote locations
+- 3-5 dives per day
+- All meals and accommodation included
+
+**Advantages**:
+- Reach pristine dive sites
+- Maximize diving time
+- Build diving community
+- Professional dive guides
+
+### Specialty Expedition Boats
+**Research vessels**:
+- Scientific diving expeditions
+- Citizen science projects
+- Marine biology studies
+- Conservation activities
+
+**Technical diving platforms**:
+- Deep wreck exploration
+- Cave diving access
+- Mixed gas diving support
+- Extended bottom time dives
+
+## Planning Your Boat Dive
+
+### Choosing the Right Operator
+**Safety considerations**:
+- Valid licenses and certifications
+- Safety equipment and protocols
+- Experienced crew and dive guides
+- Good maintenance records
+
+**Service quality**:
+- Customer reviews and ratings
+- Group size limitations
+- Equipment quality and availability
+- Professional briefings and guidance
+
+### What to Expect
+**Pre-dive preparation**:
+- Equipment setup and check
+- Dive site briefings
+- Safety protocols review
+- Buddy assignments
+
+**Dive procedures**:
+- Group entry and exit protocols
+- Underwater communication signals
+- Emergency procedures
+- Surface safety protocols
+
+## Group Diving Dynamics
+
+### Benefits of Group Diving
+**Safety advantages**:
+- Multiple dive buddies available
+- Professional supervision
+- Emergency response capability
+- Shared knowledge and experience
+
+**Social aspects**:
+- Meet fellow diving enthusiasts
+- Share underwater experiences
+- Learn from experienced divers
+- Build lasting friendships
+
+**Learning opportunities**:
+- Guided exploration with experts
+- Marine life identification
+- Photography tips and techniques
+- New diving skills development
+
+### Team Building Elements
+**Shared adventures**:
+- Overcoming challenges together
+- Celebrating discoveries
+- Supporting nervous or new divers
+- Creating memorable experiences
+
+**Communication skills**:
+- Underwater hand signals
+- Surface communication
+- Pre-dive planning discussions
+- Post-dive experience sharing
+
+## Popular Boat Diving Destinations
+
+### Tropical Waters
+**Caribbean expeditions**:
+- Coral reef exploration
+- Wall diving adventures
+- Shipwreck discoveries
+- Marine park visits
+
+**Pacific destinations**:
+- Coral triangle diversity
+- Pelagic species encounters
+- Volcanic underwater landscapes
+- Cultural diving experiences
+
+### Temperate Waters
+**Kelp forest diving**:
+- Giant kelp ecosystems
+- Unique marine life
+- Underwater forests
+- Seasonal migrations
+
+**Wreck diving expeditions**:
+- Historical shipwrecks
+- Artificial reef systems
+- Military vessel sites
+- Archaeological significance
+
+## Safety on Dive Boats
+
+### Pre-Dive Safety
+**Equipment checks**:
+- Complete gear inspection
+- Backup equipment availability
+- Proper fit and function
+- Emergency signaling devices
+
+**Dive planning**:
+- Site-specific briefings
+- Current and weather conditions
+- Maximum depth and time limits
+- Emergency action plans
+
+### During the Dive
+**Group management**:
+- Stay with assigned groups
+- Follow dive guide instructions
+- Maintain visual contact
+- Respect planned dive profiles
+
+**Emergency procedures**:
+- Lost diver protocols
+- Medical emergency response
+- Equipment failure procedures
+- Surface support communication
+
+### Post-Dive Safety
+**Decompression procedures**:
+- Proper ascent rates
+- Safety stops compliance
+- Surface interval requirements
+- Repetitive dive planning
+
+**Boat safety**:
+- Proper entry and exit procedures
+- Equipment stowage
+- Medical monitoring
+- Hydration and rest
+
+## Marine Life Encounters
+
+### Pelagic Species
+**Open ocean diving**:
+- Whale and dolphin encounters
+- Shark diving experiences
+- Ray and large fish sightings
+- Seasonal migration events
+
+**Deep water species**:
+- Unique deep-sea creatures
+- Bioluminescent organisms
+- Rare species observations
+- Scientific documentation
+
+### Reef Communities
+**Biodiversity hotspots**:
+- Coral reef ecosystems
+- Fish aggregation sites
+- Cleaning stations
+- Spawning events
+
+**Macro life opportunities**:
+- Small creature photography
+- Detailed behavior observation
+- Rare species discoveries
+- Scientific contributions
+
+## Photography and Documentation
+
+### Underwater Photography
+**Group photo opportunities**:
+- Team photos at dive sites
+- Action shots during diving
+- Marine life documentation
+- Scenic underwater landscapes
+
+**Sharing experiences**:
+- Social media posts
+- Photo sharing with group
+- Competition entries
+- Educational use
+
+### Dive Logging
+**Documentation importance**:
+- Record dive details
+- Track experience progression
+- Note marine life sightings
+- Plan future diving goals
+
+**Digital logging**:
+- Smartphone apps
+- Cloud storage
+- GPS coordinates
+- Photo integration
+
+## Environmental Responsibility
+
+### Marine Conservation
+**Responsible diving practices**:
+- No-touch diving policies
+- Proper buoyancy control
+- Reef-safe sunscreen use
+- Waste reduction efforts
+
+**Citizen science participation**:
+- Marine life surveys
+- Water quality monitoring
+- Debris documentation
+- Research data collection
+
+### Sustainable Tourism
+**Supporting local communities**:
+- Local operator selection
+- Cultural respect and awareness
+- Economic contribution
+- Environmental education
+
+**Minimizing impact**:
+- Group size limitations
+- Seasonal restrictions respect
+- Protected area compliance
+- Leave no trace principles
+
+## Building Diving Skills
+
+### Skill Development Opportunities
+**Advanced techniques**:
+- Navigation improvements
+- Buoyancy refinement
+- Photography skills
+- Emergency response training
+
+**Specialty interests**:
+- Night diving experience
+- Deep diving exposure
+- Wreck penetration basics
+- Naturalist knowledge
+
+### Mentorship and Learning
+**Experienced diver guidance**:
+- Skill improvement tips
+- Safety knowledge sharing
+- Equipment recommendations
+- Career development advice
+
+**Peer learning**:
+- Experience sharing
+- Problem-solving together
+- Confidence building
+- Motivation and encouragement
+
+## Planning Your Next Adventure
+
+### Choosing Destinations
+**Skill level matching**:
+- Appropriate depth ranges
+- Current and difficulty levels
+- Experience requirements
+- Safety considerations
+
+**Interest alignment**:
+- Marine life preferences
+- Photography opportunities
+- Adventure level desired
+- Cultural experiences
+
+### Preparation Steps
+**Physical preparation**:
+- Fitness level assessment
+- Medical clearances
+- Skill practice sessions
+- Equipment familiarity
+
+**Knowledge preparation**:
+- Destination research
+- Marine life study
+- Cultural awareness
+- Emergency procedures review
+
+### Making Connections
+**Diving community**:
+- Join diving clubs
+- Attend diving events
+- Online community participation
+- Mentorship relationships
+
+**Trip planning groups**:
+- Organize group expeditions
+- Share costs and experiences
+- Build lasting friendships
+- Create adventure networks
+
+Boat diving expeditions offer some of the most memorable experiences in the diving world. From the excitement of discovering new underwater landscapes to the camaraderie built with fellow divers, these adventures create lasting memories and often spark lifelong passions for ocean exploration. Whether you're joining a day trip or embarking on a multi-day liveaboard adventure, boat diving provides access to the best the underwater world has to offer.''',
+        category: 'Destinations',
+        difficulty: 'Intermediate',
+        tags: ['boat diving', 'group expeditions', 'adventure', 'teamwork'],
+        imageUrl: 'assets/images/female_diving_team.png',
+        readTimeMinutes: 16,
+        createdAt: DateTime.now().subtract(const Duration(hours: 10)),
+      ),
+
+      DivingContent(
+        id: 'techniques_003',
+        title: 'Freediving: The Art of Breath-Hold Diving',
+        content: '''# Freediving: The Art of Breath-Hold Diving
+
+## Introduction to Freediving
+
+Freediving is the practice of diving underwater using only the air in your lungs, without the assistance of scuba equipment. This ancient practice connects divers to the ocean in its most pure and intimate form, relying on breath control, relaxation, and mental focus.
+
+## The Philosophy of Freediving
+
+### Mind-Body Connection
+**Mental preparation**:
+- Meditation and mindfulness
+- Stress reduction techniques
+- Visualization practices
+- Confidence building
+
+**Physical awareness**:
+- Body relaxation methods
+- Breath control mastery
+- Movement efficiency
+- Energy conservation
+
+### Spiritual Aspects
+**Ocean connection**:
+- Harmony with marine environment
+- Minimal equipment approach
+- Natural diving rhythms
+- Peaceful underwater presence
+
+**Personal growth**:
+- Overcoming mental barriers
+- Building self-confidence
+- Developing patience
+- Finding inner calm
+
+## Freediving Disciplines
+
+### Pool Disciplines
+**Static Apnea (STA)**:
+- Holding breath at surface
+- Face down in water
+- No movement allowed
+- Mental relaxation focus
+
+**Dynamic Apnea (DYN)**:
+- Swimming underwater horizontally
+- Single breath-hold
+- Maximum distance goal
+- Efficient swimming technique
+
+**Dynamic No Fins (DNF)**:
+- Swimming without fins
+- Underwater stroke technique
+- Body streamlining
+- Alternative to finned swimming
+
+### Depth Disciplines
+**Constant Weight (CWT)**:
+- Diving to depth with fins
+- No weight changes during dive
+- Self-powered descent and ascent
+- Most popular competitive discipline
+
+**Free Immersion (FIM)**:
+- Pulling down rope without fins
+- Hand-over-hand technique
+- Controlled descent and ascent
+- Upper body strength focus
+
+**Constant Weight No Fins (CNF)**:
+- Diving without fins
+- Swimming technique only
+- Most technically challenging
+- Pure human aquatic ability
+
+## Basic Freediving Techniques
+
+### Breathing Preparation
+**Pre-dive breathing**:
+- Slow, deep breathing cycles
+- Oxygen saturation increase
+- CO2 reduction
+- Relaxation enhancement
+
+**Breath-hold technique**:
+- Full lung inflation
+- Comfortable air volume
+- Avoid hyperventilation
+- Natural breathing rhythm
+
+### Body Position and Movement
+**Streamlined position**:
+- Minimal water resistance
+- Efficient body alignment
+- Smooth movement patterns
+- Energy conservation
+
+**Finning techniques**:
+- Long, slow fin kicks
+- Dolphin kick variations
+- Efficient propulsion
+- Rhythm and timing
+
+### Equalization Methods
+**Valsalva maneuver**:
+- Basic pressure equalization
+- Nose pinching technique
+- Gentle pressure application
+- Early and frequent use
+
+**Frenzel technique**:
+- Advanced equalization method
+- Tongue and throat muscles
+- More efficient for depth
+- Reduced air consumption
+
+## Safety in Freediving
+
+### Essential Safety Rules
+**Never dive alone**:
+- Always use buddy system
+- Constant surface supervision
+- Emergency response capability
+- Proper training for buddies
+
+**Know your limits**:
+- Progressive training approach
+- Avoid competitive pressure
+- Listen to your body
+- Respect personal boundaries
+
+**Proper supervision**:
+- Trained safety personnel
+- Emergency action plans
+- Medical support availability
+- Communication protocols
+
+### Recognizing Warning Signs
+**Hypoxia symptoms**:
+- Dizziness or confusion
+- Tingling sensations
+- Visual disturbances
+- Loss of motor control
+
+**Shallow water blackout**:
+- Unconsciousness in shallow water
+- Occurs during ascent
+- Requires immediate rescue
+- Preventable with proper technique
+
+### Emergency Procedures
+**Rescue techniques**:
+- Immediate surface support
+- Airway management
+- Recovery positioning
+- Medical response protocols
+
+**Prevention strategies**:
+- Conservative depth limits
+- Adequate surface intervals
+- Proper training progression
+- Safety equipment use
+
+## Training and Progression
+
+### Beginner Development
+**Foundation skills**:
+- Breath-hold practice
+- Basic relaxation techniques
+- Pool training sessions
+- Safety protocol learning
+
+**Physical preparation**:
+- Cardiovascular fitness
+- Swimming ability
+- Flexibility training
+- Core strength development
+
+### Intermediate Advancement
+**Technique refinement**:
+- Equalization mastery
+- Efficient movement patterns
+- Improved breath-holds
+- Deeper diving attempts
+
+**Mental training**:
+- Concentration exercises
+- Visualization techniques
+- Stress management
+- Confidence building
+
+### Advanced Training
+**Specialized techniques**:
+- Advanced equalization methods
+- Competition preparation
+- Deep diving protocols
+- Instructor development
+
+**Performance optimization**:
+- Training periodization
+- Recovery methods
+- Nutrition planning
+- Mental preparation
+
+## Equipment for Freediving
+
+### Essential Gear
+**Mask**:
+- Low volume design
+- Comfortable fit
+- Easy equalization
+- Clear visibility
+
+**Fins**:
+- Long blade design
+- Efficient propulsion
+- Comfortable foot pocket
+- Appropriate stiffness
+
+**Wetsuit**:
+- Proper thermal protection
+- Streamlined fit
+- Minimal water entry
+- Appropriate thickness
+
+### Additional Equipment
+**Weight belt**:
+- Proper weighting
+- Quick release mechanism
+- Comfortable fit
+- Weight distribution
+
+**Dive computer**:
+- Depth tracking
+- Time monitoring
+- Safety alarms
+- Performance logging
+
+**Safety equipment**:
+- Surface marker buoy
+- Emergency whistle
+- First aid kit
+- Communication devices
+
+## Freediving Locations
+
+### Pool Training
+**Controlled environment**:
+- Consistent conditions
+- Safety supervision
+- Skill development focus
+- Year-round availability
+
+**Training opportunities**:
+- Local swim centers
+- Dedicated freediving pools
+- Club training sessions
+- Instructor courses
+
+### Open Water Sites
+**Natural environments**:
+- Ocean diving
+- Lake diving
+- Quarry locations
+- Spring sites
+
+**Site considerations**:
+- Water clarity
+- Depth availability
+- Current conditions
+- Safety features
+
+## Competitive Freediving
+
+### Competition Structure
+**International standards**:
+- AIDA regulations
+- Safety protocols
+- Judge requirements
+- Record verification
+
+**Event organization**:
+- Multiple disciplines
+- Progressive rounds
+- Safety management
+- Performance tracking
+
+### Training for Competition
+**Structured preparation**:
+- Periodized training
+- Performance targets
+- Mental preparation
+- Recovery planning
+
+**Support team**:
+- Coaching guidance
+- Safety personnel
+- Medical support
+- Equipment management
+
+## Health Benefits
+
+### Physical Benefits
+**Cardiovascular improvement**:
+- Heart rate control
+- Blood pressure regulation
+- Circulation enhancement
+- Oxygen efficiency
+
+**Respiratory development**:
+- Lung capacity increase
+- Breathing efficiency
+- Respiratory muscle strength
+- CO2 tolerance improvement
+
+### Mental Benefits
+**Stress reduction**:
+- Relaxation techniques
+- Meditation practices
+- Mindfulness development
+- Anxiety management
+
+**Mental clarity**:
+- Focus improvement
+- Concentration skills
+- Self-awareness
+- Confidence building
+
+## Getting Started in Freediving
+
+### Finding Training
+**Certification agencies**:
+- AIDA International
+- PADI Freediver
+- SSI Freediving
+- FII (Freediving Instructors International)
+
+**Course options**:
+- Basic freediving courses
+- Advanced training programs
+- Specialty workshops
+- Instructor development
+
+### Joining the Community
+**Local clubs**:
+- Training partnerships
+- Safety support
+- Social connections
+- Event participation
+
+**Online communities**:
+- Forums and social media
+- Training advice
+- Event information
+- Equipment discussions
+
+### Progressive Development
+**Training timeline**:
+- Basic skills foundation
+- Gradual depth increase
+- Technique refinement
+- Safety knowledge
+
+**Goal setting**:
+- Personal objectives
+- Performance targets
+- Competition participation
+- Instructor certification
+
+Freediving offers a unique path to ocean exploration that emphasizes the human body's natural aquatic abilities. Through proper training, safety awareness, and gradual progression, freedivers develop an intimate connection with the underwater world while pushing the boundaries of human potential. Whether pursuing personal goals or competitive achievements, freediving provides a lifetime of learning and discovery.''',
+        category: 'Techniques',
+        difficulty: 'Advanced',
+        tags: ['freediving', 'breath-hold', 'meditation', 'advanced'],
+        imageUrl: 'assets/images/female_freediver.png',
+        readTimeMinutes: 20,
+        createdAt: DateTime.now().subtract(const Duration(hours: 12)),
       ),
     ];
   }
