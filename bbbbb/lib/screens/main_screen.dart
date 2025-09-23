@@ -3,7 +3,6 @@ import 'home_screen.dart';
 import 'learn_screen.dart';
 import 'generate_screen.dart';
 import 'profile_screen.dart';
-import '../theme/app_theme.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -56,7 +55,7 @@ class _MainScreenState extends State<MainScreen> {
     setState(() {
       _currentIndex = index;
     });
-    
+
     _pageController.animateToPage(
       index,
       duration: const Duration(milliseconds: 300),

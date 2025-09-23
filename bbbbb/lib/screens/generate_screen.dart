@@ -4,7 +4,6 @@ import '../providers/image_provider.dart' as img_provider;
 import '../providers/user_provider.dart';
 import '../models/generated_image.dart';
 import '../theme/app_theme.dart';
-import '../widgets/common/error_message.dart';
 
 class GenerateScreen extends StatefulWidget {
   const GenerateScreen({super.key});

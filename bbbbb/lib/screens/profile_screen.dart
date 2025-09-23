@@ -4,6 +4,7 @@ import '../providers/user_provider.dart';
 import '../providers/image_provider.dart' as img_provider;
 import '../services/purchase_service.dart';
 import '../theme/app_theme.dart';
+import 'bookmarks_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -228,6 +229,65 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             ),
                           ),
                         ],
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+
+              // Quick Actions Section
+              SliverToBoxAdapter(
+                child: Container(
+                  margin:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  decoration: AppTheme.cardDecoration,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(20),
+                        child: Text(
+                          'Quick Actions',
+                          style:
+                              Theme.of(context).textTheme.titleLarge?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                        ),
+                      ),
+                      _QuickActionItem(
+                        icon: Icons.bookmark,
+                        title: 'My Bookmarks',
+                        subtitle: '${userProvider.totalBookmarks} saved items',
+                        color: AppTheme.coral,
+                        onTap: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => const BookmarksScreen(),
+                            ),
+                          );
+                        },
+                      ),
+                      _QuickActionItem(
+                        icon: Icons.school,
+                        title: 'Learning Progress',
+                        subtitle:
+                            '${userProvider.totalCompletedContent} lessons completed',
+                        color: AppTheme.seaFoam,
+                        onTap: () {
+                          // Navigate to learn tab
+                          DefaultTabController.of(context).animateTo(1);
+                        },
+                      ),
+                      _QuickActionItem(
+                        icon: Icons.auto_awesome,
+                        title: 'My Creations',
+                        subtitle:
+                            '${userProvider.totalImagesGenerated} images generated',
+                        color: AppTheme.tropicalTeal,
+                        onTap: () {
+                          // Navigate to generate tab
+                          DefaultTabController.of(context).animateTo(2);
+                        },
                       ),
                     ],
                   ),
@@ -524,6 +584,78 @@ class _ProfileScreenState extends State<ProfileScreen> {
             child: const Text('Reset'),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _QuickActionItem extends StatelessWidget {
+  final IconData icon;
+  final String title;
+  final String subtitle;
+  final Color color;
+  final VoidCallback onTap;
+
+  const _QuickActionItem({
+    required this.icon,
+    required this.title,
+    required this.subtitle,
+    required this.color,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+          child: Row(
+            children: [
+              Container(
+                width: 48,
+                height: 48,
+                decoration: BoxDecoration(
+                  color: color.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Icon(
+                  icon,
+                  color: color,
+                  size: 24,
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.w600,
+                          ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      subtitle,
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            color: Colors.grey[600],
+                          ),
+                    ),
+                  ],
+                ),
+              ),
+              Icon(
+                Icons.arrow_forward_ios,
+                color: Colors.grey[400],
+                size: 16,
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

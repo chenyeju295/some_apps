@@ -28,17 +28,15 @@ class FeaturedContentSection extends StatelessWidget {
               Text(
                 'Featured Learning',
                 style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  color: AppTheme.deepNavy,
-                  fontWeight: FontWeight.bold,
-                ),
+                      color: AppTheme.deepNavy,
+                      fontWeight: FontWeight.bold,
+                    ),
               ),
               const Spacer(),
               TextButton(
                 onPressed: () {
                   // Navigate to learn tab
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('View all in Learn tab')),
-                  );
+                  DefaultTabController.of(context).animateTo(1);
                 },
                 child: Text(
                   'See All',
@@ -50,9 +48,7 @@ class FeaturedContentSection extends StatelessWidget {
               ),
             ],
           ),
-          
           const SizedBox(height: 12),
-          
           SizedBox(
             height: 200,
             child: ListView.builder(
@@ -127,9 +123,9 @@ class _FeaturedContentCard extends StatelessWidget {
                       child: Text(
                         content.category,
                         style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                          color: AppTheme.deepNavy,
-                          fontWeight: FontWeight.w600,
-                        ),
+                              color: AppTheme.deepNavy,
+                              fontWeight: FontWeight.w600,
+                            ),
                       ),
                     ),
                   ),
@@ -149,10 +145,13 @@ class _FeaturedContentCard extends StatelessWidget {
                           ),
                           child: Text(
                             content.difficulty,
-                            style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                              color: Colors.white,
-                              fontWeight: FontWeight.w600,
-                            ),
+                            style: Theme.of(context)
+                                .textTheme
+                                .labelSmall
+                                ?.copyWith(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w600,
+                                ),
                           ),
                         ),
                         const SizedBox(width: 8),
@@ -176,10 +175,13 @@ class _FeaturedContentCard extends StatelessWidget {
                               const SizedBox(width: 2),
                               Text(
                                 '${content.readTimeMinutes}m',
-                                style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.w600,
-                                ),
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .labelSmall
+                                    ?.copyWith(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w600,
+                                    ),
                               ),
                             ],
                           ),
@@ -190,7 +192,7 @@ class _FeaturedContentCard extends StatelessWidget {
                 ],
               ),
             ),
-            
+
             // Content section
             Expanded(
               child: Padding(
@@ -201,28 +203,28 @@ class _FeaturedContentCard extends StatelessWidget {
                     Text(
                       content.title,
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        color: AppTheme.deepNavy,
-                        fontWeight: FontWeight.bold,
-                      ),
+                            color: AppTheme.deepNavy,
+                            fontWeight: FontWeight.bold,
+                          ),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
-                    
+
                     const SizedBox(height: 8),
-                    
+
                     Expanded(
                       child: Text(
                         _getContentPreview(content.content),
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: Colors.grey[600],
-                        ),
+                              color: Colors.grey[600],
+                            ),
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
-                    
+
                     const SizedBox(height: 8),
-                    
+
                     // Tags
                     Wrap(
                       spacing: 4,
@@ -238,9 +240,12 @@ class _FeaturedContentCard extends StatelessWidget {
                           ),
                           child: Text(
                             tag,
-                            style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                              color: AppTheme.oceanBlue,
-                            ),
+                            style: Theme.of(context)
+                                .textTheme
+                                .labelSmall
+                                ?.copyWith(
+                                  color: AppTheme.oceanBlue,
+                                ),
                           ),
                         );
                       }).toList(),
@@ -294,8 +299,8 @@ class _FeaturedContentCard extends StatelessWidget {
     final lines = content.split('\n');
     for (final line in lines) {
       final trimmed = line.trim();
-      if (trimmed.isNotEmpty && 
-          !trimmed.startsWith('#') && 
+      if (trimmed.isNotEmpty &&
+          !trimmed.startsWith('#') &&
           !trimmed.startsWith('*') &&
           trimmed.length > 50) {
         return trimmed;
