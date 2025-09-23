@@ -74,6 +74,8 @@ dev_dependencies:
   # rules and activating additional ones.
   flutter_lints: ^5.0.0
 
+  flutter_launcher_icons: ^0.14.3
+  flutter_native_splash: ^2.4.3
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 
@@ -115,3 +117,23 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
+
+
+# iOS 图标配置
+flutter_launcher_icons:
+  ios: true
+  image_path: "assets/logo.png"   # iOS 图标源文件
+  remove_alpha_ios: true          # 移除透明度（苹果要求）
+
+# iOS 启动图配置
+flutter_native_splash:
+  ios: true
+  color: "#FFFFFF"                # 启动画面背景色
+  image: assets/launch.png        # 中心图片
+  fullscreen: true                # 全屏
+  ios_content_mode: scaleAspectFill  # 缩放模式，保证铺满
+
+
+# dart run flutter_launcher_icons
+# dart run flutter_native_splash:create
+
