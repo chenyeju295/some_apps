@@ -74,7 +74,7 @@ class _GenerateScreenState extends State<GenerateScreen> {
 
   Widget _buildAppBar(UserProvider userProvider) {
     return SliverAppBar(
-      expandedHeight: 160,
+      expandedHeight: 120,
       floating: true,
       pinned: true,
       backgroundColor: Colors.transparent,

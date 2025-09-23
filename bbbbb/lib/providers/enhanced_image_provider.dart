@@ -23,6 +23,7 @@ class EnhancedImageProvider extends ChangeNotifier {
 
   // Getters
   List<GeneratedImage> get images => _images;
+  List<GeneratedImage> get sampleImages => _generateSampleImages();
   GenerationState get generationState => _generationState;
   bool get isGenerating =>
       _generationState != GenerationState.idle &&

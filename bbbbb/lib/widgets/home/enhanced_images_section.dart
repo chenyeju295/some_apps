@@ -8,32 +8,24 @@ import '../animations/ocean_animations.dart';
 
 class EnhancedImagesSection extends StatelessWidget {
   final List<GeneratedImage> images;
-  final VoidCallback onSeeAllPressed;
 
   const EnhancedImagesSection({
     super.key,
     required this.images,
-    required this.onSeeAllPressed,
   });
 
   @override
   Widget build(BuildContext context) {
-    if (images.isEmpty) {
-      return Container(
-        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-        child: _EmptyImagesState(onGeneratePressed: onSeeAllPressed),
-      );
-    }
+
 
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-      child: _buildImageSwiper(context),
+       child: _buildImageSwiper(context),
     );
   }
 
   Widget _buildImageSwiper(BuildContext context) {
     return SizedBox(
-      height: 340,
+      height: 370,
       child: Swiper(
         itemBuilder: (BuildContext context, int index) {
           final image = images[index];
@@ -47,7 +39,7 @@ class EnhancedImagesSection extends StatelessWidget {
           );
         },
         itemCount: images.length,
-        viewportFraction: 0.75,
+        viewportFraction: 0.8,
         scale: 0.9,
         pagination: SwiperPagination(
           alignment: Alignment.bottomCenter,

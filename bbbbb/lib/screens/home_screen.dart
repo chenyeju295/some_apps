@@ -264,10 +264,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   child: OceanAnimations.staggeredList(
                     index: 0,
                     child: EnhancedImagesSection(
-                      images: imageProvider.recentImages.take(6).toList(),
-                      onSeeAllPressed: () {
-                        NavigationHelper.navigateToGenerate(context);
-                      },
+                      images: imageProvider.sampleImages.toList(),
+
                     ),
                   ),
                 ),

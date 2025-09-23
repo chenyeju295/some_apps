@@ -21,38 +21,17 @@ class ImageDetailScreen extends StatefulWidget {
   State<ImageDetailScreen> createState() => _ImageDetailScreenState();
 }
 
-class _ImageDetailScreenState extends State<ImageDetailScreen>
-    with TickerProviderStateMixin {
-  late AnimationController _fadeController;
-  late AnimationController _slideController;
-  late PageController _pageController;
+class _ImageDetailScreenState extends State<ImageDetailScreen> {
   int _currentIndex = 0;
 
   @override
   void initState() {
     super.initState();
     _currentIndex = widget.initialIndex;
-    _pageController = PageController(initialPage: widget.initialIndex);
-
-    _fadeController = AnimationController(
-      duration: AppTheme.normalAnimation,
-      vsync: this,
-    );
-
-    _slideController = AnimationController(
-      duration: AppTheme.slowAnimation,
-      vsync: this,
-    );
-
-    _fadeController.forward();
-    _slideController.forward();
   }
 
   @override
   void dispose() {
-    _fadeController.dispose();
-    _slideController.dispose();
-    _pageController.dispose();
     super.dispose();
   }
 
@@ -60,86 +39,70 @@ class _ImageDetailScreenState extends State<ImageDetailScreen>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Container(
-        decoration: AppTheme.oceanDepthDecoration,
-        child: SafeArea(
-          child: Column(
-            children: [
-              // Custom App Bar
-              _buildAppBar(),
+    return Container(
+      decoration: AppTheme.oceanDepthDecoration,
 
-              // Image Swiper
-              Expanded(
-                flex: 3,
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          title:
+          Text(
+            '${_currentIndex + 1} / ${widget.allImages.length}',
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 16,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+          actions: [
+
+            OceanAnimations.scaleInAnimation(
+              delay: const Duration(milliseconds: 100),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.2),
+                  shape: BoxShape.circle,
+                ),
+                child: IconButton(
+                  icon: Icon(
+                    currentImage.isFavorite
+                        ? Icons.favorite
+                        : Icons.favorite_border,
+                    color:
+                    currentImage.isFavorite ? AppTheme.coral : Colors.white,
+                  ),
+                  onPressed: _toggleFavorite,
+                ),
+              ),
+            ),
+            SizedBox(width: 12,)
+          ],
+        ),
+        body: Column(
+          children: [
+
+            // Image Swiper
+            Expanded(
+              flex: 4,
+              child: Padding(
+                padding: const EdgeInsets.all(12.0),
                 child: _buildImageSwiper(),
               ),
+            ),
 
-              // Content Section
-              Expanded(
-                flex: 2,
-                child: _buildContentSection(),
-              ),
-            ],
-          ),
+            // Content Section
+            Expanded(
+              flex: 2,
+              child: _buildContentSection(),
+            ),
+          ],
         ),
       ),
     );
   }
 
-  Widget _buildAppBar() {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      child: Row(
-        children: [
-          OceanAnimations.scaleInAnimation(
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.2),
-                shape: BoxShape.circle,
-              ),
-              child: IconButton(
-                icon: const Icon(Icons.arrow_back, color: Colors.white),
-                onPressed: () => Navigator.of(context).pop(),
-              ),
-            ),
-          ),
-          const Spacer(),
-          FadeTransition(
-            opacity: _fadeController,
-            child: Text(
-              '${_currentIndex + 1} / ${widget.allImages.length}',
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 16,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-          ),
-          const Spacer(),
-          OceanAnimations.scaleInAnimation(
-            delay: const Duration(milliseconds: 100),
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.2),
-                shape: BoxShape.circle,
-              ),
-              child: IconButton(
-                icon: Icon(
-                  currentImage.isFavorite
-                      ? Icons.favorite
-                      : Icons.favorite_border,
-                  color:
-                      currentImage.isFavorite ? AppTheme.coral : Colors.white,
-                ),
-                onPressed: _toggleFavorite,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 
   Widget _buildImageSwiper() {
     return Container(
@@ -147,13 +110,11 @@ class _ImageDetailScreenState extends State<ImageDetailScreen>
       child: Swiper(
         itemBuilder: (BuildContext context, int index) {
           final image = widget.allImages[index];
-          return OceanAnimations.scaleInAnimation(
-            child: Container(
-              decoration: AppTheme.animatedCardDecoration,
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(20),
-                child: _buildImageWidget(image),
-              ),
+          return Container(
+            decoration: AppTheme.animatedCardDecoration,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(10),
+              child: _buildImageWidget(image),
             ),
           );
         },
@@ -177,12 +138,12 @@ class _ImageDetailScreenState extends State<ImageDetailScreen>
           setState(() {
             _currentIndex = index;
           });
-          _fadeController.reset();
-          _fadeController.forward();
         },
-        viewportFraction: 0.9,
-        scale: 0.9,
+        viewportFraction: 1.0,
+        scale: 1.0,
         loop: false,
+        duration: 300,
+        curve: Curves.easeInOut,
       ),
     );
   }
@@ -229,42 +190,30 @@ class _ImageDetailScreenState extends State<ImageDetailScreen>
         color: Colors.white,
         borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
       ),
-      child: FadeTransition(
-        opacity: _fadeController,
-        child: SlideTransition(
-          position: Tween<Offset>(
-            begin: const Offset(0, 0.3),
-            end: Offset.zero,
-          ).animate(CurvedAnimation(
-            parent: _slideController,
-            curve: AppTheme.defaultCurve,
-          )),
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(24),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Title and tags
-                _buildHeader(),
-                const SizedBox(height: 16),
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Title and tags
+            _buildHeader(),
+            const SizedBox(height: 16),
 
-                // Description
-                if (currentImage.description != null) ...[
-                  _buildDescription(),
-                  const SizedBox(height: 20),
-                ],
+            // Description
+            if (currentImage.description != null) ...[
+              _buildDescription(),
+              const SizedBox(height: 20),
+            ],
 
-                // Knowledge content
-                if (currentImage.knowledgeContent != null) ...[
-                  _buildKnowledgeContent(),
-                  const SizedBox(height: 20),
-                ],
+            // Knowledge content
+            if (currentImage.knowledgeContent != null) ...[
+              _buildKnowledgeContent(),
+              const SizedBox(height: 20),
+            ],
 
-                // Image info
-                _buildImageInfo(),
-              ],
-            ),
-          ),
+            // Image info
+            _buildImageInfo(),
+          ],
         ),
       ),
     );
