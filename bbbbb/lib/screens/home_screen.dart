@@ -212,7 +212,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               slivers: [
                 // Enhanced App Bar with waves
                 SliverAppBar(
-                  expandedHeight: 140,
+                  expandedHeight: 130,
                   floating: true,
                   pinned: true,
                   backgroundColor: Colors.transparent,
@@ -245,20 +245,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                     ),
                   ),
                 ),
-
-                // Enhanced Images Gallery with Swiper - Moved to top position
-                SliverToBoxAdapter(
-                  child: OceanAnimations.staggeredList(
-                    index: 0,
-                    child: EnhancedImagesSection(
-                      images: imageProvider.recentImages.take(6).toList(),
-                      onSeeAllPressed: () {
-                        NavigationHelper.navigateToGenerate(context);
-                      },
-                    ),
-                  ),
-                ),
-
                 // Animated Welcome Section
                 SliverToBoxAdapter(
                   child: OceanAnimations.staggeredList(
@@ -273,6 +259,20 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                     ),
                   ),
                 ),
+                // Enhanced Images Gallery with Swiper - Moved to top position
+                SliverToBoxAdapter(
+                  child: OceanAnimations.staggeredList(
+                    index: 0,
+                    child: EnhancedImagesSection(
+                      images: imageProvider.recentImages.take(6).toList(),
+                      onSeeAllPressed: () {
+                        NavigationHelper.navigateToGenerate(context);
+                      },
+                    ),
+                  ),
+                ),
+
+
 
                 // Animated Featured Content
                 SliverToBoxAdapter(

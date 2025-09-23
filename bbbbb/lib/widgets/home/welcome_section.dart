@@ -19,7 +19,7 @@ class WelcomeSection extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       margin: const EdgeInsets.all(16),
-      padding: const EdgeInsets.all(24),
+      padding: const EdgeInsets.all(12),
       decoration: AppTheme.animatedCardDecoration.copyWith(
         gradient: AppTheme.surfaceGradient,
       ),
@@ -38,7 +38,7 @@ class WelcomeSection extends StatelessWidget {
                           'Welcome back, $userName!',
                           textStyle: Theme.of(context)
                               .textTheme
-                              .headlineSmall
+                              .bodyMedium
                               ?.copyWith(
                                 color: AppTheme.deepNavy,
                                 fontWeight: FontWeight.bold,
@@ -51,7 +51,7 @@ class WelcomeSection extends StatelessWidget {
                     const SizedBox(height: 4),
                     Text(
                       'Ready for your next underwater adventure?',
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
                             color: Colors.grey[600],
                           ),
                     ),
@@ -82,11 +82,11 @@ class WelcomeSection extends StatelessWidget {
             ],
           ),
 
-          const SizedBox(height: 20),
+          const SizedBox(height: 10),
 
           // Enhanced token balance section
           Container(
-            padding: const EdgeInsets.all(20),
+            padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
               gradient: AppTheme.sunlightGradient,
               borderRadius: BorderRadius.circular(16),
@@ -160,74 +160,13 @@ class WelcomeSection extends StatelessWidget {
             ),
           ),
 
-          const SizedBox(height: 16),
 
-          // Daily tip
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: AppTheme.coral.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(8),
-              border: Border.all(
-                color: AppTheme.coral.withOpacity(0.3),
-                width: 1,
-              ),
-            ),
-            child: Row(
-              children: [
-                Icon(
-                  Icons.lightbulb_outline,
-                  color: AppTheme.coral,
-                  size: 20,
-                ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Diving Tip of the Day',
-                        style:
-                            Theme.of(context).textTheme.labelMedium?.copyWith(
-                                  color: AppTheme.coral,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                      ),
-                      const SizedBox(height: 2),
-                      Text(
-                        _getDailyTip(),
-                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                              color: AppTheme.deepNavy,
-                            ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
         ],
       ),
     );
   }
 
-  String _getDailyTip() {
-    final tips = [
-      'Always check your equipment before diving',
-      'Never hold your breath while ascending',
-      'Plan your dive and dive your plan',
-      'Stay with your buddy at all times',
-      'Equalize early and often during descent',
-      'Monitor your air supply regularly',
-      'Ascend slowly - no faster than 18m/min',
-      'Take a safety stop at 5 meters for 3 minutes',
-      'Respect marine life and don\'t touch',
-      'Stay hydrated before and after diving',
-    ];
 
-    final dayOfYear = DateTime.now().dayOfYear;
-    return tips[dayOfYear % tips.length];
-  }
 }
 
 extension DateTimeExtension on DateTime {

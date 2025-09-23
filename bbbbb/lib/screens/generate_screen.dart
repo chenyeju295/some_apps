@@ -282,67 +282,122 @@ class _GenerateScreenState extends State<GenerateScreen> {
         ),
         const SizedBox(height: 12),
         SizedBox(
-          height: 80,
+          height: 90,
           child: ListView.builder(
             scrollDirection: Axis.horizontal,
             itemCount: ImageStyle.values.length,
             itemBuilder: (context, index) {
               final style = ImageStyle.values[index];
               final isSelected = style == _selectedStyle;
+              final styleColors = _getStyleColors(style);
 
               return Container(
-                width: 100,
+                width: 110,
                 margin: const EdgeInsets.only(right: 12),
                 child: Material(
                   color: Colors.transparent,
                   child: InkWell(
                     onTap: () => setState(() => _selectedStyle = style),
-                    borderRadius: BorderRadius.circular(12),
-                    child: Container(
-                      padding: const EdgeInsets.all(8),
+                    borderRadius: BorderRadius.circular(16),
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 200),
+                      padding: const EdgeInsets.all(10),
                       decoration: BoxDecoration(
-                        color: isSelected
-                            ? AppTheme.oceanBlue.withOpacity(0.1)
-                            : Colors.grey[50],
-                        borderRadius: BorderRadius.circular(12),
+                        gradient: isSelected
+                            ? LinearGradient(
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                                colors: [
+                                  styleColors['primary']!.withOpacity(0.15),
+                                  styleColors['secondary']!.withOpacity(0.08),
+                                ],
+                              )
+                            : null,
+                        color: isSelected ? null : Colors.white,
+                        borderRadius: BorderRadius.circular(16),
                         border: Border.all(
                           color: isSelected
-                              ? AppTheme.oceanBlue
+                              ? styleColors['primary']!
                               : Colors.grey[300]!,
-                          width: isSelected ? 2 : 1,
+                          width: isSelected ? 2.5 : 1,
                         ),
+                        boxShadow: isSelected
+                            ? [
+                                BoxShadow(
+                                  color:
+                                      styleColors['primary']!.withOpacity(0.2),
+                                  blurRadius: 12,
+                                  offset: const Offset(0, 4),
+                                ),
+                              ]
+                            : [
+                                BoxShadow(
+                                  color: Colors.grey.withOpacity(0.1),
+                                  blurRadius: 4,
+                                  offset: const Offset(0, 2),
+                                ),
+                              ],
                       ),
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Container(
-                            padding: const EdgeInsets.all(6),
+                            padding: const EdgeInsets.all(8),
                             decoration: BoxDecoration(
-                              color: isSelected
-                                  ? AppTheme.oceanBlue
-                                  : Colors.grey[400],
+                              gradient: LinearGradient(
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                                colors: [
+                                  styleColors['primary']!,
+                                  styleColors['secondary']!,
+                                ],
+                              ),
                               shape: BoxShape.circle,
+                              boxShadow: [
+                                BoxShadow(
+                                  color:
+                                      styleColors['primary']!.withOpacity(0.3),
+                                  blurRadius: 6,
+                                  offset: const Offset(0, 2),
+                                ),
+                              ],
                             ),
                             child: Icon(
                               _getStyleIcon(style),
                               color: Colors.white,
-                              size: 16,
+                              size: 18,
                             ),
                           ),
-                          const SizedBox(height: 6),
+                          const SizedBox(height: 8),
                           Text(
                             style.displayName,
                             style: TextStyle(
                               color: isSelected
-                                  ? AppTheme.oceanBlue
+                                  ? styleColors['primary']!
                                   : AppTheme.deepNavy,
                               fontWeight: isSelected
-                                  ? FontWeight.bold
-                                  : FontWeight.w500,
+                                  ? FontWeight.w700
+                                  : FontWeight.w600,
                               fontSize: 11,
                             ),
                             textAlign: TextAlign.center,
                           ),
+                          if (isSelected) ...[
+                            const SizedBox(height: 2),
+                            Container(
+                              width: 20,
+                              height: 2,
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                  colors: [
+                                    styleColors['primary']!,
+                                    styleColors['secondary']!,
+                                  ],
+                                ),
+                                borderRadius: BorderRadius.circular(1),
+                              ),
+                            ),
+                          ],
                         ],
                       ),
                     ),
@@ -621,6 +676,36 @@ class _GenerateScreenState extends State<GenerateScreen> {
         return Icons.animation;
       case ImageStyle.cinematic:
         return Icons.movie;
+    }
+  }
+
+  Map<String, Color> _getStyleColors(ImageStyle style) {
+    switch (style) {
+      case ImageStyle.realistic:
+        return {
+          'primary': const Color(0xFF2196F3), // Blue
+          'secondary': const Color(0xFF42A5F5),
+        };
+      case ImageStyle.artistic:
+        return {
+          'primary': const Color(0xFFE91E63), // Pink
+          'secondary': const Color(0xFFF06292),
+        };
+      case ImageStyle.vintage:
+        return {
+          'primary': const Color(0xFFFF7043), // Deep Orange
+          'secondary': const Color(0xFFFFAB91),
+        };
+      case ImageStyle.cartoon:
+        return {
+          'primary': const Color(0xFF9C27B0), // Purple
+          'secondary': const Color(0xFFBA68C8),
+        };
+      case ImageStyle.cinematic:
+        return {
+          'primary': const Color(0xFF607D8B), // Blue Grey
+          'secondary': const Color(0xFF90A4AE),
+        };
     }
   }
 

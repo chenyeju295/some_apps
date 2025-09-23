@@ -27,65 +27,13 @@ class EnhancedImagesSection extends StatelessWidget {
 
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Header
-          _buildHeader(context),
-          const SizedBox(height: 16),
-
-          // Swiper
-          _buildImageSwiper(context),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildHeader(BuildContext context) {
-    return Row(
-      children: [
-        OceanAnimations.floatingWidget(
-          offset: 3.0,
-          child: Icon(
-            Icons.photo_library,
-            color: AppTheme.oceanBlue,
-            size: 24,
-          ),
-        ),
-        const SizedBox(width: 8),
-        Text(
-          'Ocean Gallery',
-          style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                color: AppTheme.deepNavy,
-                fontWeight: FontWeight.bold,
-              ),
-        ),
-        const Spacer(),
-        OceanAnimations.scaleInAnimation(
-          delay: const Duration(milliseconds: 200),
-          child: TextButton.icon(
-            onPressed: onSeeAllPressed,
-            icon: Icon(
-              Icons.explore,
-              color: AppTheme.oceanBlue,
-              size: 16,
-            ),
-            label: Text(
-              'Explore All',
-              style: TextStyle(
-                color: AppTheme.oceanBlue,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ),
-        ),
-      ],
+      child: _buildImageSwiper(context),
     );
   }
 
   Widget _buildImageSwiper(BuildContext context) {
     return SizedBox(
-      height: 280,
+      height: 340,
       child: Swiper(
         itemBuilder: (BuildContext context, int index) {
           final image = images[index];
