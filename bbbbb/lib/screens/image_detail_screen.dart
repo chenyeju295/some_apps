@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:card_swiper/card_swiper.dart';
+import 'package:provider/provider.dart';
 import '../models/generated_image.dart';
+import '../providers/enhanced_image_provider.dart';
 import '../theme/app_theme.dart';
 import '../widgets/animations/ocean_animations.dart';
 
@@ -23,13 +25,13 @@ class ImageDetailScreen extends StatefulWidget {
 
 class _ImageDetailScreenState extends State<ImageDetailScreen> {
   int _currentIndex = 0;
+  SwiperController controller = SwiperController();
 
   @override
   void initState() {
-    currentImage = widget.image;
     super.initState();
     _currentIndex = widget.initialIndex;
-    print("初始化");
+    controller.move(widget.initialIndex,animation: true);
   }
 
   @override
@@ -37,20 +39,17 @@ class _ImageDetailScreenState extends State<ImageDetailScreen> {
     super.dispose();
   }
 
- late GeneratedImage  currentImage ;
+  GeneratedImage get currentImage => widget.allImages[_currentIndex];
 
   @override
   Widget build(BuildContext context) {
     return Container(
       decoration: AppTheme.oceanDepthDecoration,
-
       child: Scaffold(
         backgroundColor: Colors.transparent,
-
         appBar: AppBar(
           backgroundColor: Colors.transparent,
-          title:
-          Text(
+          title: Text(
             '${_currentIndex + 1} / ${widget.allImages.length}',
             style: const TextStyle(
               color: Colors.white,
@@ -59,32 +58,10 @@ class _ImageDetailScreenState extends State<ImageDetailScreen> {
             ),
           ),
           actions: [
-
-            OceanAnimations.scaleInAnimation(
-              delay: const Duration(milliseconds: 100),
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.2),
-                  shape: BoxShape.circle,
-                ),
-                child: IconButton(
-                  icon: Icon(
-                    currentImage.isFavorite
-                        ? Icons.favorite
-                        : Icons.favorite_border,
-                    color:
-                    currentImage.isFavorite ? AppTheme.coral : Colors.white,
-                  ),
-                  onPressed: _toggleFavorite,
-                ),
-              ),
-            ),
-            SizedBox(width: 12,)
           ],
         ),
         body: Column(
           children: [
-
             // Image Swiper
             Expanded(
               flex: 4,
@@ -105,11 +82,11 @@ class _ImageDetailScreenState extends State<ImageDetailScreen> {
     );
   }
 
-
   Widget _buildImageSwiper() {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16),
       child: Swiper(
+        controller: controller,
         itemBuilder: (BuildContext context, int index) {
           final image = widget.allImages[index];
           return Container(
@@ -120,9 +97,7 @@ class _ImageDetailScreenState extends State<ImageDetailScreen> {
             ),
           );
         },
-        autoplay: true,
         itemCount: widget.allImages.length,
-        index: widget.initialIndex,
         pagination: SwiperPagination(
           builder: DotSwiperPaginationBuilder(
             activeColor: AppTheme.seaFoam,
@@ -139,9 +114,9 @@ class _ImageDetailScreenState extends State<ImageDetailScreen> {
         ),
         onIndexChanged: (index) {
           setState(() {
-            _currentIndex = index;
-            currentImage = widget.allImages[index];
+
           });
+          _currentIndex = index;
         },
         viewportFraction: 1.0,
         scale: 1.0,
@@ -419,19 +394,12 @@ class _ImageDetailScreenState extends State<ImageDetailScreen> {
     }
   }
 
-  void _toggleFavorite() {
-    // TODO: Implement favorite toggle logic
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(currentImage.isFavorite
-            ? 'Removed from favorites'
-            : 'Added to favorites'),
-        backgroundColor: AppTheme.oceanBlue,
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
-      ),
-    );
+  void _toggleFavorite(EnhancedImageProvider imageProvider) async {
+    final wasLiked = currentImage.isFavorite;
+
+    await imageProvider.toggleImageFavorite(currentImage.id);
+    setState(() {});
+
+
   }
 }
