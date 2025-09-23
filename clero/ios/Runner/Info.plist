@@ -1,77 +1,67 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
-	<dict>
-		<key>CFBundleDevelopmentRegion</key>
-		<string>$(DEVELOPMENT_LANGUAGE)</string>
-		<key>CFBundleDisplayName</key>
-		<string>Clero</string>
-		<key>CFBundleExecutable</key>
-		<string>$(EXECUTABLE_NAME)</string>
-		<key>CFBundleIdentifier</key>
-		<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
-		<key>CFBundleInfoDictionaryVersion</key>
-		<string>6.0</string>
-		<key>CFBundleName</key>
-		<string>clero</string>
-		<key>CFBundlePackageType</key>
-		<string>APPL</string>
-		<key>CFBundleShortVersionString</key>
-		<string>$(FLUTTER_BUILD_NAME)</string>
-		<key>CFBundleSignature</key>
-		<string>????</string>
-		<key>CFBundleVersion</key>
-		<string>$(FLUTTER_BUILD_NUMBER)</string>
-		<key>LSRequiresIPhoneOS</key>
-		<true/>
-		<key>UILaunchStoryboardName</key>
-		<string>LaunchScreen</string>
-		<key>UIMainStoryboardFile</key>
-		<string>Main</string>
-		<key>UISupportedInterfaceOrientations</key>
-		<array>
-			<string>UIInterfaceOrientationPortrait</string>
-			<string>UIInterfaceOrientationLandscapeLeft</string>
-			<string>UIInterfaceOrientationLandscapeRight</string>
-		</array>
-		<key>UISupportedInterfaceOrientations~ipad</key>
-		<array>
-			<string>UIInterfaceOrientationPortrait</string>
-			<string>UIInterfaceOrientationPortraitUpsideDown</string>
-			<string>UIInterfaceOrientationLandscapeLeft</string>
-			<string>UIInterfaceOrientationLandscapeRight</string>
-		</array>
-		<key>CADisableMinimumFrameDurationOnPhone</key>
-		<true/>
-		<key>UIApplicationSupportsIndirectInputEvents</key>
-		<true/>
-		<!-- Clero App Permissions -->
-		<!-- Photo Library Access - For saving generated wallpapers -->
-		<key>NSPhotoLibraryUsageDescription</key>
-		<string>Clero needs access to your photo library to save the beautiful wallpapers you generate. Your generated AI wallpapers will be saved to your Photos app for easy access and use.</string>
-		<key>NSPhotoLibraryAddUsageDescription</key>
-		<string>Clero would like to save your generated wallpapers to your photo library. This allows you to easily access and set your AI-created wallpapers as your device background.</string>
-		<!-- Camera Access - For potential future features like style transfer -->
-		<key>NSCameraUsageDescription</key>
-		<string>Clero would like to access your camera to capture photos for creating personalized wallpapers with AI style transfer and custom background generation features.</string>
-		<!-- Microphone Access - For potential voice prompt features -->
-		<key>NSMicrophoneUsageDescription</key>
-		<string>Clero would like to access your microphone to enable voice prompts for wallpaper generation, making it easier to describe your creative ideas hands-free.</string>
-		<!-- Local Network Access - For sharing and cloud features -->
-		<key>NSLocalNetworkUsageDescription</key>
-		<string>Clero uses local network access to share your wallpapers with nearby devices and provide seamless cloud synchronization of your wallpaper collection.</string>
-		<!-- File System Access - For importing/exporting wallpapers -->
-		<key>NSDocumentsFolderUsageDescription</key>
-		<string>Clero needs access to your documents to import reference images and export high-quality wallpaper collections for backup and sharing.</string>
-		<!-- App Tracking Transparency - For analytics and ads -->
-		<key>NSUserTrackingUsageDescription</key>
-		<string>Clero would like to access app-related data for delivering personalized content and improving your experience. Your privacy is important to us, and you can change this permission anytime in Settings.</string>
-		<!-- Contacts Access - For sharing features -->
-		<key>NSContactsUsageDescription</key>
-		<string>Clero would like to access your contacts to easily share your created wallpapers with friends and family directly from the app.</string>
-		<key>UIStatusBarHidden</key>
-		<true/>
-		<key>UIViewControllerBasedStatusBarAppearance</key>
-		<false/>
-	</dict>
+<dict>
+	<key>CADisableMinimumFrameDurationOnPhone</key>
+	<true/>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>$(DEVELOPMENT_LANGUAGE)</string>
+	<key>CFBundleDisplayName</key>
+	<string>Clero</string>
+	<key>CFBundleExecutable</key>
+	<string>$(EXECUTABLE_NAME)</string>
+	<key>CFBundleIdentifier</key>
+	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundleName</key>
+	<string>clero</string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+	<key>CFBundleShortVersionString</key>
+	<string>$(FLUTTER_BUILD_NAME)</string>
+	<key>CFBundleSignature</key>
+	<string>????</string>
+	<key>CFBundleVersion</key>
+	<string>$(FLUTTER_BUILD_NUMBER)</string>
+	<key>LSRequiresIPhoneOS</key>
+	<true/>
+	<key>NSCameraUsageDescription</key>
+	<string>Clero would like to access your camera to capture photos for creating personalized wallpapers with AI style transfer and custom background generation features.</string>
+	<key>NSContactsUsageDescription</key>
+	<string>Clero would like to access your contacts to easily share your created wallpapers with friends and family directly from the app.</string>
+	<key>NSDocumentsFolderUsageDescription</key>
+	<string>Clero needs access to your documents to import reference images and export high-quality wallpaper collections for backup and sharing.</string>
+	<key>NSLocalNetworkUsageDescription</key>
+	<string>Clero uses local network access to share your wallpapers with nearby devices and provide seamless cloud synchronization of your wallpaper collection.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Clero would like to access your microphone to enable voice prompts for wallpaper generation, making it easier to describe your creative ideas hands-free.</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>Clero would like to save your generated wallpapers to your photo library. This allows you to easily access and set your AI-created wallpapers as your device background.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Clero needs access to your photo library to save the beautiful wallpapers you generate. Your generated AI wallpapers will be saved to your Photos app for easy access and use.</string>
+	<key>NSUserTrackingUsageDescription</key>
+	<string>Clero would like to access app-related data for delivering personalized content and improving your experience. Your privacy is important to us, and you can change this permission anytime in Settings.</string>
+	<key>UIApplicationSupportsIndirectInputEvents</key>
+	<true/>
+	<key>UILaunchStoryboardName</key>
+	<string>LaunchScreen</string>
+	<key>UIMainStoryboardFile</key>
+	<string>Main</string>
+	<key>UIStatusBarHidden</key>
+	<false/>
+	<key>UISupportedInterfaceOrientations</key>
+	<array>
+		<string>UIInterfaceOrientationPortrait</string>
+	</array>
+	<key>UISupportedInterfaceOrientations~ipad</key>
+	<array>
+		<string>UIInterfaceOrientationLandscapeLeft</string>
+		<string>UIInterfaceOrientationLandscapeRight</string>
+		<string>UIInterfaceOrientationPortrait</string>
+		<string>UIInterfaceOrientationPortraitUpsideDown</string>
+	</array>
+	<key>UIViewControllerBasedStatusBarAppearance</key>
+	<false/>
+</dict>
 </plist>

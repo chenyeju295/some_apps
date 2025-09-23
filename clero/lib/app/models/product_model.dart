@@ -21,33 +21,41 @@ class ProductModel {
     this.badge,
   });
 
-  // Fixed product configurations based on requirements
   static const List<ProductModel> products = [
     ProductModel(
-      productId: '10003',
-      title: 'Crystal Starter Pack',
-      description: 'Perfect for beginners to explore AI wallpaper generation',
-      price: 2.49,
-      crystals: 3600,
+      productId: 'com.joinclero.ios4.99',
+      title: 'Crystal Pack',
+      description: '',
+      price: 4.99,
+      crystals: 2600,
       iconPath: 'assets/icons/crystal_small.png',
       isPopular: false,
     ),
     ProductModel(
-      productId: '10005',
-      title: 'Crystal Power Pack',
-      description: 'Most popular choice for regular creators',
-      price: 4.99,
-      crystals: 7200,
+      productId: 'com.joinclero.ios9.99',
+      title: 'Crystal Pack',
+      description: '',
+      price: 9.99,
+      crystals: 5200,
       iconPath: 'assets/icons/crystal_medium.png',
       isPopular: true,
       badge: 'POPULAR',
     ),
     ProductModel(
-      productId: '10010',
-      title: 'Crystal Master Pack',
-      description: 'Ultimate pack for power users and professionals',
-      price: 9.99,
-      crystals: 11000,
+      productId: 'com.joinclero.ios19.99',
+      title: 'Crystal Pack',
+      description: '',
+      price: 19.99,
+      crystals: 10400,
+      iconPath: 'assets/icons/crystal_large.png',
+      isPopular: false,
+    ),
+    ProductModel(
+      productId: 'com.joinclero.ios49.99',
+      title: 'Crystal Pack',
+      description: '',
+      price: 49.99,
+      crystals: 26000,
       iconPath: 'assets/icons/crystal_large.png',
       isPopular: false,
       badge: 'BEST VALUE',
@@ -56,7 +64,7 @@ class ProductModel {
 
   // Helper methods
   String get formattedPrice => '\$${price.toStringAsFixed(2)}';
-  
+
   String get formattedCrystals {
     if (crystals >= 1000) {
       return '${(crystals / 1000).toStringAsFixed(1)}K';
@@ -67,7 +75,9 @@ class ProductModel {
   double get crystalsPerDollar => crystals / price;
 
   String get valueRating {
-    final avgValue = products.map((p) => p.crystalsPerDollar).reduce((a, b) => a + b) / products.length;
+    final avgValue =
+        products.map((p) => p.crystalsPerDollar).reduce((a, b) => a + b) /
+            products.length;
     if (crystalsPerDollar > avgValue * 1.1) {
       return 'BEST VALUE';
     } else if (crystalsPerDollar > avgValue * 0.9) {
@@ -93,11 +103,11 @@ class ProductModel {
 
 // Crystal consumption rates for different operations
 class CrystalCosts {
-  static const int basicGeneration = 100;     // Standard wallpaper generation
-  static const int hdGeneration = 150;        // HD quality generation
-  static const int premiumGeneration = 200;   // Premium with advanced features
-  static const int batchGeneration = 80;      // Per image in batch (discount)
-  
+  static const int basicGeneration = 100; // Standard wallpaper generation
+  static const int hdGeneration = 150; // HD quality generation
+  static const int premiumGeneration = 200; // Premium with advanced features
+  static const int batchGeneration = 80; // Per image in batch (discount)
+
   static const Map<String, int> generationCosts = {
     'standard': basicGeneration,
     'hd': hdGeneration,
@@ -106,12 +116,12 @@ class CrystalCosts {
   };
 
   static const Map<String, int> styleCosts = {
-    'realistic': 0,      // Base cost
-    'artistic': 50,      // Additional cost
-    'anime': 30,         // Additional cost
-    'fantasy': 70,       // Additional cost
-    'vintage': 20,       // Additional cost
-    'modern': 40,        // Additional cost
+    'realistic': 0, // Base cost
+    'artistic': 50, // Additional cost
+    'anime': 30, // Additional cost
+    'fantasy': 70, // Additional cost
+    'vintage': 20, // Additional cost
+    'modern': 40, // Additional cost
   };
 
   static int calculateGenerationCost({
@@ -119,7 +129,9 @@ class CrystalCosts {
     required String style,
     bool isBatch = false,
   }) {
-    int baseCost = isBatch ? batchGeneration : (generationCosts[quality] ?? basicGeneration);
+    int baseCost = isBatch
+        ? batchGeneration
+        : (generationCosts[quality] ?? basicGeneration);
     int styleCost = styleCosts[style] ?? 0;
     return baseCost + styleCost;
   }

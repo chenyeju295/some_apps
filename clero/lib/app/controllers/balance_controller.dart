@@ -1,6 +1,7 @@
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
-import '../services/storage_service.dart';
+import '../services/in_app_purchase_service.dart';
 
 class BalanceController extends GetxController {
   // Observable crystal balance
@@ -32,12 +33,45 @@ class BalanceController extends GetxController {
   void addCrystals(int amount) {
     crystalBalance.value += amount;
     _saveBalance();
-    Get.snackbar(
-      'Crystals Added!',
-      '+$amount crystals added to your balance',
-      snackPosition: SnackPosition.TOP,
-      duration: const Duration(seconds: 2),
-    );
+  }
+
+  // Purchase crystals using in-app purchase
+  Future<bool> purchaseCrystals(
+      String productId, int crystals, double price) async {
+    try {
+      // Use the InAppPurchaseService
+      final iapService = Get.find<InAppPurchaseService>();
+
+      if (!iapService.isAvailable.value) {
+        Get.snackbar(
+          'Store Unavailable',
+          'The App Store is not available right now.',
+          snackPosition: SnackPosition.TOP,
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+          duration: const Duration(seconds: 3),
+        );
+        return false;
+      }
+
+      // Start the purchase process
+      final success = await iapService.purchaseProduct(productId);
+
+      // Note: The actual crystal addition is handled in the InAppPurchaseService
+      // when the purchase is successfully completed
+
+      return success;
+    } catch (e) {
+      Get.snackbar(
+        'Purchase Failed',
+        'Could not complete the purchase. Please try again.',
+        snackPosition: SnackPosition.TOP,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+        duration: const Duration(seconds: 3),
+      );
+      return false;
+    }
   }
 
   // Spend crystals (for generations)

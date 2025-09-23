@@ -5,6 +5,7 @@ import '../controllers/generation_controller.dart';
 import '../controllers/favorites_controller.dart';
 import '../controllers/settings_controller.dart';
 import '../controllers/balance_controller.dart';
+import '../services/in_app_purchase_service.dart';
 
 class NavigationBinding extends Bindings {
   @override

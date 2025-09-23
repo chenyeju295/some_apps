@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import '../controllers/settings_controller.dart';
 import '../controllers/balance_controller.dart';
 import '../models/product_model.dart';
+import '../widgets/shop_dialog.dart';
 
 class SettingsView extends GetView<SettingsController> {
   const SettingsView({super.key});
@@ -60,7 +61,6 @@ class SettingsView extends GetView<SettingsController> {
               children: _buildAboutTiles(),
             ),
             const SizedBox(height: 86),
-
           ],
         ),
       ),
@@ -107,7 +107,6 @@ class SettingsView extends GetView<SettingsController> {
         ));
   }
 
-
   Widget _buildDataManagementTiles() {
     return Column(
       children: [
@@ -118,8 +117,10 @@ class SettingsView extends GetView<SettingsController> {
               const Text('Re-enable confirmation dialog before generation'),
           onTap: controller.resetGenerationConfirm,
         ),
-        const Divider(height: 1,color: Colors.grey,),
-
+        const Divider(
+          height: 1,
+          color: Colors.grey,
+        ),
         ListTile(
           leading: const Icon(Icons.delete_forever, color: Colors.red),
           title: const Text('Clear All Data'),
@@ -150,7 +151,10 @@ class SettingsView extends GetView<SettingsController> {
             'https://h5.joinclero.com/clero/about/index.html#/privacy-agreement', // 示例隐私政策链接
           ),
         ),
-        const Divider(height: 1,color: Colors.grey,),
+        const Divider(
+          height: 1,
+          color: Colors.grey,
+        ),
         ListTile(
           leading: Container(
             padding: const EdgeInsets.all(8),
@@ -168,8 +172,6 @@ class SettingsView extends GetView<SettingsController> {
             'https://h5.joinclero.com/clero/about/index.html#/user-agreement', // 示例服务条款链接
           ),
         ),
-
-
       ],
     );
   }
@@ -460,168 +462,7 @@ class SettingsView extends GetView<SettingsController> {
   void _showShopDialog(BuildContext context) {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Crystal Shop'),
-        content: SizedBox(
-          width: double.maxFinite,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: ProductModel.products.map((product) {
-              return _buildProductCard(context, product);
-            }).toList(),
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Close'),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildProductCard(BuildContext context, ProductModel product) {
-    final balanceController = Get.find<BalanceController>();
-
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Theme.of(context).cardColor,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: product.isPopular
-              ? Theme.of(context).primaryColor
-              : Theme.of(context).dividerColor,
-          width: product.isPopular ? 2 : 1,
-        ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: Theme.of(context).primaryColor.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Icon(
-                  Icons.diamond,
-                  color: Theme.of(context).primaryColor,
-                  size: 20,
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Text(
-                          product.title,
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        if (product.badge != null) ...[
-                          const SizedBox(width: 8),
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 6, vertical: 2),
-                            decoration: BoxDecoration(
-                              color: product.isPopular
-                                  ? Colors.orange
-                                  : Colors.green,
-                              borderRadius: BorderRadius.circular(4),
-                            ),
-                            child: Text(
-                              product.badge!,
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 10,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ],
-                    ),
-                    Text(
-                      '${product.crystals} Crystals',
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Theme.of(context).primaryColor,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  Text(
-                    product.formattedPrice,
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  Text(
-                    '${product.crystalsPerDollar.toInt()} crystals/\$',
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: Theme.of(context)
-                          .textTheme
-                          .bodySmall
-                          ?.color
-                          ?.withOpacity(0.7),
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-          const SizedBox(height: 8),
-          Text(
-            product.description,
-            style: TextStyle(
-              fontSize: 12,
-              color: Theme.of(context)
-                  .textTheme
-                  .bodySmall
-                  ?.color
-                  ?.withOpacity(0.7),
-            ),
-          ),
-          const SizedBox(height: 12),
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton(
-              onPressed: () {
-                // Simulate purchase (in real app, this would use in_app_purchase)
-                balanceController.addCrystals(product.crystals);
-                Navigator.of(context).pop();
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: product.isPopular
-                    ? Theme.of(context).primaryColor
-                    : Theme.of(context).colorScheme.secondary,
-                foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-              ),
-              child: Text('Buy ${product.formattedPrice}'),
-            ),
-          ),
-        ],
-      ),
+      builder: (context) => const ShopDialog(),
     );
   }
 
