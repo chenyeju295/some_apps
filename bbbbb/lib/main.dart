@@ -7,8 +7,6 @@ import 'services/storage_service.dart';
 import 'services/purchase_service.dart';
 import 'screens/main_screen.dart';
 import 'theme/app_theme.dart';
-import 'widgets/common/startup_error_handler.dart';
-import 'utils/app_initializer.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
