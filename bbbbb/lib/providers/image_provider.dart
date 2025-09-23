@@ -1,4 +1,7 @@
+import 'dart:io';
+import 'dart:typed_data';
 import 'package:flutter/foundation.dart';
+import 'package:path_provider/path_provider.dart';
 import '../models/generated_image.dart';
 import '../services/ai_service.dart';
 import '../services/storage_service.dart';
@@ -56,25 +59,32 @@ class ImageProvider extends ChangeNotifier {
     _currentPrompt = prompt;
 
     try {
-      // Call AI service to generate image
+      // Call Together AI service to generate image
       final AIImageResponse response = await AIService.instance.generateImage(
         prompt: prompt,
-        model: 'dall-e-3',
-        size: '1024x1024',
-        quality: 'standard',
+        style: style.name,
       );
 
       if (response.data.isNotEmpty) {
         final AIImageData imageData = response.data.first;
 
+        // Save image bytes to local storage if available
+        String imageUrl = imageData.url;
+        if (response.imageBytes != null) {
+          imageUrl = await _saveImageToLocal(response.imageBytes!, prompt);
+        }
+
         // Create GeneratedImage model
         final GeneratedImage generatedImage = GeneratedImage(
           id: DateTime.now().millisecondsSinceEpoch.toString(),
-          prompt: imageData.revisedPrompt ?? prompt,
-          imageUrl: imageData.url,
+          prompt: imageData.originalPrompt ?? prompt,
+          imageUrl: imageUrl,
           createdAt: DateTime.now(),
           style: style,
           tokensUsed: 1,
+          title: _generateImageTitle(prompt),
+          description: imageData.revisedPrompt,
+          tags: _extractTagsFromPrompt(prompt),
         );
 
         // Save to storage
@@ -104,6 +114,69 @@ class ImageProvider extends ChangeNotifier {
       _setGenerating(false);
       _currentPrompt = '';
     }
+  }
+
+  /// Save image bytes to local storage
+  Future<String> _saveImageToLocal(Uint8List imageBytes, String prompt) async {
+    try {
+      final directory = await getApplicationDocumentsDirectory();
+      final imagesDir = Directory('${directory.path}/generated_images');
+      if (!await imagesDir.exists()) {
+        await imagesDir.create(recursive: true);
+      }
+
+      final timestamp = DateTime.now().millisecondsSinceEpoch;
+      final fileName = 'generated_${timestamp}.png';
+      final file = File('${imagesDir.path}/$fileName');
+
+      await file.writeAsBytes(imageBytes);
+      return file.path;
+    } catch (e) {
+      // Fallback to using a placeholder URL
+      return 'assets/images/ocean_background.png';
+    }
+  }
+
+  /// Generate a title from the prompt
+  String _generateImageTitle(String prompt) {
+    final words = prompt.split(' ').take(4).join(' ');
+    return words.length > 30 ? '${words.substring(0, 30)}...' : words;
+  }
+
+  /// Extract tags from prompt
+  List<String> _extractTagsFromPrompt(String prompt) {
+    final tags = <String>[];
+    final lowerPrompt = prompt.toLowerCase();
+
+    // Ocean-related tags
+    const oceanTags = [
+      'underwater',
+      'ocean',
+      'sea',
+      'marine',
+      'coral',
+      'reef',
+      'fish',
+      'turtle',
+      'whale',
+      'dolphin',
+      'shark',
+      'diving',
+      'scuba',
+      'freediving',
+      'shipwreck',
+      'kelp',
+      'anemone',
+    ];
+
+    for (final tag in oceanTags) {
+      if (lowerPrompt.contains(tag)) {
+        tags.add(tag);
+      }
+    }
+
+    // Limit to 5 tags
+    return tags.take(5).toList();
   }
 
   Future<void> toggleImageFavorite(String imageId) async {

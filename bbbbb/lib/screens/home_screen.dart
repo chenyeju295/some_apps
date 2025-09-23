@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/user_provider.dart';
 import '../providers/content_provider.dart';
-import '../providers/image_provider.dart' as img_provider;
+import '../providers/enhanced_image_provider.dart';
 import '../models/diving_content.dart';
 import '../theme/app_theme.dart';
 import '../widgets/home/welcome_section.dart';
@@ -11,6 +11,7 @@ import '../widgets/home/enhanced_images_section.dart';
 import '../widgets/common/error_message.dart';
 import '../widgets/animations/ocean_animations.dart';
 import 'content_detail_screen.dart';
+import '../utils/navigation_helper.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -51,11 +52,11 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   Future<void> _refreshData() async {
     final userProvider = context.read<UserProvider>();
     final contentProvider = context.read<ContentProvider>();
-    final imageProvider = context.read<img_provider.ImageProvider>();
+    final imageProvider = context.read<EnhancedImageProvider>();
 
     await Future.wait([
       contentProvider.loadContent(),
-      imageProvider.loadImages(),
+      imageProvider.initialize(),
     ]);
 
     if (userProvider.error != null) {
@@ -70,7 +71,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   }
 
   void _navigateToGenerateScreen() {
-    DefaultTabController.of(context).animateTo(2);
+    NavigationHelper.navigateToGenerate(context);
   }
 
   void _navigateToContentDetail(
@@ -182,8 +183,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     return Scaffold(
       body: RefreshIndicator(
         onRefresh: _refreshData,
-        child: Consumer3<UserProvider, ContentProvider,
-            img_provider.ImageProvider>(
+        child: Consumer3<UserProvider, ContentProvider, EnhancedImageProvider>(
           builder:
               (context, userProvider, contentProvider, imageProvider, child) {
             if (userProvider.isLoading || contentProvider.isLoading) {
@@ -253,7 +253,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                     child: EnhancedImagesSection(
                       images: imageProvider.recentImages.take(6).toList(),
                       onSeeAllPressed: () {
-                        DefaultTabController.of(context).animateTo(2);
+                        NavigationHelper.navigateToGenerate(context);
                       },
                     ),
                   ),

@@ -1,11 +1,13 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
 import 'package:http/http.dart' as http;
+import 'together_ai_service.dart';
 
 class AIService {
   static const String _baseUrl = 'https://api.openai.com/v1';
   static const String _imageGenerationEndpoint = '/images/generations';
-  
+
   static AIService? _instance;
   static AIService get instance => _instance ??= AIService._internal();
   AIService._internal();
@@ -18,7 +20,43 @@ class AIService {
 
   bool get isConfigured => _apiKey != null && _apiKey!.isNotEmpty;
 
+  /// Generate image using Together AI FLUX.1 model (primary)
   Future<AIImageResponse> generateImage({
+    required String prompt,
+    String style = 'realistic',
+    int width = 1024,
+    int height = 1024,
+  }) async {
+    try {
+      // Enhance prompt with style
+      final enhancedPrompt =
+          OceanImageStyles.enhancePromptWithStyle(prompt, style);
+
+      // Use Together AI as primary service
+      final result = await TogetherAIService.instance.generateImage(
+        prompt: enhancedPrompt,
+        width: width,
+        height: height,
+      );
+
+      if (result.isSuccess) {
+        return AIImageResponse.fromTogetherAI(
+          imageBytes: result.imageBytes!,
+          prompt: result.prompt!,
+          originalPrompt: result.originalPrompt!,
+          seed: result.seed,
+        );
+      } else {
+        throw AIServiceException(result.error ?? 'Failed to generate image');
+      }
+    } catch (e) {
+      if (e is AIServiceException) rethrow;
+      throw AIServiceException('Image generation failed: ${e.toString()}');
+    }
+  }
+
+  /// Fallback to OpenAI DALL-E (if needed)
+  Future<AIImageResponse> generateImageWithDALLE({
     required String prompt,
     String model = 'dall-e-3',
     String size = '1024x1024',
@@ -67,26 +105,34 @@ class AIService {
 
   String _enhanceUnderwaterPrompt(String originalPrompt) {
     // Enhance user prompts with underwater/diving context
-    const String underwaterContext = 
+    const String underwaterContext =
         "Underwater scene, marine environment, diving perspective, "
         "ocean depths, aquatic life, coral reefs, submarine lighting, "
         "crystal clear water, marine ecosystem, ";
-    
+
     // Check if prompt already contains underwater keywords
     final String lowerPrompt = originalPrompt.toLowerCase();
     final List<String> underwaterKeywords = [
-      'underwater', 'ocean', 'sea', 'diving', 'marine', 'coral', 
-      'fish', 'reef', 'submarine', 'aquatic', 'diving'
+      'underwater',
+      'ocean',
+      'sea',
+      'diving',
+      'marine',
+      'coral',
+      'fish',
+      'reef',
+      'submarine',
+      'aquatic',
+      'diving'
     ];
-    
-    bool hasUnderwaterContext = underwaterKeywords.any(
-      (keyword) => lowerPrompt.contains(keyword)
-    );
-    
+
+    bool hasUnderwaterContext =
+        underwaterKeywords.any((keyword) => lowerPrompt.contains(keyword));
+
     if (!hasUnderwaterContext) {
       return "$underwaterContext$originalPrompt";
     }
-    
+
     return originalPrompt;
   }
 
@@ -108,10 +154,14 @@ class AIService {
 class AIImageResponse {
   final List<AIImageData> data;
   final DateTime created;
+  final Uint8List? imageBytes;
+  final String? seed;
 
   AIImageResponse({
     required this.data,
     required this.created,
+    this.imageBytes,
+    this.seed,
   });
 
   factory AIImageResponse.fromJson(Map<String, dynamic> json) {
@@ -122,15 +172,37 @@ class AIImageResponse {
       created: DateTime.fromMillisecondsSinceEpoch(json['created'] * 1000),
     );
   }
+
+  factory AIImageResponse.fromTogetherAI({
+    required Uint8List imageBytes,
+    required String prompt,
+    required String originalPrompt,
+    String? seed,
+  }) {
+    return AIImageResponse(
+      data: [
+        AIImageData(
+          url: '', // No URL for base64 data
+          revisedPrompt: prompt,
+          originalPrompt: originalPrompt,
+        ),
+      ],
+      created: DateTime.now(),
+      imageBytes: imageBytes,
+      seed: seed,
+    );
+  }
 }
 
 class AIImageData {
   final String url;
   final String? revisedPrompt;
+  final String? originalPrompt;
 
   AIImageData({
     required this.url,
     this.revisedPrompt,
+    this.originalPrompt,
   });
 
   factory AIImageData.fromJson(Map<String, dynamic> json) {

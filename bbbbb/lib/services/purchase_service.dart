@@ -17,40 +17,47 @@ class PurchaseService {
 
   // Product IDs and their corresponding token amounts
   static const Map<String, TokenPackage> tokenPackages = {
-    'dive_tokens_starter': TokenPackage(
-      id: 'dive_tokens_starter',
-      price: '\$2.99',
+    '999900': TokenPackage(
+      id: '999900',
+      price: '\$0.99',
       tokens: 100,
       name: 'Starter Pack',
       description: '100 tokens for underwater adventures',
     ),
-    'dive_tokens_explorer': TokenPackage(
-      id: 'dive_tokens_explorer',
+    '999901': TokenPackage(
+      id: '999901',
       price: '\$4.99',
-      tokens: 200,
+      tokens: 500,
       name: 'Explorer Pack',
-      description: '200 tokens with bonus value',
+      description: '500 tokens with bonus value',
     ),
-    'dive_tokens_adventurer': TokenPackage(
-      id: 'dive_tokens_adventurer',
+    '999902': TokenPackage(
+      id: '999902',
       price: '\$9.99',
-      tokens: 450,
+      tokens: 1200,
       name: 'Adventurer Pack',
-      description: '450 tokens - most popular choice',
+      description: '1200 tokens - most popular choice',
     ),
-    'dive_tokens_pro': TokenPackage(
-      id: 'dive_tokens_pro',
+    '999903': TokenPackage(
+      id: '999903',
       price: '\$19.99',
-      tokens: 1000,
-      name: 'Pro Diver Pack',
-      description: '1000 tokens for unlimited exploration',
-    ),
-    'dive_tokens_master': TokenPackage(
-      id: 'dive_tokens_master',
-      price: '\$49.99',
       tokens: 2500,
+      name: 'Pro Diver Pack',
+      description: '2500 tokens for unlimited exploration',
+    ),
+    '999904': TokenPackage(
+      id: '999904',
+      price: '\$49.99',
+      tokens: 7000,
       name: 'Master Pack',
-      description: '2500 tokens - ultimate diving experience',
+      description: '7000 tokens - ultimate diving experience',
+    ),
+    '999905': TokenPackage(
+      id: '999905',
+      price: '\$99.99',
+      tokens: 15000,
+      name: 'Ocean Legend Pack',
+      description: '15000 tokens - professional level',
     ),
   };
 
@@ -195,6 +202,14 @@ class PurchaseService {
 
   void dispose() {
     _subscription.cancel();
+  }
+
+  // Convenience methods for development
+  bool get isInitialized => _isInitialized;
+  bool get isAvailable => _isInitialized;
+
+  List<TokenPackage> getAvailablePackages() {
+    return tokenPackages.values.toList();
   }
 }
 

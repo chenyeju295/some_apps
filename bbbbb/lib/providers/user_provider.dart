@@ -14,10 +14,12 @@ class UserProvider extends ChangeNotifier {
   bool get hasTokens => tokenBalance > 0;
 
   Future<void> initializeUser() async {
+    // Use scheduleMicrotask to avoid setState during build
+    await Future.microtask(() {});
     _setLoading(true);
     try {
       _userProgress = await StorageService.instance.getUserProgress();
-      
+
       // Create new user if doesn't exist
       if (_userProgress == null) {
         _userProgress = UserProgress(
@@ -35,7 +37,7 @@ class UserProvider extends ChangeNotifier {
         );
         await _saveUserProgress();
       }
-      
+
       _error = null;
     } catch (e) {
       _error = 'Failed to initialize user: ${e.toString()}';
@@ -55,7 +57,7 @@ class UserProvider extends ChangeNotifier {
         tokenBalance: _userProgress!.tokenBalance - amount,
         totalTokensUsed: _userProgress!.totalTokensUsed + amount,
       );
-      
+
       await _saveUserProgress();
       notifyListeners();
       return true;
@@ -73,7 +75,7 @@ class UserProvider extends ChangeNotifier {
       _userProgress = _userProgress!.copyWith(
         tokenBalance: _userProgress!.tokenBalance + amount,
       );
-      
+
       await _saveUserProgress();
       notifyListeners();
     } catch (e) {
@@ -89,7 +91,7 @@ class UserProvider extends ChangeNotifier {
       _userProgress = _userProgress!.copyWith(
         totalImagesGenerated: _userProgress!.totalImagesGenerated + 1,
       );
-      
+
       await _saveUserProgress();
       notifyListeners();
     } catch (e) {
@@ -102,10 +104,12 @@ class UserProvider extends ChangeNotifier {
     if (_userProgress == null) return;
 
     try {
-      final List<String> bookmarks = List.from(_userProgress!.bookmarkedContentIds);
+      final List<String> bookmarks =
+          List.from(_userProgress!.bookmarkedContentIds);
       if (!bookmarks.contains(contentId)) {
         bookmarks.add(contentId);
-        _userProgress = _userProgress!.copyWith(bookmarkedContentIds: bookmarks);
+        _userProgress =
+            _userProgress!.copyWith(bookmarkedContentIds: bookmarks);
         await _saveUserProgress();
         notifyListeners();
       }
@@ -119,7 +123,8 @@ class UserProvider extends ChangeNotifier {
     if (_userProgress == null) return;
 
     try {
-      final List<String> bookmarks = List.from(_userProgress!.bookmarkedContentIds);
+      final List<String> bookmarks =
+          List.from(_userProgress!.bookmarkedContentIds);
       bookmarks.remove(contentId);
       _userProgress = _userProgress!.copyWith(bookmarkedContentIds: bookmarks);
       await _saveUserProgress();
@@ -138,7 +143,8 @@ class UserProvider extends ChangeNotifier {
     if (_userProgress == null) return;
 
     try {
-      final List<String> completed = List.from(_userProgress!.completedContentIds);
+      final List<String> completed =
+          List.from(_userProgress!.completedContentIds);
       if (!completed.contains(contentId)) {
         completed.add(contentId);
         _userProgress = _userProgress!.copyWith(completedContentIds: completed);
@@ -159,9 +165,11 @@ class UserProvider extends ChangeNotifier {
     if (_userProgress == null) return;
 
     try {
-      final Map<String, int> categoryProgress = Map.from(_userProgress!.categoryProgress);
+      final Map<String, int> categoryProgress =
+          Map.from(_userProgress!.categoryProgress);
       categoryProgress[category] = progress;
-      _userProgress = _userProgress!.copyWith(categoryProgress: categoryProgress);
+      _userProgress =
+          _userProgress!.copyWith(categoryProgress: categoryProgress);
       await _saveUserProgress();
       notifyListeners();
     } catch (e) {
@@ -187,7 +195,8 @@ class UserProvider extends ChangeNotifier {
     }
   }
 
-  UserPreferences get preferences => _userProgress?.preferences ?? const UserPreferences();
+  UserPreferences get preferences =>
+      _userProgress?.preferences ?? const UserPreferences();
 
   Future<void> resetUserData() async {
     try {
@@ -220,7 +229,8 @@ class UserProvider extends ChangeNotifier {
   int get totalImagesGenerated => _userProgress?.totalImagesGenerated ?? 0;
   int get totalTokensUsed => _userProgress?.totalTokensUsed ?? 0;
   int get totalBookmarks => _userProgress?.bookmarkedContentIds.length ?? 0;
-  int get totalCompletedContent => _userProgress?.completedContentIds.length ?? 0;
+  int get totalCompletedContent =>
+      _userProgress?.completedContentIds.length ?? 0;
   DateTime? get joinDate => _userProgress?.joinDate;
   DateTime? get lastActiveDate => _userProgress?.lastActiveDate;
 

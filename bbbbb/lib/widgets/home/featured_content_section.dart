@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../models/diving_content.dart';
 import '../../theme/app_theme.dart';
+import '../../utils/navigation_helper.dart';
 
 class FeaturedContentSection extends StatelessWidget {
   final List<DivingContent> featuredContent;
@@ -36,7 +37,7 @@ class FeaturedContentSection extends StatelessWidget {
               TextButton(
                 onPressed: () {
                   // Navigate to learn tab
-                  DefaultTabController.of(context).animateTo(1);
+                  NavigationHelper.navigateToLearn(context);
                 },
                 child: Text(
                   'See All',

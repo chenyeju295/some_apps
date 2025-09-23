@@ -47,6 +47,9 @@ dependencies:
   # HTTP requests for AI API
   http: ^1.1.0
   
+  # Path manipulation
+  path: ^1.8.3
+  
   # Privacy compliance
   app_tracking_transparency: ^2.0.4
   

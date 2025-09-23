@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/user_provider.dart';
-import '../providers/image_provider.dart' as img_provider;
+import '../providers/enhanced_image_provider.dart';
 import '../services/purchase_service.dart';
 import '../theme/app_theme.dart';
 import 'bookmarks_screen.dart';
@@ -40,7 +40,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Consumer2<UserProvider, img_provider.ImageProvider>(
+      body: Consumer2<UserProvider, EnhancedImageProvider>(
         builder: (context, userProvider, imageProvider, child) {
           return CustomScrollView(
             slivers: [

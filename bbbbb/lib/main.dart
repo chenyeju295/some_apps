@@ -2,23 +2,30 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'providers/user_provider.dart';
 import 'providers/content_provider.dart';
-import 'providers/image_provider.dart' as img_provider;
+import 'providers/enhanced_image_provider.dart';
 import 'services/storage_service.dart';
-import 'services/ai_service.dart';
 import 'services/purchase_service.dart';
 import 'screens/main_screen.dart';
 import 'theme/app_theme.dart';
+import 'widgets/common/startup_error_handler.dart';
+import 'utils/app_initializer.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
+
   // Initialize services
   await StorageService.instance.initialize();
-  await PurchaseService.instance.initialize();
-  
+
+  // Try to initialize purchase service, but don't fail if it doesn't work
+  try {
+    await PurchaseService.instance.initialize();
+  } catch (e) {
+    print('Purchase service initialization failed (development mode): $e');
+  }
+
   // TODO: Set your OpenAI API key here
   // AIService.instance.setApiKey('your-openai-api-key');
-  
+
   runApp(const DiveExplorerApp());
 }
 
@@ -31,7 +38,7 @@ class DiveExplorerApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (_) => UserProvider()),
         ChangeNotifierProvider(create: (_) => ContentProvider()),
-        ChangeNotifierProvider(create: (_) => img_provider.ImageProvider()),
+        ChangeNotifierProvider(create: (_) => EnhancedImageProvider()),
       ],
       child: Consumer<UserProvider>(
         builder: (context, userProvider, child) {
@@ -39,8 +46,8 @@ class DiveExplorerApp extends StatelessWidget {
             title: 'DiveExplorer',
             theme: AppTheme.lightTheme,
             darkTheme: AppTheme.darkTheme,
-            themeMode: userProvider.preferences.darkMode 
-                ? ThemeMode.dark 
+            themeMode: userProvider.preferences.darkMode
+                ? ThemeMode.dark
                 : ThemeMode.light,
             home: const SplashScreen(),
             debugShowCheckedModeBanner: false,
@@ -58,7 +65,7 @@ class SplashScreen extends StatefulWidget {
   State<SplashScreen> createState() => _SplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen> 
+class _SplashScreenState extends State<SplashScreen>
     with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
@@ -67,12 +74,12 @@ class _SplashScreenState extends State<SplashScreen>
   @override
   void initState() {
     super.initState();
-    
+
     _animationController = AnimationController(
       duration: const Duration(seconds: 3),
       vsync: this,
     );
-    
+
     _fadeAnimation = Tween<double>(
       begin: 0.0,
       end: 1.0,
@@ -80,7 +87,7 @@ class _SplashScreenState extends State<SplashScreen>
       parent: _animationController,
       curve: const Interval(0.0, 0.6, curve: Curves.easeOut),
     ));
-    
+
     _scaleAnimation = Tween<double>(
       begin: 0.8,
       end: 1.0,
@@ -88,28 +95,31 @@ class _SplashScreenState extends State<SplashScreen>
       parent: _animationController,
       curve: const Interval(0.2, 0.8, curve: Curves.elasticOut),
     ));
-    
-    _initializeApp();
+
+    // Delay initialization to avoid build conflicts
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _initializeApp();
+    });
   }
 
   Future<void> _initializeApp() async {
     _animationController.forward();
-    
+
     // Initialize providers
     final userProvider = context.read<UserProvider>();
     final contentProvider = context.read<ContentProvider>();
-    final imageProvider = context.read<img_provider.ImageProvider>();
-    
+    final imageProvider = context.read<EnhancedImageProvider>();
+
     await Future.wait([
       userProvider.initializeUser(),
       contentProvider.loadContent(),
-      imageProvider.loadImages(),
+      imageProvider.initialize(),
     ]);
-    
+
     // Wait for animation to complete
     await _animationController.forward();
     await Future.delayed(const Duration(milliseconds: 500));
-    
+
     if (mounted) {
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(builder: (_) => const MainScreen()),
@@ -159,9 +169,9 @@ class _SplashScreenState extends State<SplashScreen>
                         color: AppTheme.oceanBlue,
                       ),
                     ),
-                    
+
                     const SizedBox(height: 24),
-                    
+
                     // App Name
                     const Text(
                       'DiveExplorer',
@@ -172,9 +182,9 @@ class _SplashScreenState extends State<SplashScreen>
                         letterSpacing: 1.2,
                       ),
                     ),
-                    
+
                     const SizedBox(height: 8),
-                    
+
                     // Tagline
                     Text(
                       'Explore the Ocean Depths',
@@ -184,9 +194,9 @@ class _SplashScreenState extends State<SplashScreen>
                         letterSpacing: 0.5,
                       ),
                     ),
-                    
+
                     const SizedBox(height: 48),
-                    
+
                     // Loading indicator
                     SizedBox(
                       width: 40,

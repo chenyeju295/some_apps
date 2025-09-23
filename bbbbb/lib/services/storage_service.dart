@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/user_progress.dart';
 import '../models/generated_image.dart';
-import '../models/diving_content.dart';
 
 class StorageService {
   static const String _userProgressKey = 'user_progress';
@@ -11,7 +10,8 @@ class StorageService {
   static const String _completedContentKey = 'completed_content';
 
   static StorageService? _instance;
-  static StorageService get instance => _instance ??= StorageService._internal();
+  static StorageService get instance =>
+      _instance ??= StorageService._internal();
   StorageService._internal();
 
   SharedPreferences? _prefs;
@@ -22,7 +22,8 @@ class StorageService {
 
   SharedPreferences get prefs {
     if (_prefs == null) {
-      throw Exception('StorageService not initialized. Call initialize() first.');
+      throw Exception(
+          'StorageService not initialized. Call initialize() first.');
     }
     return _prefs!;
   }
@@ -165,7 +166,8 @@ class StorageService {
 
   // Token Management
   Future<int> getTokenBalance() async {
-    return prefs.getInt('token_balance') ?? 50; // Default 50 tokens for new users
+    return prefs.getInt('token_balance') ??
+        50; // Default 50 tokens for new users
   }
 
   Future<bool> setTokenBalance(int balance) async {
@@ -194,7 +196,8 @@ class StorageService {
     return await prefs.setBool(key, value);
   }
 
-  Future<String> getStringSetting(String key, {String defaultValue = ''}) async {
+  Future<String> getStringSetting(String key,
+      {String defaultValue = ''}) async {
     return prefs.getString(key) ?? defaultValue;
   }
 
