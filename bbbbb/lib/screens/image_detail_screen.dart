@@ -26,8 +26,10 @@ class _ImageDetailScreenState extends State<ImageDetailScreen> {
 
   @override
   void initState() {
+    currentImage = widget.image;
     super.initState();
     _currentIndex = widget.initialIndex;
+    print("初始化");
   }
 
   @override
@@ -35,7 +37,7 @@ class _ImageDetailScreenState extends State<ImageDetailScreen> {
     super.dispose();
   }
 
-  GeneratedImage get currentImage => widget.allImages[_currentIndex];
+ late GeneratedImage  currentImage ;
 
   @override
   Widget build(BuildContext context) {
@@ -118,6 +120,7 @@ class _ImageDetailScreenState extends State<ImageDetailScreen> {
             ),
           );
         },
+        autoplay: true,
         itemCount: widget.allImages.length,
         index: widget.initialIndex,
         pagination: SwiperPagination(
@@ -137,12 +140,11 @@ class _ImageDetailScreenState extends State<ImageDetailScreen> {
         onIndexChanged: (index) {
           setState(() {
             _currentIndex = index;
+            currentImage = widget.allImages[index];
           });
         },
         viewportFraction: 1.0,
         scale: 1.0,
-        loop: false,
-        duration: 300,
         curve: Curves.easeInOut,
       ),
     );
