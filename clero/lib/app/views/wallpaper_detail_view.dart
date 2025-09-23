@@ -333,9 +333,7 @@ class _WallpaperDetailViewState extends State<WallpaperDetailView>
                               ? null
                               : _downloadWallpaper,
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.white ,
-                            foregroundColor: Colors.white,
-                            shape: RoundedRectangleBorder(
+                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(16),
                             ),
                             padding: const EdgeInsets.all(12),
@@ -360,9 +358,7 @@ class _WallpaperDetailViewState extends State<WallpaperDetailView>
                               ? null
                               : _shareWallpaper,
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.white ,
-                            foregroundColor: Colors.white,
-                            shape: RoundedRectangleBorder(
+                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(16),
                             ),
                             padding: const EdgeInsets.all(12),

@@ -347,7 +347,7 @@ class SettingsView extends GetView<SettingsController> {
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
-                    'Crystals are used to generate AI wallpapers. Each generation costs ${CrystalCosts.basicGeneration}-${CrystalCosts.premiumGeneration} crystals.',
+                    'Crystals are used to generate AI wallpapers. Each generation costs ${CrystalCosts.hdGeneration} crystals.',
                     style: const TextStyle(
                       color: Colors.white,
                       fontSize: 12,

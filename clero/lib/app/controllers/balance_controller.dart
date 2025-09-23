@@ -20,7 +20,7 @@ class BalanceController extends GetxController {
   void _loadBalance() {
     final box = GetStorage();
     crystalBalance.value =
-        box.read(_crystalBalanceKey) ?? 1000; // Start with 1000 crystals
+        box.read(_crystalBalanceKey) ?? 200; // Start with 1000 crystals
   }
 
   // Save balance to storage

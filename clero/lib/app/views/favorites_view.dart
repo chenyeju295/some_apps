@@ -1,3 +1,4 @@
+import 'package:clero/app/controllers/navigation_controller.dart' show NavigationController;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -236,7 +237,8 @@ class FavoritesView extends GetView<FavoritesController> {
             width: double.infinity,
             height: 56,
             child: ElevatedButton(
-              onPressed: () => Get.back(),
+              onPressed: () =>                  Get.find<NavigationController>().navigateToGeneration()
+    ,
               style: ElevatedButton.styleFrom(
                 backgroundColor: Get.theme.primaryColor,
                 foregroundColor: Colors.white,
@@ -265,19 +267,7 @@ class FavoritesView extends GetView<FavoritesController> {
               ),
             ),
           ),
-          if (isFavoritesTab) ...[
-            const SizedBox(height: 24),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                _buildQuickTip(Icons.favorite, 'Tap heart to favorite'),
-                const SizedBox(width: 20),
-                _buildQuickTip(Icons.download, 'Long press to save'),
-                const SizedBox(width: 20),
-                _buildQuickTip(Icons.share, 'Share with friends'),
-              ],
-            ),
-          ],
+
         ],
       ),
     );
