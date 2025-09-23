@@ -71,7 +71,7 @@ class _LearnScreenState extends State<LearnScreen>
               _buildKnowledgeCategories(userProvider),
 
               // Featured Learning Path
-              _buildFeaturedLearningPath(contentProvider, userProvider),
+              // _buildFeaturedLearningPath(contentProvider, userProvider),
 
               // Quick Tips Section
               _buildQuickTipsSection(),

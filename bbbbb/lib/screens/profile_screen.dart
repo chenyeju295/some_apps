@@ -173,126 +173,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
               ),
 
-              // Statistics Section
-              SliverToBoxAdapter(
-                child: Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 16),
-                  padding: const EdgeInsets.all(20),
-                  decoration: AppTheme.cardDecoration,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Your Statistics',
-                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                              fontWeight: FontWeight.bold,
-                            ),
-                      ),
-                      const SizedBox(height: 16),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: _StatItem(
-                              icon: Icons.auto_awesome,
-                              label: 'Images Generated',
-                              value: '${userProvider.totalImagesGenerated}',
-                              color: AppTheme.tropicalTeal,
-                            ),
-                          ),
-                          Expanded(
-                            child: _StatItem(
-                              icon: Icons.bookmark,
-                              label: 'Bookmarks',
-                              value: '${userProvider.totalBookmarks}',
-                              color: AppTheme.coral,
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 16),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: _StatItem(
-                              icon: Icons.school,
-                              label: 'Lessons Completed',
-                              value: '${userProvider.totalCompletedContent}',
-                              color: AppTheme.oceanBlue,
-                            ),
-                          ),
-                          Expanded(
-                            child: _StatItem(
-                              icon: Icons.calendar_today,
-                              label: 'Days Active',
-                              value: '${userProvider.daysActive}',
-                              color: AppTheme.deepSeaGreen,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-
-              // Quick Actions Section
-              SliverToBoxAdapter(
-                child: Container(
-                  margin:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  decoration: AppTheme.cardDecoration,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.all(20),
-                        child: Text(
-                          'Quick Actions',
-                          style:
-                              Theme.of(context).textTheme.titleLarge?.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                        ),
-                      ),
-                      _QuickActionItem(
-                        icon: Icons.bookmark,
-                        title: 'My Bookmarks',
-                        subtitle: '${userProvider.totalBookmarks} saved items',
-                        color: AppTheme.coral,
-                        onTap: () {
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (context) => const BookmarksScreen(),
-                            ),
-                          );
-                        },
-                      ),
-                      _QuickActionItem(
-                        icon: Icons.school,
-                        title: 'Learning Progress',
-                        subtitle:
-                            '${userProvider.totalCompletedContent} lessons completed',
-                        color: AppTheme.seaFoam,
-                        onTap: () {
-                          // Navigate to learn tab
-                          DefaultTabController.of(context).animateTo(1);
-                        },
-                      ),
-                      _QuickActionItem(
-                        icon: Icons.auto_awesome,
-                        title: 'My Creations',
-                        subtitle:
-                            '${userProvider.totalImagesGenerated} images generated',
-                        color: AppTheme.tropicalTeal,
-                        onTap: () {
-                          // Navigate to generate tab
-                          DefaultTabController.of(context).animateTo(2);
-                        },
-                      ),
-                    ],
-                  ),
-                ),
-              ),
 
               // Settings Section
               SliverToBoxAdapter(
@@ -312,49 +192,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   ),
                         ),
                       ),
-                      _SettingItem(
-                        icon: Icons.dark_mode,
-                        title: 'Dark Mode',
-                        subtitle: 'Toggle dark theme',
-                        trailing: Switch(
-                          value: userProvider.preferences.darkMode,
-                          onChanged: (value) {
-                            final newPrefs = userProvider.preferences.copyWith(
-                              darkMode: value,
-                            );
-                            userProvider.updatePreferences(newPrefs);
-                          },
-                        ),
-                      ),
-                      _SettingItem(
-                        icon: Icons.notifications,
-                        title: 'Notifications',
-                        subtitle: 'Enable push notifications',
-                        trailing: Switch(
-                          value: userProvider.preferences.notificationsEnabled,
-                          onChanged: (value) {
-                            final newPrefs = userProvider.preferences.copyWith(
-                              notificationsEnabled: value,
-                            );
-                            userProvider.updatePreferences(newPrefs);
-                          },
-                        ),
-                      ),
-                      _SettingItem(
-                        icon: Icons.volume_up,
-                        title: 'Sound Effects',
-                        subtitle: 'Enable app sounds',
-                        trailing: Switch(
-                          value: userProvider.preferences.soundEffectsEnabled,
-                          onChanged: (value) {
-                            final newPrefs = userProvider.preferences.copyWith(
-                              soundEffectsEnabled: value,
-                            );
-                            userProvider.updatePreferences(newPrefs);
-                          },
-                        ),
-                      ),
-                      const Divider(),
+
+
                       _SettingItem(
                         icon: Icons.privacy_tip,
                         title: 'Privacy Policy',
@@ -532,6 +371,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   void _showAboutDialog(BuildContext context) {
     showAboutDialog(
       context: context,
+
       applicationName: 'DiveExplorer',
       applicationVersion: '1.0.0',
       applicationIcon: Container(

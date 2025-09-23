@@ -14,15 +14,11 @@ void main() async {
   // Initialize services
   await StorageService.instance.initialize();
 
-  // Try to initialize purchase service, but don't fail if it doesn't work
-  try {
+   try {
     await PurchaseService.instance.initialize();
   } catch (e) {
     print('Purchase service initialization failed (development mode): $e');
   }
-
-  // TODO: Set your OpenAI API key here
-  // AIService.instance.setApiKey('your-openai-api-key');
 
   runApp(const DiveExplorerApp());
 }

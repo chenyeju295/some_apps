@@ -85,38 +85,6 @@ class _ContentDetailScreenState extends State<ContentDetailScreen>
     }
   }
 
-  void _toggleBookmark() async {
-    final userProvider = context.read<UserProvider>();
-
-    if (_isBookmarked) {
-      await userProvider.removeBookmark(widget.content.id);
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: const Text('Removed from bookmarks'),
-            backgroundColor: AppTheme.coral,
-            behavior: SnackBarBehavior.floating,
-          ),
-        );
-      }
-    } else {
-      await userProvider.addBookmark(widget.content.id);
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: const Text('Added to bookmarks'),
-            backgroundColor: AppTheme.seaFoam,
-            behavior: SnackBarBehavior.floating,
-          ),
-        );
-      }
-    }
-
-    setState(() {
-      _isBookmarked = !_isBookmarked;
-    });
-  }
-
   void _markAsCompleted() async {
     if (_isCompleted) return;
 
@@ -188,21 +156,8 @@ class _ContentDetailScreenState extends State<ContentDetailScreen>
         onPressed: () => Navigator.of(context).pop(),
       ),
       actions: [
-        IconButton(
-          icon: Icon(
-            _isBookmarked ? Icons.bookmark : Icons.bookmark_border,
-            color: Colors.white,
-          ),
-          onPressed: _toggleBookmark,
-        ),
-        IconButton(
-          icon: const Icon(Icons.share, color: Colors.white),
-          onPressed: () {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Sharing feature coming soon!')),
-            );
-          },
-        ),
+
+
       ],
       flexibleSpace: FlexibleSpaceBar(
         background: Stack(
@@ -629,20 +584,6 @@ class _ContentDetailScreenState extends State<ContentDetailScreen>
                 style: _isCompleted
                     ? AppTheme.secondaryButtonStyle
                     : AppTheme.primaryButtonStyle,
-              ),
-            ),
-            const SizedBox(width: 12),
-            IconButton(
-              onPressed: _toggleBookmark,
-              icon: Icon(
-                _isBookmarked ? Icons.bookmark : Icons.bookmark_border,
-                color: _isBookmarked ? AppTheme.coral : Colors.grey,
-              ),
-              style: IconButton.styleFrom(
-                backgroundColor: _isBookmarked
-                    ? AppTheme.coral.withOpacity(0.1)
-                    : Colors.grey.withOpacity(0.1),
-                padding: const EdgeInsets.all(12),
               ),
             ),
           ],

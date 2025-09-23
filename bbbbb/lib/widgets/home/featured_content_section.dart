@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import '../../models/diving_content.dart';
 import '../../theme/app_theme.dart';
 import '../../utils/navigation_helper.dart';
+import '../animations/ocean_animations.dart';
 
 class FeaturedContentSection extends StatelessWidget {
   final List<DivingContent> featuredContent;
@@ -15,9 +17,6 @@ class FeaturedContentSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (featuredContent.isEmpty) {
-      return const SizedBox.shrink();
-    }
 
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
@@ -36,7 +35,6 @@ class FeaturedContentSection extends StatelessWidget {
               const Spacer(),
               TextButton(
                 onPressed: () {
-                  // Navigate to learn tab
                   NavigationHelper.navigateToLearn(context);
                 },
                 child: Text(
@@ -51,15 +49,20 @@ class FeaturedContentSection extends StatelessWidget {
           ),
           const SizedBox(height: 12),
           SizedBox(
-            height: 200,
+            height: 240,
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
+              physics: const BouncingScrollPhysics(),
               itemCount: featuredContent.length,
               itemBuilder: (context, index) {
                 final content = featuredContent[index];
-                return _FeaturedContentCard(
-                  content: content,
-                  onTap: () => onContentTap(content),
+                return OceanAnimations.staggeredList(
+                  index: index,
+                  delay: 100,
+                  child: _FeaturedContentCard(
+                    content: content,
+                    onTap: () => onContentTap(content),
+                  ),
                 );
               },
             ),
@@ -84,49 +87,111 @@ class _FeaturedContentCard extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        width: 280,
+        width: 300,
         margin: const EdgeInsets.only(right: 16),
-        decoration: AppTheme.cardDecoration,
+        decoration: AppTheme.animatedCardDecoration.copyWith(
+          boxShadow: [
+            BoxShadow(
+              color: AppTheme.oceanBlue.withOpacity(0.1),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Image section
             Container(
-              height: 100,
+              height: 120,
               decoration: BoxDecoration(
-                gradient: AppTheme.oceanGradient,
+                gradient:
+                    content.imageUrl != null ? null : AppTheme.oceanGradient,
                 borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(12),
-                  topRight: Radius.circular(12),
+                  topLeft: Radius.circular(16),
+                  topRight: Radius.circular(16),
                 ),
               ),
               child: Stack(
                 children: [
+                  // Background image or gradient with icon
                   Positioned.fill(
-                    child: Icon(
-                      _getCategoryIcon(content.category),
-                      color: Colors.white.withOpacity(0.3),
-                      size: 60,
+                    child: content.imageUrl != null
+                        ? _buildContentImage()
+                        : Container(
+                            decoration: BoxDecoration(
+                              gradient: AppTheme.oceanGradient,
+                              borderRadius: const BorderRadius.only(
+                                topLeft: Radius.circular(16),
+                                topRight: Radius.circular(16),
+                              ),
+                            ),
+                            child: Center(
+                              child: Icon(
+                                _getCategoryIcon(content.category),
+                                color: Colors.white.withOpacity(0.3),
+                                size: 60,
+                              ),
+                            ),
+                          ),
+                  ),
+
+                  // Overlay gradient for better text readability
+                  Positioned.fill(
+                    child: Container(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: [
+                            Colors.transparent,
+                            Colors.black.withOpacity(0.3),
+                          ],
+                        ),
+                        borderRadius: const BorderRadius.only(
+                          topLeft: Radius.circular(16),
+                          topRight: Radius.circular(16),
+                        ),
+                      ),
                     ),
                   ),
+                  // Category badge
                   Positioned(
                     top: 12,
                     right: 12,
                     child: Container(
                       padding: const EdgeInsets.symmetric(
-                        horizontal: 8,
-                        vertical: 4,
+                        horizontal: 10,
+                        vertical: 6,
                       ),
                       decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.9),
-                        borderRadius: BorderRadius.circular(12),
+                        color: Colors.white.withOpacity(0.95),
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(
+                          color: AppTheme.seaFoam.withOpacity(0.3),
+                          width: 1,
+                        ),
                       ),
-                      child: Text(
-                        content.category,
-                        style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                              color: AppTheme.deepNavy,
-                              fontWeight: FontWeight.w600,
-                            ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            _getCategoryIcon(content.category),
+                            color: AppTheme.oceanBlue,
+                            size: 14,
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            content.category,
+                            style: Theme.of(context)
+                                .textTheme
+                                .labelSmall
+                                ?.copyWith(
+                                  color: AppTheme.deepNavy,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                          ),
+                        ],
                       ),
                     ),
                   ),
@@ -197,7 +262,7 @@ class _FeaturedContentCard extends StatelessWidget {
             // Content section
             Expanded(
               child: Padding(
-                padding: const EdgeInsets.all(16),
+                padding: const EdgeInsets.all(18),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -206,38 +271,45 @@ class _FeaturedContentCard extends StatelessWidget {
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
                             color: AppTheme.deepNavy,
                             fontWeight: FontWeight.bold,
+                            height: 1.3,
                           ),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
 
-                    const SizedBox(height: 8),
+                    const SizedBox(height: 10),
 
                     Expanded(
                       child: Text(
                         _getContentPreview(content.content),
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
                               color: Colors.grey[600],
+                              height: 1.4,
                             ),
-                        maxLines: 2,
+                        maxLines: 3,
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
 
-                    const SizedBox(height: 8),
+                    const SizedBox(height: 12),
 
                     // Tags
                     Wrap(
-                      spacing: 4,
-                      children: content.tags.take(2).map((tag) {
+                      spacing: 6,
+                      runSpacing: 4,
+                      children: content.tags.take(3).map((tag) {
                         return Container(
                           padding: const EdgeInsets.symmetric(
-                            horizontal: 6,
-                            vertical: 2,
+                            horizontal: 8,
+                            vertical: 4,
                           ),
                           decoration: BoxDecoration(
-                            color: AppTheme.lightAqua,
-                            borderRadius: BorderRadius.circular(8),
+                            color: AppTheme.lightAqua.withOpacity(0.7),
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(
+                              color: AppTheme.seaFoam.withOpacity(0.3),
+                              width: 1,
+                            ),
                           ),
                           child: Text(
                             tag,
@@ -246,6 +318,7 @@ class _FeaturedContentCard extends StatelessWidget {
                                 .labelSmall
                                 ?.copyWith(
                                   color: AppTheme.oceanBlue,
+                                  fontWeight: FontWeight.w500,
                                 ),
                           ),
                         );
@@ -253,6 +326,108 @@ class _FeaturedContentCard extends StatelessWidget {
                     ),
                   ],
                 ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildContentImage() {
+    if (content.imageUrl == null) {
+      return Container(
+        decoration: BoxDecoration(
+          gradient: AppTheme.oceanGradient,
+          borderRadius: const BorderRadius.only(
+            topLeft: Radius.circular(16),
+            topRight: Radius.circular(16),
+          ),
+        ),
+      );
+    }
+
+    final imageUrl = content.imageUrl!;
+
+    // Check if it's a local asset
+    if (imageUrl.startsWith('assets/')) {
+      return ClipRRect(
+        borderRadius: const BorderRadius.only(
+          topLeft: Radius.circular(16),
+          topRight: Radius.circular(16),
+        ),
+        child: Image.asset(
+          imageUrl,
+          fit: BoxFit.cover,
+          width: double.infinity,
+          height: double.infinity,
+          errorBuilder: (context, error, stackTrace) {
+            return _buildFallbackImage();
+          },
+        ),
+      );
+    } else {
+      // Network image
+      return ClipRRect(
+        borderRadius: const BorderRadius.only(
+          topLeft: Radius.circular(16),
+          topRight: Radius.circular(16),
+        ),
+        child: CachedNetworkImage(
+          imageUrl: imageUrl,
+          fit: BoxFit.cover,
+          width: double.infinity,
+          height: double.infinity,
+          placeholder: (context, url) => _buildImagePlaceholder(),
+          errorWidget: (context, url, error) => _buildFallbackImage(),
+        ),
+      );
+    }
+  }
+
+  Widget _buildImagePlaceholder() {
+    return Container(
+      decoration: BoxDecoration(
+        gradient: AppTheme.sunlightDecoration.gradient,
+        borderRadius: const BorderRadius.only(
+          topLeft: Radius.circular(16),
+          topRight: Radius.circular(16),
+        ),
+      ),
+      child: const Center(
+        child: CircularProgressIndicator(
+          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+          strokeWidth: 2,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildFallbackImage() {
+    return Container(
+      decoration: BoxDecoration(
+        gradient: AppTheme.oceanGradient,
+        borderRadius: const BorderRadius.only(
+          topLeft: Radius.circular(16),
+          topRight: Radius.circular(16),
+        ),
+      ),
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              _getCategoryIcon(content.category),
+              color: Colors.white.withOpacity(0.6),
+              size: 40,
+            ),
+            const SizedBox(height: 8),
+            Text(
+              content.category,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 12,
+                fontWeight: FontWeight.w500,
               ),
             ),
           ],

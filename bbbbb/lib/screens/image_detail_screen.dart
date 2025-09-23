@@ -31,7 +31,7 @@ class _ImageDetailScreenState extends State<ImageDetailScreen> {
   void initState() {
     super.initState();
     _currentIndex = widget.initialIndex;
-    controller.move(widget.initialIndex,animation: true);
+    controller.move(widget.initialIndex, animation: true);
   }
 
   @override
@@ -57,8 +57,7 @@ class _ImageDetailScreenState extends State<ImageDetailScreen> {
               fontWeight: FontWeight.w500,
             ),
           ),
-          actions: [
-          ],
+          actions: [],
         ),
         body: Column(
           children: [
@@ -113,9 +112,7 @@ class _ImageDetailScreenState extends State<ImageDetailScreen> {
           size: 20,
         ),
         onIndexChanged: (index) {
-          setState(() {
-
-          });
+          setState(() {});
           _currentIndex = index;
         },
         viewportFraction: 1.0,
@@ -399,7 +396,5 @@ class _ImageDetailScreenState extends State<ImageDetailScreen> {
 
     await imageProvider.toggleImageFavorite(currentImage.id);
     setState(() {});
-
-
   }
 }
