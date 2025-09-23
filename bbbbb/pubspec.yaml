@@ -53,6 +53,9 @@ dependencies:
   # Privacy compliance
   app_tracking_transparency: ^2.0.4
   
+  # WebView for in-app browsing
+  webview_flutter: ^4.4.2
+  
   # Image handling
   cached_network_image: ^3.3.0
   

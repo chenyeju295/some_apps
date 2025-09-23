@@ -5,6 +5,7 @@ import '../providers/enhanced_image_provider.dart';
 import '../services/purchase_service.dart';
 import '../theme/app_theme.dart';
 import 'bookmarks_screen.dart';
+import 'webview_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -173,7 +174,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
               ),
 
-
               // Settings Section
               SliverToBoxAdapter(
                 child: Container(
@@ -192,18 +192,25 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   ),
                         ),
                       ),
-
-
                       _SettingItem(
                         icon: Icons.privacy_tip,
                         title: 'Privacy Policy',
                         subtitle: 'View our privacy policy',
-                        onTap: () {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                                content: Text('Privacy policy coming soon')),
-                          );
-                        },
+                        onTap: () => _openWebView(
+                          context,
+                          'Privacy Policy',
+                          'https://www.baidu.com',
+                        ),
+                      ),
+                      _SettingItem(
+                        icon: Icons.description,
+                        title: 'Terms of Service',
+                        subtitle: 'View terms and conditions',
+                        onTap: () => _openWebView(
+                          context,
+                          'Terms of Service',
+                          'https://www.baidu.com',
+                        ),
                       ),
                       _SettingItem(
                         icon: Icons.info,
@@ -238,6 +245,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
   String _formatDate(DateTime? date) {
     if (date == null) return 'Unknown';
     return '${date.month}/${date.year}';
+  }
+
+  void _openWebView(BuildContext context, String title, String url) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => WebViewScreen(
+          title: title,
+          url: url,
+        ),
+      ),
+    );
   }
 
   void _showTokenPurchaseDialog(
@@ -371,7 +390,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
   void _showAboutDialog(BuildContext context) {
     showAboutDialog(
       context: context,
-
       applicationName: 'DiveExplorer',
       applicationVersion: '1.0.0',
       applicationIcon: Container(
@@ -424,78 +442,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
             child: const Text('Reset'),
           ),
         ],
-      ),
-    );
-  }
-}
-
-class _QuickActionItem extends StatelessWidget {
-  final IconData icon;
-  final String title;
-  final String subtitle;
-  final Color color;
-  final VoidCallback onTap;
-
-  const _QuickActionItem({
-    required this.icon,
-    required this.title,
-    required this.subtitle,
-    required this.color,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: onTap,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-          child: Row(
-            children: [
-              Container(
-                width: 48,
-                height: 48,
-                decoration: BoxDecoration(
-                  color: color.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Icon(
-                  icon,
-                  color: color,
-                  size: 24,
-                ),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      title,
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.w600,
-                          ),
-                    ),
-                    const SizedBox(height: 2),
-                    Text(
-                      subtitle,
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: Colors.grey[600],
-                          ),
-                    ),
-                  ],
-                ),
-              ),
-              Icon(
-                Icons.arrow_forward_ios,
-                color: Colors.grey[400],
-                size: 16,
-              ),
-            ],
-          ),
-        ),
       ),
     );
   }
@@ -555,7 +501,6 @@ class _SettingItem extends StatelessWidget {
   final IconData icon;
   final String title;
   final String subtitle;
-  final Widget? trailing;
   final VoidCallback? onTap;
   final Color? titleColor;
 
@@ -563,7 +508,6 @@ class _SettingItem extends StatelessWidget {
     required this.icon,
     required this.title,
     required this.subtitle,
-    this.trailing,
     this.onTap,
     this.titleColor,
   });
@@ -583,7 +527,7 @@ class _SettingItem extends StatelessWidget {
         ),
       ),
       subtitle: Text(subtitle),
-      trailing: trailing ?? const Icon(Icons.chevron_right),
+      trailing: const Icon(Icons.chevron_right),
       onTap: onTap,
     );
   }
