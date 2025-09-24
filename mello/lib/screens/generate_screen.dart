@@ -105,9 +105,11 @@ class _GenerateScreenState extends State<GenerateScreen> {
                           children: [
                             const Text(
                               'AI Ocean Studio',
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 1,
                               style: TextStyle(
                                 color: Colors.white,
-                                fontSize: 24,
+                                fontSize: 20,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
@@ -652,7 +654,7 @@ class _GenerateScreenState extends State<GenerateScreen> {
                         ),
                         SizedBox(width: 8),
                         Text(
-                          '(1 Token)',
+                          '(200 Token)',
                           style: TextStyle(color: Colors.white70, fontSize: 12),
                         ),
                       ],

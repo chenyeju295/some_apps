@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:flutter/foundation.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
 
 class PurchaseService {
@@ -14,6 +15,8 @@ class PurchaseService {
   Function(String productId, int tokens)? onPurchaseSuccess;
   Function(String error)? onPurchaseError;
   Function()? onPurchaseRestored;
+  Function()? onPurchaseStarted;
+  Function()? onPurchasePending;
 
   // Product IDs and their corresponding token amounts
   static const Map<String, TokenPackage> tokenPackages = {
@@ -51,13 +54,6 @@ class PurchaseService {
       tokens: 7000,
       name: 'Master Pack',
       description: '7000 tokens - ultimate diving experience',
-    ),
-    '999905': TokenPackage(
-      id: '999905',
-      price: '\$99.99',
-      tokens: 15000,
-      name: 'Ocean Legend Pack',
-      description: '15000 tokens - professional level',
     ),
   };
 
@@ -115,8 +111,29 @@ class PurchaseService {
   }
 
   Future<bool> purchaseTokens(String productId) async {
+    // Debug mode: simulate successful purchase for testing
+    if (kDebugMode && !_isInitialized) {
+      print('Debug mode: Simulating purchase for $productId');
+      onPurchaseStarted?.call();
+
+      // Simulate processing delay
+      await Future.delayed(const Duration(seconds: 1));
+
+      final TokenPackage? package = getTokenPackage(productId);
+      if (package != null) {
+        print(
+            'Debug mode: Simulating successful purchase of ${package.tokens} tokens');
+        onPurchaseSuccess?.call(productId, package.tokens);
+        return true;
+      } else {
+        onPurchaseError?.call('Product not found');
+        return false;
+      }
+    }
+
     if (!_isInitialized) {
       print('Purchase service not initialized');
+      onPurchaseError?.call('Purchase service not initialized');
       return false;
     }
 
@@ -126,14 +143,22 @@ class PurchaseService {
 
       if (product == null) {
         print('Product not found: $productId');
+        onPurchaseError?.call('Product not found');
         return false;
       }
+
+      print('Starting purchase for product: $productId');
+      onPurchaseStarted?.call();
 
       final PurchaseParam purchaseParam =
           PurchaseParam(productDetails: product);
       final bool success = await _inAppPurchase.buyConsumable(
         purchaseParam: purchaseParam,
       );
+
+      if (!success) {
+        onPurchaseError?.call('Failed to initiate purchase');
+      }
 
       return success;
     } catch (e) {
@@ -148,16 +173,19 @@ class PurchaseService {
       switch (purchaseDetails.status) {
         case PurchaseStatus.pending:
           print('Purchase pending: ${purchaseDetails.productID}');
+          onPurchasePending?.call();
           break;
         case PurchaseStatus.purchased:
+        case PurchaseStatus.restored:
+
           _handleSuccessfulPurchase(purchaseDetails);
           break;
         case PurchaseStatus.error:
           _handlePurchaseError(purchaseDetails);
           break;
-        case PurchaseStatus.restored:
-          _handleRestoredPurchase(purchaseDetails);
-          break;
+        // case PurchaseStatus.restored:
+        //   _handleRestoredPurchase(purchaseDetails);
+        //   break;
         case PurchaseStatus.canceled:
           print('Purchase canceled: ${purchaseDetails.productID}');
           onPurchaseError?.call('Purchase was canceled');
@@ -175,7 +203,12 @@ class PurchaseService {
 
     final TokenPackage? package = getTokenPackage(purchaseDetails.productID);
     if (package != null) {
+      print('Adding ${package.tokens} tokens to user balance');
       onPurchaseSuccess?.call(purchaseDetails.productID, package.tokens);
+    } else {
+      print(
+          'Warning: Token package not found for product ${purchaseDetails.productID}');
+      onPurchaseError?.call('Invalid product configuration');
     }
   }
 
@@ -236,9 +269,9 @@ class TokenPackage {
   }
 
   String get valueDescription {
-    if (id == 'dive_tokens_adventurer') {
+    if (id == '999902') {
       return 'MOST POPULAR';
-    } else if (id == 'dive_tokens_pro' || id == 'dive_tokens_master') {
+    } else if (id == '999903' || id == '999904') {
       return 'BEST VALUE';
     }
     return '';

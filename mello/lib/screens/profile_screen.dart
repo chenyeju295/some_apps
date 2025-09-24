@@ -4,7 +4,6 @@ import '../providers/user_provider.dart';
 import '../providers/enhanced_image_provider.dart';
 import '../services/purchase_service.dart';
 import '../theme/app_theme.dart';
-import 'bookmarks_screen.dart';
 import 'webview_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -15,6 +14,8 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
+  bool _isPurchasing = false;
+
   @override
   void initState() {
     super.initState();
@@ -24,17 +25,54 @@ class _ProfileScreenState extends State<ProfileScreen> {
   void _setupPurchaseService() {
     final userProvider = context.read<UserProvider>();
 
-    PurchaseService.instance.onPurchaseSuccess = (productId, tokens) {
-      userProvider.addTokens(tokens);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Successfully purchased $tokens tokens!')),
-      );
+    PurchaseService.instance.onPurchaseStarted = () {
+      if (mounted) {
+        setState(() {
+          _isPurchasing = true;
+        });
+      }
+    };
+
+    PurchaseService.instance.onPurchasePending = () {
+      if (mounted) {
+        setState(() {
+          _isPurchasing = true;
+        });
+      }
+    };
+
+    PurchaseService.instance.onPurchaseSuccess = (productId, tokens) async {
+      if (mounted) {
+        setState(() {
+          _isPurchasing = false;
+        });
+
+        await userProvider.addTokens(tokens);
+
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Successfully purchased $tokens tokens!'),
+              backgroundColor: Colors.green,
+            ),
+          );
+        }
+      }
     };
 
     PurchaseService.instance.onPurchaseError = (error) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Purchase failed: $error')),
-      );
+      if (mounted) {
+        setState(() {
+          _isPurchasing = false;
+        });
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Purchase failed: $error'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
     };
   }
 
@@ -162,10 +200,24 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       SizedBox(
                         width: double.infinity,
                         child: ElevatedButton.icon(
-                          onPressed: () =>
-                              _showTokenPurchaseDialog(context, userProvider),
-                          icon: const Icon(Icons.add_circle),
-                          label: const Text('Buy More Tokens'),
+                          onPressed: _isPurchasing
+                              ? null
+                              : () => _showTokenPurchaseDialog(
+                                  context, userProvider),
+                          icon: _isPurchasing
+                              ? const SizedBox(
+                                  width: 16,
+                                  height: 16,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    valueColor: AlwaysStoppedAnimation<Color>(
+                                        Colors.white),
+                                  ),
+                                )
+                              : const Icon(Icons.add_circle),
+                          label: Text(_isPurchasing
+                              ? 'Processing...'
+                              : 'Buy More Tokens'),
                           style: AppTheme.primaryButtonStyle,
                         ),
                       ),
@@ -370,10 +422,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   fontWeight: FontWeight.bold,
                                 ),
                           ),
-                          onTap: () {
-                            PurchaseService.instance.purchaseTokens(entry.key);
-                            Navigator.pop(context);
-                          },
+                          onTap: _isPurchasing
+                              ? null
+                              : () {
+                                  PurchaseService.instance
+                                      .purchaseTokens(entry.key);
+                                  Navigator.pop(context);
+                                },
                         ),
                       );
                     },
@@ -443,56 +498,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
         ],
       ),
-    );
-  }
-}
-
-class _StatItem extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final String value;
-  final Color color;
-
-  const _StatItem({
-    required this.icon,
-    required this.label,
-    required this.value,
-    required this.color,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Container(
-          width: 50,
-          height: 50,
-          decoration: BoxDecoration(
-            color: color.withOpacity(0.1),
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: Icon(
-            icon,
-            color: color,
-            size: 24,
-          ),
-        ),
-        const SizedBox(height: 8),
-        Text(
-          value,
-          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                color: AppTheme.deepNavy,
-                fontWeight: FontWeight.bold,
-              ),
-        ),
-        Text(
-          label,
-          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: Colors.grey[600],
-              ),
-          textAlign: TextAlign.center,
-        ),
-      ],
     );
   }
 }

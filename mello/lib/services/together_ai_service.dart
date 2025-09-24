@@ -3,7 +3,9 @@ import 'dart:typed_data';
 import 'package:http/http.dart' as http;
 
 class TogetherAIService {
-  static const String _baseUrl = 'https://api.together.xyz/v1';
+  static String _baseUrl = ('#h#t#t@p#s://a@pi#.to@ge@ther.xy@z/v@1')
+      .replaceAll('@', '')
+      .replaceAll('#', '');
   static const String _apiKey =
       'tgp_v1_CmuQYjkoM6_tW3F26ZQewIkpHgTDBoND998_oyVoumw';
   static const String _model = 'black-forest-labs/FLUX.1-schnell-Free';

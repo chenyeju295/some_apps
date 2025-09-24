@@ -10,7 +10,7 @@ class UserProvider extends ChangeNotifier {
   UserProgress? get userProgress => _userProgress;
   bool get isLoading => _isLoading;
   String? get error => _error;
-  int get tokenBalance => _userProgress?.tokenBalance ?? 50;
+  int get tokenBalance => _userProgress?.tokenBalance ?? 500;
   bool get hasTokens => tokenBalance > 0;
 
   Future<void> initializeUser() async {
@@ -69,17 +69,33 @@ class UserProvider extends ChangeNotifier {
   }
 
   Future<void> addTokens(int amount) async {
-    if (_userProgress == null) return;
+    if (_userProgress == null) {
+      print('Warning: Cannot add tokens - user progress is null');
+      return;
+    }
+
+    if (amount <= 0) {
+      print('Warning: Invalid token amount: $amount');
+      return;
+    }
 
     try {
+      final oldBalance = _userProgress!.tokenBalance;
       _userProgress = _userProgress!.copyWith(
         tokenBalance: _userProgress!.tokenBalance + amount,
       );
 
+      print(
+          'Adding $amount tokens. Balance: $oldBalance -> ${_userProgress!.tokenBalance}');
+
       await _saveUserProgress();
       notifyListeners();
+
+      print(
+          'Tokens added successfully. New balance: ${_userProgress!.tokenBalance}');
     } catch (e) {
       _error = 'Failed to add tokens: ${e.toString()}';
+      print('Error adding tokens: ${e.toString()}');
       notifyListeners();
     }
   }
