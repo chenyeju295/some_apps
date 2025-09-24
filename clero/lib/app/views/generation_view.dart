@@ -169,6 +169,8 @@ class _GenerationViewState extends State<GenerationView>
 
                         // Recent generations
                         _buildRecentGenerations(context),
+                        const SizedBox(height: 84),
+
                       ],
                     ),
                   ),
