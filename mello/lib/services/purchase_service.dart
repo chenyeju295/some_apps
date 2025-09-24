@@ -20,40 +20,33 @@ class PurchaseService {
 
   // Product IDs and their corresponding token amounts
   static const Map<String, TokenPackage> tokenPackages = {
-    '999900': TokenPackage(
-      id: '999900',
-      price: '\$0.99',
-      tokens: 100,
+    'com.testee.yesyes.level1': TokenPackage(
+      id: 'com.testee.yesyes.level1',
+      price: '\$4.99',
+      tokens: 3500,
       name: 'Starter Pack',
       description: '100 tokens for underwater adventures',
     ),
-    '999901': TokenPackage(
-      id: '999901',
-      price: '\$4.99',
-      tokens: 500,
+    'com.testee.yesyes.level2': TokenPackage(
+      id: 'com.testee.yesyes.level2',
+      price: '\$9.99',
+      tokens: 7000,
       name: 'Explorer Pack',
       description: '500 tokens with bonus value',
     ),
-    '999902': TokenPackage(
-      id: '999902',
-      price: '\$9.99',
-      tokens: 1200,
-      name: 'Adventurer Pack',
-      description: '1200 tokens - most popular choice',
-    ),
-    '999903': TokenPackage(
-      id: '999903',
+    'com.testee.yesyes.level3': TokenPackage(
+      id: 'com.testee.yesyes.level3',
       price: '\$19.99',
-      tokens: 2500,
-      name: 'Pro Diver Pack',
-      description: '2500 tokens for unlimited exploration',
+      tokens: 14000,
+      name: 'Adventurer Pack',
+      description: '14000 tokens - most popular choice',
     ),
-    '999904': TokenPackage(
-      id: '999904',
+    'com.testee.yesyes.level4': TokenPackage(
+      id: 'com.testee.yesyes.level4',
       price: '\$49.99',
-      tokens: 7000,
-      name: 'Master Pack',
-      description: '7000 tokens - ultimate diving experience',
+      tokens:  35000 ,
+      name: 'Pro Diver Pack',
+      description: '35000 tokens for unlimited exploration',
     ),
   };
 
@@ -267,12 +260,4 @@ class TokenPackage {
     return tokens / priceValue;
   }
 
-  String get valueDescription {
-    if (id == '999902') {
-      return 'MOST POPULAR';
-    } else if (id == '999903' || id == '999904') {
-      return 'BEST VALUE';
-    }
-    return '';
-  }
 }

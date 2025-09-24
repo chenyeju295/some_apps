@@ -27,49 +27,52 @@ class _GenerateScreenState extends State<GenerateScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Consumer2<EnhancedImageProvider, UserProvider>(
-        builder: (context, imageProvider, userProvider, child) {
-          return Stack(
-            children: [
-              CustomScrollView(
-                slivers: [
-                  _buildAppBar(userProvider),
-                  SliverPadding(
-                    padding: const EdgeInsets.fromLTRB(16, 16, 16, 100),
-                    sliver: SliverList(
-                      delegate: SliverChildListDelegate([
-                        if (userProvider.tokenBalance <
-                            TOKEN_COST_PER_GENERATION) ...[
-                          _buildTokenWarning(),
+    return GestureDetector(
+      onTap: () => FocusScope.of(context).unfocus(),
+      child: Scaffold(
+        body: Consumer2<EnhancedImageProvider, UserProvider>(
+          builder: (context, imageProvider, userProvider, child) {
+            return Stack(
+              children: [
+                CustomScrollView(
+                  slivers: [
+                    _buildAppBar(userProvider),
+                    SliverPadding(
+                      padding: const EdgeInsets.fromLTRB(16, 16, 16, 100),
+                      sliver: SliverList(
+                        delegate: SliverChildListDelegate([
+                          if (userProvider.tokenBalance <
+                              TOKEN_COST_PER_GENERATION) ...[
+                            _buildTokenWarning(),
+                            const SizedBox(height: 16),
+                          ],
+                          _buildPromptInput(),
                           const SizedBox(height: 16),
-                        ],
-                        _buildPromptInput(),
-                        const SizedBox(height: 16),
-                        _buildStyleSelection(),
-                        const SizedBox(height: 16),
-                        _buildQuickPrompts(),
-                        const SizedBox(height: 16),
-                        if (imageProvider.isGenerating) ...[
-                          _buildProgress(imageProvider),
+                          _buildStyleSelection(),
                           const SizedBox(height: 16),
-                        ],
-                        if (imageProvider.error != null) ...[
-                          _buildError(imageProvider),
+                          _buildQuickPrompts(),
                           const SizedBox(height: 16),
-                        ],
-                        if (imageProvider.images.isNotEmpty) ...[
-                          _buildRecentImage(imageProvider.images.first),
-                        ],
-                      ]),
+                          if (imageProvider.isGenerating) ...[
+                            _buildProgress(imageProvider),
+                            const SizedBox(height: 16),
+                          ],
+                          if (imageProvider.error != null) ...[
+                            _buildError(imageProvider),
+                            const SizedBox(height: 16),
+                          ],
+                          if (imageProvider.images.isNotEmpty) ...[
+                            _buildRecentImage(imageProvider.images.first),
+                          ],
+                        ]),
+                      ),
                     ),
-                  ),
-                ],
-              ),
-              _buildGenerateButton(imageProvider, userProvider),
-            ],
-          );
-        },
+                  ],
+                ),
+                _buildGenerateButton(imageProvider, userProvider),
+              ],
+            );
+          },
+        ),
       ),
     );
   }

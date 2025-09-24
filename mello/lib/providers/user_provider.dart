@@ -24,7 +24,7 @@ class UserProvider extends ChangeNotifier {
       if (_userProgress == null) {
         _userProgress = UserProgress(
           userId: DateTime.now().millisecondsSinceEpoch.toString(),
-          tokenBalance: 50, // Welcome bonus
+          tokenBalance: 200, // Welcome bonus
           lastActiveDate: DateTime.now(),
           joinDate: DateTime.now(),
           preferences: const UserPreferences(),
