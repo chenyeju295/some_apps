@@ -1,0 +1,78 @@
+name: mello
+description: "A comprehensive diving and marine culture app for diving enthusiasts."
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.0.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # The following adds the Cupertino Icons font to your application.
+  # Use with the CupertinoIcons class for iOS style icons.
+  cupertino_icons: ^1.0.8
+  
+  # State management
+  provider: ^6.1.1
+  
+  # Local storage
+  shared_preferences: ^2.2.2
+  
+  # In-app purchases
+  in_app_purchase: ^3.1.11
+  
+  # HTTP requests for AI API
+  http: ^1.1.0
+  
+  # Path manipulation
+  path: ^1.8.3
+  
+  # Privacy compliance
+  app_tracking_transparency: ^2.0.4
+  
+  # WebView for in-app browsing
+  webview_flutter: ^4.4.2
+  
+  # Image handling
+  cached_network_image: ^3.3.0
+  
+  # Sharing functionality
+  share_plus: ^7.2.1
+  
+  # File system access
+  path_provider: ^2.1.1
+  
+  # JSON serialization
+  json_annotation: ^4.8.1
+  
+  # Animations and effects
+  flutter_staggered_animations: ^1.1.1
+  shimmer: ^3.0.0
+  lottie: ^2.7.0
+  animated_text_kit: ^4.2.2
+  
+  # Swiper for image carousel
+  card_swiper: ^3.0.1
+  
+  # Gallery/Photos access
+  image_gallery_saver: ^2.0.3
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  flutter_lints: ^5.0.0
+  
+  # Code generation
+  build_runner: ^2.4.7
+  json_serializable: ^6.7.1
+flutter:
+
+  uses-material-design: true
+
+  # To add assets to your application, add an assets section, like this:
+  assets:
+    - assets/images/
+
+

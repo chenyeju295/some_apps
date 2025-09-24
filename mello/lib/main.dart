@@ -40,7 +40,7 @@ class DiveExplorerApp extends StatelessWidget {
       child: Consumer<UserProvider>(
         builder: (context, userProvider, child) {
           return MaterialApp(
-            title: 'DiveExplorer',
+            title: 'Mello',
             theme: AppTheme.lightTheme,
             darkTheme: AppTheme.darkTheme,
             themeMode: userProvider.preferences.darkMode
@@ -256,7 +256,7 @@ class _SplashScreenState extends State<SplashScreen>
 
                     // App Name
                     const Text(
-                      'DiveExplorer',
+                      'Mello',
                       style: TextStyle(
                         fontSize: 32,
                         fontWeight: FontWeight.bold,
