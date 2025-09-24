@@ -17,6 +17,7 @@ class GenerateScreen extends StatefulWidget {
 class _GenerateScreenState extends State<GenerateScreen> {
   final TextEditingController _promptController = TextEditingController();
   ImageStyle _selectedStyle = ImageStyle.realistic;
+  static const int TOKEN_COST_PER_GENERATION = 200;
 
   @override
   void dispose() {
@@ -38,7 +39,8 @@ class _GenerateScreenState extends State<GenerateScreen> {
                     padding: const EdgeInsets.fromLTRB(16, 16, 16, 100),
                     sliver: SliverList(
                       delegate: SliverChildListDelegate([
-                        if (userProvider.tokenBalance <= 0) ...[
+                        if (userProvider.tokenBalance <
+                            TOKEN_COST_PER_GENERATION) ...[
                           _buildTokenWarning(),
                           const SizedBox(height: 16),
                         ],
@@ -199,7 +201,7 @@ class _GenerateScreenState extends State<GenerateScreen> {
           const SizedBox(width: 12),
           const Expanded(
             child: Text(
-              'No tokens available. Purchase tokens in Profile to start creating.',
+              'Insufficient tokens. Need $TOKEN_COST_PER_GENERATION tokens per generation. Purchase more in Profile.',
               style: TextStyle(color: AppTheme.deepNavy),
             ),
           ),
@@ -583,7 +585,8 @@ class _GenerateScreenState extends State<GenerateScreen> {
   Widget _buildGenerateButton(
       EnhancedImageProvider imageProvider, UserProvider userProvider) {
     final canGenerate =
-        userProvider.tokenBalance > 0 && !imageProvider.isGenerating;
+        userProvider.tokenBalance >= TOKEN_COST_PER_GENERATION &&
+            !imageProvider.isGenerating;
 
     return Positioned(
       left: 16,
@@ -654,7 +657,7 @@ class _GenerateScreenState extends State<GenerateScreen> {
                         ),
                         SizedBox(width: 8),
                         Text(
-                          '(200 Token)',
+                          '($TOKEN_COST_PER_GENERATION Tokens)',
                           style: TextStyle(color: Colors.white70, fontSize: 12),
                         ),
                       ],
@@ -741,6 +744,12 @@ class _GenerateScreenState extends State<GenerateScreen> {
       return;
     }
 
+    // Check token balance before generation
+    if (userProvider.tokenBalance < TOKEN_COST_PER_GENERATION) {
+      _showInsufficientTokensDialog(userProvider);
+      return;
+    }
+
     final result = await imageProvider.generateImage(
       prompt: prompt,
       style: _selectedStyle,
@@ -752,12 +761,352 @@ class _GenerateScreenState extends State<GenerateScreen> {
 
     if (result != null) {
       _promptController.clear();
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Ocean image created successfully!'),
-          backgroundColor: AppTheme.seaFoam,
-        ),
-      );
+      // Show the generated image in a popup
+      _showGeneratedImageDialog(result);
     }
+  }
+
+  void _showInsufficientTokensDialog(UserProvider userProvider) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: Row(
+          children: [
+            Icon(Icons.warning_amber, color: AppTheme.coral, size: 28),
+            const SizedBox(width: 12),
+            const Text('Insufficient Tokens'),
+          ],
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'You need $TOKEN_COST_PER_GENERATION tokens to generate an image.',
+              style: const TextStyle(fontSize: 16),
+            ),
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                const Text('Current balance: ',
+                    style: TextStyle(color: Colors.grey)),
+                Text(
+                  '${userProvider.tokenBalance} tokens',
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: AppTheme.deepNavy,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Row(
+              children: [
+                const Text('Required: ', style: TextStyle(color: Colors.grey)),
+                Text(
+                  '$TOKEN_COST_PER_GENERATION tokens',
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: AppTheme.coral,
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pop(context);
+              // Navigate to profile screen to buy tokens
+              DefaultTabController.of(context).animateTo(3); // Profile tab
+            },
+            style: AppTheme.primaryButtonStyle,
+            child: const Text('Buy Tokens'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showGeneratedImageDialog(GeneratedImage image) {
+    Navigator.of(context).push(
+      PageRouteBuilder(
+        pageBuilder: (context, animation, secondaryAnimation) =>
+            _GeneratedImageDialog(image: image),
+        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+          return FadeTransition(
+            opacity: animation,
+            child: ScaleTransition(
+              scale: Tween<double>(begin: 0.8, end: 1.0).animate(
+                CurvedAnimation(parent: animation, curve: Curves.easeOutBack),
+              ),
+              child: child,
+            ),
+          );
+        },
+        transitionDuration: const Duration(milliseconds: 400),
+        opaque: false,
+      ),
+    );
+  }
+}
+
+class _GeneratedImageDialog extends StatelessWidget {
+  final GeneratedImage image;
+
+  const _GeneratedImageDialog({required this.image});
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.black.withOpacity(0.9),
+      child: SafeArea(
+        child: Stack(
+          children: [
+            // Close button
+            Positioned(
+              top: 20,
+              right: 20,
+              child: GestureDetector(
+                onTap: () => Navigator.pop(context),
+                child: Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: Colors.black.withOpacity(0.5),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    Icons.close,
+                    color: Colors.white,
+                    size: 24,
+                  ),
+                ),
+              ),
+            ),
+
+            // Image and details
+            Center(
+              child: Container(
+                margin: const EdgeInsets.all(24),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(24),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.3),
+                      blurRadius: 20,
+                      offset: const Offset(0, 10),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    // Success indicator
+                    Container(
+                      padding: const EdgeInsets.all(20),
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [AppTheme.oceanBlue, AppTheme.tropicalTeal],
+                        ),
+                        borderRadius: const BorderRadius.only(
+                          topLeft: Radius.circular(24),
+                          topRight: Radius.circular(24),
+                        ),
+                      ),
+                      child: const Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.check_circle,
+                              color: Colors.white, size: 28),
+                          SizedBox(width: 12),
+                          Text(
+                            'Image Created Successfully!',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    // Image
+                    Container(
+                      height: 300,
+                      width: double.infinity,
+                      child: Hero(
+                        tag: 'generated_image_${image.id}',
+                        child: image.imageUrl.startsWith('/')
+                            ? Image.file(
+                                File(image.imageUrl),
+                                fit: BoxFit.cover,
+                                errorBuilder: (context, error, stackTrace) {
+                                  return Container(
+                                    color: AppTheme.lightAqua,
+                                    child: Center(
+                                      child: Icon(
+                                        Icons.image_outlined,
+                                        size: 80,
+                                        color: AppTheme.oceanBlue,
+                                      ),
+                                    ),
+                                  );
+                                },
+                              )
+                            : Image.asset(
+                                image.imageUrl,
+                                fit: BoxFit.cover,
+                                errorBuilder: (context, error, stackTrace) {
+                                  return Container(
+                                    color: AppTheme.lightAqua,
+                                    child: Center(
+                                      child: Icon(
+                                        Icons.image_outlined,
+                                        size: 80,
+                                        color: AppTheme.oceanBlue,
+                                      ),
+                                    ),
+                                  );
+                                },
+                              ),
+                      ),
+                    ),
+
+                    // Details
+                    Padding(
+                      padding: const EdgeInsets.all(24),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  image.title ?? image.prompt,
+                                  style: const TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                    color: AppTheme.deepNavy,
+                                    height: 1.3,
+                                  ),
+                                ),
+                              ),
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 12,
+                                  vertical: 6,
+                                ),
+                                decoration: BoxDecoration(
+                                  gradient: LinearGradient(
+                                    colors: [
+                                      AppTheme.seaFoam,
+                                      AppTheme.lightAqua,
+                                    ],
+                                  ),
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                child: Text(
+                                  image.style.displayName,
+                                  style: const TextStyle(
+                                    color: AppTheme.deepNavy,
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: 12,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 16),
+
+                          // Token cost info
+                          Container(
+                            padding: const EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              color: AppTheme.oceanBlue.withOpacity(0.1),
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(
+                                color: AppTheme.oceanBlue.withOpacity(0.3),
+                              ),
+                            ),
+                            child: Row(
+                              children: [
+                                Icon(
+                                  Icons.monetization_on,
+                                  color: AppTheme.oceanBlue,
+                                  size: 20,
+                                ),
+                                const SizedBox(width: 8),
+                                Text(
+                                  'Used ${image.tokensUsed} tokens',
+                                  style: TextStyle(
+                                    color: AppTheme.oceanBlue,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+
+                          const SizedBox(height: 20),
+
+                          // Action buttons
+                          Row(
+                            children: [
+                              Expanded(
+                                child: OutlinedButton.icon(
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            const HistoryScreen(),
+                                      ),
+                                    );
+                                  },
+                                  icon: const Icon(Icons.history),
+                                  label: const Text('View History'),
+                                  style: OutlinedButton.styleFrom(
+                                    foregroundColor: AppTheme.oceanBlue,
+                                    side: BorderSide(color: AppTheme.oceanBlue),
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 12),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: ElevatedButton.icon(
+                                  onPressed: () => Navigator.pop(context),
+                                  icon: const Icon(Icons.auto_awesome),
+                                  label: const Text('Create More'),
+                                  style: AppTheme.primaryButtonStyle.copyWith(
+                                    padding: WidgetStateProperty.all(
+                                      const EdgeInsets.symmetric(vertical: 12),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

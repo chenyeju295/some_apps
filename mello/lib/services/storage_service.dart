@@ -167,7 +167,7 @@ class StorageService {
   // Token Management
   Future<int> getTokenBalance() async {
     return prefs.getInt('token_balance') ??
-        50; // Default 50 tokens for new users
+        200; // Default 50 tokens for new users
   }
 
   Future<bool> setTokenBalance(int balance) async {

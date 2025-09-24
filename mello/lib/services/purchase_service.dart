@@ -177,7 +177,6 @@ class PurchaseService {
           break;
         case PurchaseStatus.purchased:
         case PurchaseStatus.restored:
-
           _handleSuccessfulPurchase(purchaseDetails);
           break;
         case PurchaseStatus.error:

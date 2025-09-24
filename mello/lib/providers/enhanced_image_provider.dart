@@ -136,13 +136,13 @@ class EnhancedImageProvider extends ChangeNotifier {
         imageUrl: imageUrl,
         createdAt: DateTime.now(),
         style: style,
-        tokensUsed: 1,
+        tokensUsed: 200,
         title: _generateTitle(prompt),
       );
 
       await StorageService.instance.addGeneratedImage(generatedImage);
       _images.insert(0, generatedImage);
-      onTokensUsed(1);
+      onTokensUsed(200);
 
       _setGenerationState(GenerationState.completed);
       _updateProgress(1.0, 'Complete!');
