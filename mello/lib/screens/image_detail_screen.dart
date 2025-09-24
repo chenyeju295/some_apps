@@ -31,7 +31,9 @@ class _ImageDetailScreenState extends State<ImageDetailScreen> {
   void initState() {
     super.initState();
     _currentIndex = widget.initialIndex;
-    controller.move(widget.initialIndex, animation: true);
+    Future.delayed(Duration(milliseconds: 200),(){
+      controller.move(widget.initialIndex, animation: true);
+    });
   }
 
   @override
@@ -86,6 +88,7 @@ class _ImageDetailScreenState extends State<ImageDetailScreen> {
       margin: const EdgeInsets.symmetric(horizontal: 16),
       child: Swiper(
         controller: controller,
+
         itemBuilder: (BuildContext context, int index) {
           final image = widget.allImages[index];
           return Container(
@@ -349,8 +352,7 @@ class _ImageDetailScreenState extends State<ImageDetailScreen> {
           _buildInfoRow('Style', currentImage.style.displayName),
           const SizedBox(height: 8),
           _buildInfoRow('Created', _formatDate(currentImage.createdAt)),
-          const SizedBox(height: 8),
-          _buildInfoRow('Tokens Used', '${currentImage.tokensUsed}'),
+
         ],
       ),
     );

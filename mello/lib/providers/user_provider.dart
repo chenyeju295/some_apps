@@ -13,7 +13,7 @@ class UserProvider extends ChangeNotifier {
   int get tokenBalance => _userProgress?.tokenBalance ?? 500;
   bool get hasTokens => tokenBalance > 0;
 
-  Future<void> initializeUser() async {
+  Future<void> initializeUser({bool tokenBalance = false}) async {
     // Use scheduleMicrotask to avoid setState during build
     await Future.microtask(() {});
     _setLoading(true);
@@ -24,7 +24,7 @@ class UserProvider extends ChangeNotifier {
       if (_userProgress == null) {
         _userProgress = UserProgress(
           userId: DateTime.now().millisecondsSinceEpoch.toString(),
-          tokenBalance: 200, // Welcome bonus
+          tokenBalance: tokenBalance?0:200, // Welcome bonus
           lastActiveDate: DateTime.now(),
           joinDate: DateTime.now(),
           preferences: const UserPreferences(),
@@ -214,11 +214,11 @@ class UserProvider extends ChangeNotifier {
   UserPreferences get preferences =>
       _userProgress?.preferences ?? const UserPreferences();
 
-  Future<void> resetUserData() async {
+  Future<void> resetUserData(bool resetUser) async {
     try {
       await StorageService.instance.clearAllData();
       _userProgress = null;
-      await initializeUser();
+      await initializeUser(tokenBalance: resetUser);
     } catch (e) {
       _error = 'Failed to reset user data: ${e.toString()}';
       notifyListeners();

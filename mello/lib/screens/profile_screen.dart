@@ -468,8 +468,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
           ElevatedButton(
             onPressed: () {
-              userProvider.resetUserData();
+              userProvider.resetUserData(true);
               Navigator.pop(context);
+              context.read<EnhancedImageProvider>().loadImages();
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(content: Text('All data has been reset')),
               );

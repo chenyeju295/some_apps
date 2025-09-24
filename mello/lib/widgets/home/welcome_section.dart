@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:animated_text_kit/animated_text_kit.dart';
 import '../../theme/app_theme.dart';
+import '../../utils/navigation_helper.dart';
 import '../animations/ocean_animations.dart';
 
 class WelcomeSection extends StatelessWidget {
@@ -143,12 +144,7 @@ class WelcomeSection extends StatelessWidget {
                     width: double.infinity,
                     child: OutlinedButton.icon(
                       onPressed: () {
-                        // Navigate to purchase screen
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Purchase tokens in Profile tab'),
-                          ),
-                        );
+                        NavigationHelper.navigateToProfile(context);
                       },
                       icon: const Icon(Icons.add_circle_outline),
                       label: const Text('Get More Tokens'),
