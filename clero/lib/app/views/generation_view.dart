@@ -105,85 +105,87 @@ class _GenerationViewState extends State<GenerationView>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Stack(
-        children: [
-          // Background gradient
-          Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [
-                  Theme.of(context).primaryColor.withOpacity(0.1),
-                  Theme.of(context).colorScheme.secondary.withOpacity(0.1),
+    return GestureDetector(
+      onTap: () {
+        FocusScope.of(context).unfocus();
+      },
+      child: Scaffold(
+        body: Stack(
+          children: [
+            // Background gradient
+            Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    Theme.of(context).primaryColor.withOpacity(0.1),
+                    Theme.of(context).colorScheme.secondary.withOpacity(0.1),
+                  ],
+                ),
+              ),
+            ),
+
+            // Main content
+            Scaffold(
+              backgroundColor: Colors.transparent,
+              appBar: AppBar(
+                backgroundColor: Colors.transparent,
+                title: Text(
+                  'Create Magic',
+                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: -0.5,
+                      ),
+                ),
+                centerTitle: false,
+                actions: [
+                  _buildCrystalBalance(context),
+                  SizedBox(width: 16),
+                ],
+              ),
+              body: Column(
+                children: [
+                  // Content
+                  Expanded(
+                    child: SingleChildScrollView(
+                      padding: const EdgeInsets.all(20),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Main prompt input with animation
+                          _buildAnimatedPromptInput(context),
+                          const SizedBox(height: 12),
+
+                          // Category selection with animation
+                          _buildAnimatedCategoryTabs(context),
+                          const SizedBox(height: 12),
+
+                          // Preset prompts with animation
+                          _buildAnimatedPresetPrompts(context),
+                          const SizedBox(height: 18),
+
+                          // Generate button with animation
+                          _buildAnimatedGenerateButton(context),
+                          const SizedBox(height: 24),
+
+                          // Recent generations
+                          _buildRecentGenerations(context),
+                          const SizedBox(height: 84),
+                        ],
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ),
-          ),
 
-          // Main content
-          Scaffold(
-            backgroundColor: Colors.transparent,
-            appBar: AppBar(
-              backgroundColor: Colors.transparent,
-              title: Text(
-                'Create Magic',
-                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: -0.5,
-                ),
-              ),
-              centerTitle: false,
-              actions: [
-
-                _buildCrystalBalance(context),
-                SizedBox(width: 16),
-
-              ],
-            ),
-            body: Column(
-              children: [
-                // Content
-                Expanded(
-                  child: SingleChildScrollView(
-                    padding: const EdgeInsets.all(20),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // Main prompt input with animation
-                        _buildAnimatedPromptInput(context),
-                        const SizedBox(height: 12),
-
-                        // Category selection with animation
-                        _buildAnimatedCategoryTabs(context),
-                        const SizedBox(height: 12),
-
-                        // Preset prompts with animation
-                        _buildAnimatedPresetPrompts(context),
-                        const SizedBox(height: 18),
-
-                        // Generate button with animation
-                        _buildAnimatedGenerateButton(context),
-                        const SizedBox(height: 24),
-
-                        // Recent generations
-                        _buildRecentGenerations(context),
-                        const SizedBox(height: 84),
-
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-
-          // Loading overlay
-          Obx(() => controller.isGenerating.value
-              ? const LoadingOverlay(message: 'Creating your masterpiece...')
-              : const SizedBox.shrink()),
-        ],
+            // Loading overlay
+            Obx(() => controller.isGenerating.value
+                ? const LoadingOverlay(message: 'Creating your masterpiece...')
+                : const SizedBox.shrink()),
+          ],
+        ),
       ),
     );
   }
@@ -250,6 +252,8 @@ class _GenerationViewState extends State<GenerationView>
                     child: TextField(
                       onChanged: controller.updateCustomPrompt,
                       maxLines: 3,
+                      maxLength: 500,
+                      controller: controller.customPromptController,
                       style: Theme.of(context).textTheme.bodyLarge,
                       decoration: InputDecoration(
                         hintText:
@@ -265,46 +269,16 @@ class _GenerationViewState extends State<GenerationView>
                         contentPadding: const EdgeInsets.all(16),
                         suffixIcon: controller.customPrompt.value.isNotEmpty
                             ? IconButton(
-                                onPressed: controller.clearCustomPrompt,
+                                onPressed: () {
+                                  FocusScope.of(context).unfocus();
+                                  controller.customPromptController.text = "";
+                                  controller.clearCustomPrompt();
+                                },
                                 icon: const Icon(Icons.clear),
                               )
                             : null,
                       ),
                     ),
-                  )),
-              const SizedBox(height: 12),
-              Obx(() => Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        '${controller.customPrompt.value.length}/500',
-                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                              color: Theme.of(context)
-                                  .textTheme
-                                  .bodyMedium
-                                  ?.color
-                                  ?.withOpacity(0.6),
-                            ),
-                      ),
-                      if (controller.customPrompt.value.isNotEmpty)
-                        AnimatedContainer(
-                          duration: const Duration(milliseconds: 300),
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 12, vertical: 4),
-                          decoration: BoxDecoration(
-                            color: Theme.of(context).primaryColor,
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Text(
-                            'Ready ✨',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 12,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ),
-                    ],
                   )),
             ],
           ),
@@ -552,12 +526,12 @@ class _GenerationViewState extends State<GenerationView>
 
   Widget _buildAnimatedPromptChip(BuildContext context, String prompt) {
     final isSelected = controller.isPromptSelected(prompt);
-    final displayPrompt =
-        prompt.length > 24 ? '${prompt.substring(0, 24)}...' : prompt;
+    final displayPrompt =  prompt;
 
     return AnimatedContainer(
       duration: const Duration(milliseconds: 300),
       curve: Curves.easeInOut,
+      width: Get.width/2-40,
       transform: Matrix4.identity()..scale(isSelected ? 1.05 : 1.0),
       child: Material(
         color: Colors.transparent,
@@ -605,38 +579,22 @@ class _GenerationViewState extends State<GenerationView>
                       ),
                     ],
             ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                if (isSelected)
-                  AnimatedContainer(
-                    duration: const Duration(milliseconds: 200),
-                    margin: const EdgeInsets.only(right: 6),
-                    child: Icon(
-                      Icons.check_circle,
-                      size: 16,
-                      color: Colors.white,
-                    ),
-                  ),
-                Flexible(
-                  child: AnimatedDefaultTextStyle(
-                    duration: const Duration(milliseconds: 300),
-                    style: TextStyle(
-                      color: isSelected
-                          ? Colors.white
-                          : Theme.of(context).textTheme.bodyMedium?.color,
-                      fontWeight:
-                          isSelected ? FontWeight.w600 : FontWeight.w500,
-                      fontSize: 13,
-                      letterSpacing: isSelected ? 0.3 : 0,
-                    ),
-                    child: Text(
-                      displayPrompt,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                ),
-              ],
+            child: AnimatedDefaultTextStyle(
+              duration: const Duration(milliseconds: 300),
+              style: TextStyle(
+                color: isSelected
+                    ? Colors.white
+                    : Theme.of(context).textTheme.bodyMedium?.color,
+                fontWeight:
+                    isSelected ? FontWeight.w600 : FontWeight.w500,
+                fontSize: 13,
+                letterSpacing: isSelected ? 0.3 : 0,
+              ),
+              child: Text(
+                displayPrompt,
+                overflow: TextOverflow.ellipsis,
+                maxLines:isSelected? 3:1,
+              ),
             ),
           ),
         ),
@@ -824,7 +782,7 @@ class _GenerationViewState extends State<GenerationView>
           ),
           child: ClipRRect(
             borderRadius: BorderRadius.circular(16),
-            child:   CachedNetworkImage(
+            child: CachedNetworkImage(
               imageUrl: wallpaper.url,
               fit: BoxFit.cover,
               placeholder: (context, url) => Container(
@@ -899,6 +857,20 @@ class _GenerationViewState extends State<GenerationView>
   }
 
   void _handleGenerate() {
+    // Check balance first
+
+    final balanceController = Get.find<BalanceController>();
+
+    if (!balanceController.hasEnoughCrystals(CrystalCosts.hdGeneration)) {
+      Get.snackbar(
+        'Insufficient Crystals',
+        'You need ${CrystalCosts.hdGeneration} crystals but only have ${balanceController.formattedBalance}. Visit the shop to buy more!',
+        snackPosition: SnackPosition.BOTTOM,
+        duration: const Duration(seconds: 4),
+      );
+      return;
+    }
+
     if (controller.customPrompt.value.isNotEmpty) {
       controller.generateWithCustomPrompt();
     } else if (controller.selectedPrompts.isNotEmpty) {

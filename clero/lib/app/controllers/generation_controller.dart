@@ -335,6 +335,8 @@ class GenerationController extends GetxController {
   bool get canGenerate =>
       customPrompt.value.trim().isNotEmpty || selectedPrompts.isNotEmpty;
 
+  TextEditingController customPromptController = TextEditingController();
+
   // Show generation confirmation dialog
   Future<void> _showGenerationConfirmDialog({
     required String title,
@@ -343,17 +345,6 @@ class GenerationController extends GetxController {
     required VoidCallback onConfirm,
   }) async {
     final balanceController = Get.find<BalanceController>();
-
-    // Check balance first
-    if (!balanceController.hasEnoughCrystals(cost)) {
-      Get.snackbar(
-        'Insufficient Crystals',
-        'You need $cost crystals but only have ${balanceController.formattedBalance}. Visit the shop to buy more!',
-        snackPosition: SnackPosition.BOTTOM,
-        duration: const Duration(seconds: 4),
-      );
-      return;
-    }
 
     final showConfirmCheckbox = true.obs;
 

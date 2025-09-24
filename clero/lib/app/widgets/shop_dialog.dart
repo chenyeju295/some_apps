@@ -230,29 +230,6 @@ class ProductItem extends StatelessWidget {
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                          if (product.badge != null) ...[
-                            const SizedBox(width: 8),
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 6,
-                                vertical: 2,
-                              ),
-                              decoration: BoxDecoration(
-                                color: product.isPopular
-                                    ? Colors.orange
-                                    : Colors.green,
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              child: Text(
-                                product.badge!,
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 10,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
-                          ],
                         ],
                       ),
                       const SizedBox(height: 4),

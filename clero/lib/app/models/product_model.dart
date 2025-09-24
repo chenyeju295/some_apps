@@ -115,24 +115,11 @@ class CrystalCosts {
     'batch': batchGeneration,
   };
 
-  static const Map<String, int> styleCosts = {
-    'realistic': 0, // Base cost
-    'artistic': 50, // Additional cost
-    'anime': 30, // Additional cost
-    'fantasy': 70, // Additional cost
-    'vintage': 20, // Additional cost
-    'modern': 40, // Additional cost
-  };
-
   static int calculateGenerationCost({
     required String quality,
     required String style,
     bool isBatch = false,
   }) {
-    int baseCost = isBatch
-        ? batchGeneration
-        : (generationCosts[quality] ?? basicGeneration);
-    int styleCost = styleCosts[style] ?? 0;
-    return baseCost + styleCost;
+    return hdGeneration;
   }
 }
