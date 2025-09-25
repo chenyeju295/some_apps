@@ -656,10 +656,8 @@ class _WallpaperDetailViewState extends State<WallpaperDetailView>
   void _showActions() {
     showModalBottomSheet(
       context: context,
-      backgroundColor: Colors.transparent,
       builder: (context) => Container(
         decoration: const BoxDecoration(
-          color: Colors.white,
           borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
         ),
         child: SafeArea(

@@ -742,17 +742,7 @@ class HomeView extends GetView<HomeController> {
                           children: [
                             Icon(Icons.favorite,
                                 color: Colors.red.shade400, size: 14),
-                            const SizedBox(width: 4),
-                            Text(
-                              'Favorites',
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .bodySmall
-                                  ?.copyWith(
-                                    color: Colors.red.shade400,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                            ),
+
                           ],
                         ),
                       ),

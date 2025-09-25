@@ -7,6 +7,8 @@ import '../services/ai_service.dart';
 import 'balance_controller.dart';
 import 'package:flutter/material.dart';
 
+import 'favorites_controller.dart';
+
 class GenerationController extends GetxController {
   // Observable variables
   final categories = <ThemeCategoryModel>[].obs;
@@ -307,6 +309,8 @@ class GenerationController extends GetxController {
 
         // Navigate to wallpaper detail view with hero animation
         Get.toNamed('/wallpaper-detail', arguments: wallpaper);
+        Get.find<FavoritesController>().loadAllWallpapers();
+        Get.find<FavoritesController>().loadFavorites();
       }
     } catch (e) {
       Get.snackbar(

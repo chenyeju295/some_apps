@@ -2,6 +2,8 @@ import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import '../services/storage_service.dart';
 import '../constants/app_constants.dart';
+import 'favorites_controller.dart';
+import 'home_controller.dart';
 
 class SettingsController extends GetxController {
   // Observable variables
@@ -131,6 +133,11 @@ class SettingsController extends GetxController {
       buttonColor: Colors.red,
       onConfirm: () {
         StorageService.clearAll();
+
+        Get.find<FavoritesController>().loadAllWallpapers();
+        Get.find<FavoritesController>().loadFavorites();
+        Get.find<HomeController>().refreshHistory();
+
         Get.back();
         Get.snackbar(
           'Data Cleared',
