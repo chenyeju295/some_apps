@@ -27,10 +27,7 @@ dependencies:
   
   # Path manipulation
   path: ^1.8.3
-  
-  # Privacy compliance
-  app_tracking_transparency: ^2.0.4
-  
+
   # WebView for in-app browsing
   webview_flutter: ^4.4.2
   

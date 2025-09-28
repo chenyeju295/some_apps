@@ -45,8 +45,6 @@
 	<string>Mello saves your AI-generated underwater images and diving photos to your photo library for easy sharing and memories.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Mello needs access to your photo library to save generated ocean images, share diving memories, and import photos for AI enhancement.</string>
-	<key>NSUserTrackingUsageDescription</key>
-	<string>Mello uses tracking to deliver personalized ocean content, suggest relevant dive sites, and provide tailored marine life experiences. Your privacy is important to us.</string>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 	<key>UILaunchStoryboardName</key>

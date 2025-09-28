@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
-import 'package:app_tracking_transparency/app_tracking_transparency.dart';
 import 'dart:io';
 import 'providers/user_provider.dart';
 import 'providers/content_provider.dart';
@@ -113,11 +112,6 @@ class _SplashScreenState extends State<SplashScreen>
       imageProvider.initialize(),
     ]);
 
-    // Initialize ATT for iOS
-    if (Platform.isIOS) {
-      await _initializeATT();
-    }
-
     // Wait for animation to complete
     await _animationController.forward();
     await Future.delayed(const Duration(milliseconds: 500));
@@ -129,85 +123,7 @@ class _SplashScreenState extends State<SplashScreen>
     }
   }
 
-  Future<void> _initializeATT() async {
-    try {
-      // Check if ATT is available and required
-      final status = await AppTrackingTransparency.trackingAuthorizationStatus;
 
-      // Only request permission if status is not determined
-      if (status == TrackingStatus.notDetermined) {
-        await _requestATTPermissionWithRetry();
-      } else {
-        print('ATT Status: ${status.toString()}');
-      }
-    } catch (e) {
-      print('ATT initialization error: $e');
-      // Continue app initialization even if ATT fails
-    }
-  }
-
-  Future<void> _requestATTPermissionWithRetry() async {
-    const maxRetries = 20;
-    const retryDelay = Duration(seconds: 2);
-
-    for (int attempt = 1; attempt <= maxRetries; attempt++) {
-      try {
-        print('ATT Permission Request - Attempt $attempt/$maxRetries');
-
-        // Add a small delay before requesting permission
-        await Future.delayed(Duration(milliseconds: 500 * attempt));
-
-        final status =
-            await AppTrackingTransparency.requestTrackingAuthorization();
-
-        print('ATT Permission Result: ${status.toString()}');
-
-        // Handle the result
-        switch (status) {
-          case TrackingStatus.authorized:
-            print('✅ ATT: Tracking authorized - User granted permission');
-            return; // Success, exit retry loop
-
-          case TrackingStatus.denied:
-            print('❌ ATT: Tracking denied - User declined permission');
-            return; // User made a choice, exit retry loop
-
-          case TrackingStatus.restricted:
-            print('⚠️ ATT: Tracking restricted - System level restriction');
-            return; // System restriction, exit retry loop
-
-          case TrackingStatus.notDetermined:
-            print('⏳ ATT: Status still not determined - Retrying...');
-            if (attempt == maxRetries) {
-              print(
-                  '❌ ATT: Max retries reached, continuing without permission');
-              return;
-            }
-            break;
-
-          case TrackingStatus.notSupported:
-            print('ℹ️ ATT: Tracking not supported on this device/iOS version');
-            return; // Not supported, exit retry loop
-        }
-
-        // If we reach here and it's not the last attempt, wait before retrying
-        if (attempt < maxRetries) {
-          print('⏳ Waiting ${retryDelay.inSeconds} seconds before retry...');
-          await Future.delayed(retryDelay);
-        }
-      } catch (e) {
-        print('❌ ATT Request Error (Attempt $attempt): $e');
-
-        if (attempt == maxRetries) {
-          print('❌ ATT: All attempts failed, continuing app initialization');
-          return;
-        }
-
-        // Wait before retrying on error
-        await Future.delayed(retryDelay);
-      }
-    }
-  }
 
   @override
   void dispose() {
