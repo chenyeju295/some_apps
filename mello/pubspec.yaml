@@ -33,9 +33,9 @@ dependencies:
   
   # Image handling
   cached_network_image: ^3.3.0
-  
+
   # Sharing functionality
-  share_plus: ^7.2.1
+  share_plus: ^12.0.0
   
   # File system access
   path_provider: ^2.1.1
