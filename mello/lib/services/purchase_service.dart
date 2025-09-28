@@ -44,7 +44,7 @@ class PurchaseService {
     'com.testee.yesyes.level4': TokenPackage(
       id: 'com.testee.yesyes.level4',
       price: '\$49.99',
-      tokens:  35000 ,
+      tokens: 35000,
       name: 'Pro Diver Pack',
       description: '35000 tokens for unlimited exploration',
     ),
@@ -76,6 +76,8 @@ class PurchaseService {
       return true;
     } catch (e) {
       print('Failed to initialize purchase service: $e');
+      // Reset initialization state so it can be retried later
+      _isInitialized = false;
       return false;
     }
   }
@@ -124,10 +126,28 @@ class PurchaseService {
       }
     }
 
-    if (!_isInitialized) {
-      print('Purchase service not initialized');
-      onPurchaseError?.call('Purchase service not initialized');
-      return false;
+    // If not initialized or products not loaded, try to initialize again
+    // This handles cases where initial setup failed due to network authorization
+    if (!_isInitialized || _products.isEmpty) {
+      print(
+          'Purchase service not initialized or products not loaded, attempting to initialize...');
+      final bool initSuccess = await initialize();
+      if (!initSuccess) {
+        print('Failed to initialize purchase service');
+        onPurchaseError?.call('Purchase service initialization failed');
+        return false;
+      }
+
+      // If still no products after initialization, try to reload them
+      if (_products.isEmpty) {
+        print('No products loaded, attempting to reload...');
+        await _loadProducts();
+        if (_products.isEmpty) {
+          print('Failed to load products');
+          onPurchaseError?.call('Failed to load products');
+          return false;
+        }
+      }
     }
 
     try {
@@ -209,11 +229,6 @@ class PurchaseService {
     onPurchaseError?.call(purchaseDetails.error?.message ?? 'Purchase failed');
   }
 
-  void _handleRestoredPurchase(PurchaseDetails purchaseDetails) {
-    print('Purchase restored: ${purchaseDetails.productID}');
-    onPurchaseRestored?.call();
-  }
-
   Future<void> restorePurchases() async {
     if (!_isInitialized) return;
 
@@ -259,5 +274,4 @@ class TokenPackage {
     if (priceValue == 0.0) return 0.0;
     return tokens / priceValue;
   }
-
 }
