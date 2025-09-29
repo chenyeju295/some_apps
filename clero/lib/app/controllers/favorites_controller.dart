@@ -61,13 +61,11 @@ class FavoritesController extends GetxController
       // Remove from favorites
       StorageService.removeFromFavorites(wallpaper.id);
       favoriteWallpapers.removeWhere((w) => w.id == wallpaper.id);
-
     } else {
       // Add to favorites
       final updatedWallpaper = wallpaper.copyWith(isFavorite: true);
       StorageService.addToFavorites(updatedWallpaper);
       favoriteWallpapers.add(updatedWallpaper);
-
     }
 
     update(); // Trigger UI update
@@ -98,6 +96,13 @@ class FavoritesController extends GetxController
         update(); // Trigger UI update
       },
     );
+  }
+
+  // Remove from history
+  void removeFromHistory(WallpaperModel wallpaper) {
+    StorageService.removeFromHistory(wallpaper.id);
+    allWallpapers.removeWhere((w) => w.id == wallpaper.id);
+    update(); // Trigger UI update
   }
 
   // Clear all favorites

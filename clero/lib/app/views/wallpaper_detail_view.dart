@@ -798,6 +798,9 @@ class _WallpaperDetailViewState extends State<WallpaperDetailView>
       homeController.generatedWallpapers
           .removeWhere((w) => w.id == wallpaper!.id);
 
+      favController.removeFromHistory(wallpaper!);
+      favController.loadAllWallpapers();
+
       Get.back();
       Get.snackbar(
         'Deleted',

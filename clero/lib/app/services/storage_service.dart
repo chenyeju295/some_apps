@@ -75,6 +75,13 @@ class StorageService {
     return data.map((json) => WallpaperModel.fromJson(json)).toList();
   }
 
+  // remove from history
+  static void removeFromHistory(String wallpaperId) {
+    final history = generationHistory;
+    history.removeWhere((w) => w.id == wallpaperId);
+    generationHistory = history;
+  }
+
   static set generationHistory(List<WallpaperModel> wallpapers) {
     final data = wallpapers.map((w) => w.toJson()).toList();
     _box.write(AppConstants.keyGenerationHistory, data);

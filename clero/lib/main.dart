@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'app/services/storage_service.dart';
-import 'app/services/att_service.dart';
 import 'app/services/in_app_purchase_service.dart';
 import 'app/routes/app_pages.dart';
 import 'app/theme/app_theme.dart';
@@ -23,10 +22,7 @@ class AIWallpaperApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Initialize ATT after the first frame
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      ATTService.initialize();
-    });
+
 
     return GetMaterialApp(
       title: 'AI Wallpaper Generator',
