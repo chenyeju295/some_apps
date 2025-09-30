@@ -162,6 +162,7 @@ class InAppPurchaseService extends GetxService {
         duration: const Duration(seconds: 3),
         icon: const Icon(Icons.check_circle, color: Colors.white),
       );
+      _inAppPurchase.completePurchase(purchaseDetails);
 
       // Notify listeners
       Get.find<BalanceController>().update();
@@ -229,23 +230,17 @@ class InAppPurchaseService extends GetxService {
 
       // Create purchase param
       final PurchaseParam purchaseParam =
-          PurchaseParam(productDetails: product);
+          PurchaseParam(productDetails: product,applicationUserName: "clero");
 
       // Start the purchase
-      final bool success = await _inAppPurchase.buyNonConsumable(
-        purchaseParam: purchaseParam,
+      final bool success = await _inAppPurchase.buyConsumable(
+        purchaseParam: purchaseParam
       );
 
       return success;
     } catch (e) {
       debugPrint('InAppPurchase: Purchase error: $e');
-      Get.snackbar(
-        'Purchase Error',
-        'An unexpected error occurred. Please try again.',
-        snackPosition: SnackPosition.TOP,
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
-      );
+
       return false;
     }
   }
