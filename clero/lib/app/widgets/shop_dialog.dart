@@ -4,13 +4,52 @@ import '../controllers/balance_controller.dart';
 import '../models/product_model.dart';
 import '../services/in_app_purchase_service.dart';
 
-class ShopDialog extends StatelessWidget {
+class ShopDialog extends StatefulWidget {
   const ShopDialog({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final iapService = Get.find<InAppPurchaseService>();
+  State<ShopDialog> createState() => _ShopDialogState();
+}
 
+class _ShopDialogState extends State<ShopDialog> {
+  late InAppPurchaseService iapService;
+  bool isInitializing = false;
+
+  @override
+  void initState() {
+    super.initState();
+    iapService = Get.find<InAppPurchaseService>();
+    _checkInitialization();
+  }
+
+  // 检查初始化状态，如果商品为空则重新初始化
+  Future<void> _checkInitialization() async {
+    if (iapService.availableProducts.isEmpty) {
+      setState(() {
+        isInitializing = true;
+      });
+
+      final bool initialized = await iapService.ensureInitialized();
+
+      setState(() {
+        isInitializing = false;
+      });
+
+      if (!initialized) {
+        Get.snackbar(
+          'Network Error',
+          'Unable to load products. Please check your network connection and try again.',
+          snackPosition: SnackPosition.TOP,
+          backgroundColor: Colors.orange,
+          colorText: Colors.white,
+          duration: const Duration(seconds: 3),
+        );
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Dialog(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(20),
@@ -71,10 +110,12 @@ class ShopDialog extends StatelessWidget {
               child: Row(
                 children: [
                   Obx(() => Icon(
-                        iapService.isAvailable.value
+                        iapService.isAvailable.value &&
+                                iapService.availableProducts.isNotEmpty
                             ? Icons.check_circle
                             : Icons.error,
-                        color: iapService.isAvailable.value
+                        color: iapService.isAvailable.value &&
+                                iapService.availableProducts.isNotEmpty
                             ? Colors.green
                             : Colors.red,
                         size: 16,
@@ -82,7 +123,8 @@ class ShopDialog extends StatelessWidget {
                   const SizedBox(width: 8),
                   Expanded(
                     child: Obx(() => Text(
-                          iapService.isAvailable.value
+                          iapService.isAvailable.value &&
+                                  iapService.availableProducts.isNotEmpty
                               ? 'App Store is available'
                               : 'App Store is not available',
                           style: TextStyle(
@@ -96,6 +138,14 @@ class ShopDialog extends StatelessWidget {
                         )),
                   ),
                   TextButton(
+                    onPressed:
+                        isInitializing ? null : () => _checkInitialization(),
+                    child: Text(
+                      isInitializing ? 'Retrying...' : 'Retry',
+                      style: const TextStyle(fontSize: 12),
+                    ),
+                  ),
+                  TextButton(
                     onPressed: () => iapService.restorePurchases(),
                     child:
                         const Text('Restore', style: TextStyle(fontSize: 12)),
@@ -107,11 +157,51 @@ class ShopDialog extends StatelessWidget {
             // Products List
             Flexible(
               child: Obx(() {
-                if (iapService.isLoading.value) {
+                if (iapService.isLoading.value || isInitializing) {
                   return const Center(
                     child: Padding(
                       padding: EdgeInsets.all(32),
                       child: CircularProgressIndicator(),
+                    ),
+                  );
+                }
+
+                // 如果没有可用商品，显示重试提示
+                if (iapService.availableProducts.isEmpty) {
+                  return Center(
+                    child: Padding(
+                      padding: const EdgeInsets.all(32),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(
+                            Icons.wifi_off,
+                            size: 48,
+                            color: Colors.grey,
+                          ),
+                          const SizedBox(height: 16),
+                          Text(
+                            'No products available',
+                            style: Theme.of(context).textTheme.titleMedium,
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            'Please check your network connection and try again',
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium
+                                ?.copyWith(
+                                  color: Colors.grey,
+                                ),
+                            textAlign: TextAlign.center,
+                          ),
+                          const SizedBox(height: 16),
+                          ElevatedButton(
+                            onPressed: () => _checkInitialization(),
+                            child: const Text('Retry'),
+                          ),
+                        ],
+                      ),
                     ),
                   );
                 }
@@ -139,6 +229,19 @@ class ShopDialog extends StatelessWidget {
 
   void _handlePurchase(BuildContext context, ProductModel product) async {
     final balanceController = Get.find<BalanceController>();
+
+    // 购买前再次确保初始化完成
+    final bool initialized = await iapService.ensureInitialized();
+    if (!initialized) {
+      Get.snackbar(
+        'Purchase Failed',
+        'Unable to connect to store. Please check your network and try again.',
+        snackPosition: SnackPosition.TOP,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
+      return;
+    }
 
     // Attempt purchase - loading and success/error handling is done in the service
     final success = await balanceController.purchaseCrystals(

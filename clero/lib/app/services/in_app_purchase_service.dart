@@ -97,6 +97,22 @@ class InAppPurchaseService extends GetxService {
     }
   }
 
+  // 重新查询商品的方法，用于网络恢复后重试
+  Future<void> retryQueryProducts() async {
+    await _queryProducts();
+  }
+
+  // 检查是否已初始化并尝试重新初始化
+  Future<bool> ensureInitialized() async {
+    if (!isAvailable.value || availableProducts.isEmpty) {
+      debugPrint(
+          'InAppPurchase: Re-initializing due to missing products or unavailable store');
+      await _initializeStore();
+      return isAvailable.value && availableProducts.isNotEmpty;
+    }
+    return true;
+  }
+
   void _handlePurchaseUpdates(List<PurchaseDetails> purchaseDetailsList) {
     for (final PurchaseDetails purchaseDetails in purchaseDetailsList) {
       _handlePurchaseUpdate(purchaseDetails);
@@ -201,10 +217,12 @@ class InAppPurchaseService extends GetxService {
 
   Future<bool> purchaseProduct(String productId) async {
     try {
-      if (!isAvailable.value) {
+      // 购买前确保已正确初始化
+      final bool initialized = await ensureInitialized();
+      if (!initialized) {
         Get.snackbar(
           'Store Unavailable',
-          'The App Store is not available right now.',
+          'The App Store is not available right now. Please check your network connection and try again.',
           snackPosition: SnackPosition.TOP,
           backgroundColor: Colors.red,
           colorText: Colors.white,
@@ -220,7 +238,7 @@ class InAppPurchaseService extends GetxService {
       if (product == null) {
         Get.snackbar(
           'Product Not Found',
-          'This product is not available for purchase.',
+          'This product is not available for purchase. Please try again.',
           snackPosition: SnackPosition.TOP,
           backgroundColor: Colors.red,
           colorText: Colors.white,
@@ -230,12 +248,11 @@ class InAppPurchaseService extends GetxService {
 
       // Create purchase param
       final PurchaseParam purchaseParam =
-          PurchaseParam(productDetails: product,applicationUserName: "clero");
+          PurchaseParam(productDetails: product, applicationUserName: "clero");
 
       // Start the purchase
-      final bool success = await _inAppPurchase.buyConsumable(
-        purchaseParam: purchaseParam
-      );
+      final bool success =
+          await _inAppPurchase.buyConsumable(purchaseParam: purchaseParam);
 
       return success;
     } catch (e) {
